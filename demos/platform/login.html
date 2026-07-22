@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="demo-stub.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — Aeglos Platform</title>
+<link rel="stylesheet" href="css/platform.css">
+<style>
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .login-box { width: 100%; max-width: 400px; padding: 20px; }
+  .login-logo { text-align: center; margin-bottom: 32px; }
+  .login-logo .name { font-family: var(--font-mono); font-size: 1.5rem; color: var(--gold); font-weight: 700; letter-spacing: 1px; }
+  .login-logo .sub  { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+  .login-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; }
+  .login-form { display: flex; flex-direction: column; gap: 16px; }
+  .login-form button { margin-top: 4px; }
+  .login-footer { text-align: center; margin-top: 20px; font-size: 0.82rem; color: var(--text-muted); }
+  .tab-group { display: flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
+  .tab-btn { flex: 1; padding: 9px; font-size: 0.85rem; background: transparent; border: none; color: var(--text-dim); cursor: pointer; transition: 0.15s; font-family: var(--font-sans); }
+  .tab-btn.active { background: rgba(201,168,76,0.12); color: var(--gold); }
+  #errMsg { display: none; }
+</style>
+</head>
+<body>
+<div class="login-box">
+  <div class="login-logo">
+    <div class="name">AEGLOS</div>
+    <div class="sub">Platform Management</div>
+  </div>
+  <div class="login-card">
+    <div class="tab-group">
+      <button class="tab-btn active" onclick="switchTab('admin')">Admin</button>
+      <button class="tab-btn" onclick="switchTab('client')">Client Portal</button>
+    </div>
+    <div id="errMsg" class="alert alert-error mb-4"></div>
+    <form class="login-form" id="loginForm" onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="emailInput" required autocomplete="email" placeholder="you@company.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="passInput" required autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn btn-primary w-full" id="loginBtn">Sign In</button>
+    </form>
+  </div>
+  <div class="login-footer">
+    <a href="index.html">← Back to site</a>
+  </div>
+</div>
+
+<script>
+let role = 'admin';
+
+function switchTab(r) {
+  role = r;
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (r==='admin'&&i===0)||(r==='client'&&i===1)));
+  hideErr();
+}
+
+function showErr(msg) {
+  const el = document.getElementById('errMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideErr() { document.getElementById('errMsg').style.display = 'none'; }
+
+async function doLogin(e) {
+  e.preventDefault();
+  hideErr();
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+  const email = document.getElementById('emailInput').value;
+  const password = document.getElementById('passInput').value;
+  const url = role === 'admin' ? '/api/auth/admin/login' : '/api/auth/client/login';
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) { showErr(data.error || 'Login failed'); return; }
+    window.location.href = role === 'admin' ? '/crm.html' : '/portal.html';
+  } catch {
+    showErr('Network error. Please try again.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+}
+
+// Check query param for pre-selecting role
+const p = new URLSearchParams(location.search);
+if (p.get('role') === 'client') switchTab('client');
+
+</script>
+</body>
+</html>

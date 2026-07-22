@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="demo-stub.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — Aeglos Platform</title>
+<link rel="stylesheet" href="css/platform.css">
+<style>
+  .pricing-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 32px;
+    text-align: center;
+  }
+  .pricing-eyebrow { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); margin-bottom: 14px; }
+  .pricing-title { font-size: 2.4rem; font-weight: 700; margin-bottom: 12px; }
+  .pricing-subtitle { font-size: 1rem; color: var(--text-dim); max-width: 560px; margin: 0 auto 40px; }
+
+  /* ── Billing toggle ── */
+  .billing-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    background: var(--glass-card);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 40px;
+    padding: 4px;
+    margin-bottom: 48px;
+    position: relative;
+  }
+  .toggle-opt {
+    padding: 8px 22px;
+    border-radius: 36px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.18s;
+    user-select: none;
+    position: relative;
+    z-index: 1;
+  }
+  .toggle-opt.active { color: #0b0b0d; }
+  .toggle-thumb {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    height: calc(100% - 8px);
+    border-radius: 36px;
+    background: var(--gold);
+    box-shadow: 0 2px 12px rgba(201,168,76,0.35);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), width 0.22s;
+    z-index: 0;
+  }
+  .save-badge {
+    display: inline-block;
+    background: rgba(76,175,122,0.15);
+    border: 1px solid rgba(76,175,122,0.3);
+    color: #80e8aa;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.3px;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    text-align: left;
+  }
+
+  .pricing-card {
+    background: var(--glass-card);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    user-select: none;
+  }
+  .pricing-card:hover {
+    border-color: rgba(201,168,76,0.35);
+    transform: translateY(-2px);
+  }
+  .pricing-card.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold), 0 8px 40px rgba(201,168,76,0.18), var(--shadow);
+    background: linear-gradient(160deg, rgba(201,168,76,0.07) 0%, var(--glass-card) 70%);
+  }
+  .pricing-card.featured {
+    border-color: var(--gold-dim);
+    background: linear-gradient(160deg, rgba(201,168,76,0.06) 0%, var(--glass-card) 60%);
+  }
+  .pricing-card.featured.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold), 0 12px 48px rgba(201,168,76,0.22), var(--shadow);
+    background: linear-gradient(160deg, rgba(201,168,76,0.10) 0%, var(--glass-card) 70%);
+  }
+
+  .featured-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gold);
+    color: #0b0b0d;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .selected-indicator {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 11px;
+    color: transparent;
+  }
+  .pricing-card.selected .selected-indicator {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #0b0b0d;
+    box-shadow: 0 0 8px rgba(201,168,76,0.4);
+  }
+
+  .tier-name { font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; }
+
+  .price-wrap { margin-bottom: 4px; }
+  .price { font-size: 2.6rem; font-weight: 700; color: var(--text); line-height: 1; transition: opacity 0.15s; }
+  .price span { font-size: 1rem; font-weight: 400; color: var(--text-dim); }
+  .price-original { font-size: 1rem; color: var(--text-muted); text-decoration: line-through; margin-left: 6px; display: none; }
+  .price-sub { font-size: 0.82rem; color: var(--text-muted); margin: 6px 0 20px; min-height: 1.2em; }
+
+  .feature-list { flex: 1; list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 28px; }
+  .feature-list li { font-size: 0.87rem; color: var(--text-dim); display: flex; align-items: flex-start; gap: 8px; }
+  .feature-list li::before { content: '✓'; color: var(--gold); flex-shrink: 0; font-weight: 600; margin-top: 1px; }
+  .feature-list li.dim::before { content: '·'; color: var(--text-muted); }
+  .feature-list li.dim { color: var(--text-muted); }
+
+  .checkout-form { display: flex; flex-direction: column; gap: 10px; }
+  .checkout-form input { width: 100%; }
+
+  .faq-section { max-width: 720px; margin: 0 auto; padding: 0 32px 80px; }
+  .faq-section h2 { text-align: center; margin-bottom: 36px; }
+  .faq-item { border-bottom: 1px solid var(--border-dim); padding: 20px 0; }
+  .faq-item h4 { font-size: 0.95rem; margin-bottom: 8px; }
+  .faq-item p { font-size: 0.88rem; }
+
+  #toast { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+  .toast-msg { background: var(--glass-mid); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 12px 18px; font-size: 0.88rem; }
+  .toast-err { border-color: rgba(224,85,85,0.4); color: #f08080; }
+  .toast-ok  { border-color: rgba(76,175,122,0.4); color: #80e8aa; }
+
+  @media (max-width: 860px) {
+    .pricing-grid { grid-template-columns: 1fr; }
+    .pricing-section { padding: 50px 16px; }
+  }
+</style>
+</head>
+<body>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">AEGLOS <span>Systems</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="pricing.html" style="color:var(--gold);">Pricing</a>
+      <a href="login.html">Sign in</a>
+    </div>
+  </div>
+</nav>
+
+<div class="pricing-section">
+  <div class="pricing-eyebrow">Transparent Pricing</div>
+  <h1 class="pricing-title">One platform, any industry</h1>
+  <p class="pricing-subtitle">Every plan includes data ingestion, a branded portal, and the Aeglos comparison engine. Scale up as your deployment grows.</p>
+
+  <!-- Billing toggle -->
+  <div class="billing-toggle" id="billingToggle">
+    <div class="toggle-thumb" id="toggleThumb"></div>
+    <div class="toggle-opt active" id="opt-monthly" onclick="setBilling('monthly')">Monthly</div>
+    <div class="toggle-opt" id="opt-annual" onclick="setBilling('annual')">Annual <span class="save-badge">Save 5%</span></div>
+  </div>
+
+  <div class="pricing-grid" id="pricingGrid">
+
+    <!-- Starter -->
+    <div class="pricing-card" id="card-starter" onclick="selectPlan('starter')">
+      <div class="selected-indicator">✓</div>
+      <div class="tier-name">Starter</div>
+      <div class="price-wrap">
+        <span class="price" id="price-starter">$1,500 <span>/ mo</span></span>
+      </div>
+      <div class="price-sub" id="sub-starter">+ $2,500 setup fee</div>
+      <ul class="feature-list">
+        <li>Data ingestion &amp; catalog (up to 5,000 listings)</li>
+        <li>Branded comparison tool</li>
+        <li>Custom domain &amp; colors</li>
+        <li>Client portal access</li>
+        <li>Regulatory content module</li>
+        <li>Email support</li>
+        <li class="dim">AI natural language filter</li>
+        <li class="dim">Marketplace / buy &amp; sell</li>
+        <li class="dim">Dealer directory</li>
+      </ul>
+      <div class="checkout-form">
+        <input type="text" id="s_company" placeholder="Company name" onclick="event.stopPropagation()">
+        <input type="email" id="s_email" placeholder="Work email" onclick="event.stopPropagation()">
+        <button class="btn btn-secondary w-full" onclick="event.stopPropagation(); checkout('starter')">Get Started →</button>
+      </div>
+    </div>
+
+    <!-- Growth (featured) -->
+    <div class="pricing-card featured selected" id="card-growth" onclick="selectPlan('growth')">
+      <div class="featured-badge">Most Popular</div>
+      <div class="selected-indicator">✓</div>
+      <div class="tier-name">Growth</div>
+      <div class="price-wrap">
+        <span class="price" id="price-growth">$3,500 <span>/ mo</span></span>
+      </div>
+      <div class="price-sub" id="sub-growth">+ $5,000 setup fee</div>
+      <ul class="feature-list">
+        <li>Everything in Starter</li>
+        <li>Up to 25,000 listings</li>
+        <li>AI natural language filter</li>
+        <li>Marketplace module</li>
+        <li>Dealer / reseller directory</li>
+        <li>Community listings feed</li>
+        <li>Priority support &amp; Slack channel</li>
+        <li class="dim">Custom scrapers &amp; automation</li>
+        <li class="dim">Analytics dashboard</li>
+      </ul>
+      <div class="checkout-form">
+        <input type="text" id="g_company" placeholder="Company name" onclick="event.stopPropagation()">
+        <input type="email" id="g_email" placeholder="Work email" onclick="event.stopPropagation()">
+        <button class="btn btn-primary w-full" onclick="event.stopPropagation(); checkout('growth')">Get Started →</button>
+      </div>
+    </div>
+
+    <!-- Pro -->
+    <div class="pricing-card" id="card-pro" onclick="selectPlan('pro')">
+      <div class="selected-indicator">✓</div>
+      <div class="tier-name">Pro</div>
+      <div class="price-wrap">
+        <span class="price" id="price-pro">$6,500 <span>/ mo</span></span>
+      </div>
+      <div class="price-sub" id="sub-pro">+ $10,000 setup fee</div>
+      <ul class="feature-list">
+        <li>Everything in Growth</li>
+        <li>Unlimited listings</li>
+        <li>Custom scrapers &amp; automation</li>
+        <li>Analytics &amp; reporting dashboard</li>
+        <li>Blog &amp; news aggregation</li>
+        <li>White-glove onboarding</li>
+        <li>Dedicated account manager</li>
+        <li>SLA guarantee</li>
+      </ul>
+      <div class="checkout-form">
+        <input type="text" id="p_company" placeholder="Company name" onclick="event.stopPropagation()">
+        <input type="email" id="p_email" placeholder="Work email" onclick="event.stopPropagation()">
+        <button class="btn btn-secondary w-full" onclick="event.stopPropagation(); checkout('pro')">Get Started →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <p style="margin-top:28px;font-size:0.82rem;color:var(--text-muted);">
+    Not sure which plan fits? <a href="/#contact" style="color:var(--gold);">Book a demo</a> and we'll scope it together.
+  </p>
+</div>
+
+<div class="faq-section">
+  <h2>Common Questions</h2>
+  <div class="faq-item">
+    <h4>What industries does this work for?</h4>
+    <p>Any industry with products that benefit from structured comparison data — eBikes, RVs, marine, ATVs, power tools, industrial equipment, real estate, and more. The platform is content-agnostic.</p>
+  </div>
+  <div class="faq-item">
+    <h4>What's included in the setup fee?</h4>
+    <p>Initial data ingestion, brand configuration (colors, domain, logo), deployment of your comparison tool, and onboarding support. Pro includes dedicated white-glove onboarding with a project manager.</p>
+  </div>
+  <div class="faq-item">
+    <h4>Can I upgrade my plan later?</h4>
+    <p>Yes. You can upgrade at any time and we'll prorate the difference. Downgrades take effect at the next billing cycle.</p>
+  </div>
+  <div class="faq-item">
+    <h4>Do you offer annual pricing?</h4>
+    <p>Yes — annual contracts receive a 5% discount off the monthly rate, billed as a single upfront payment. Switch using the toggle above the plans.</p>
+  </div>
+  <div class="faq-item">
+    <h4>What does the client portal give my team?</h4>
+    <p>Your team gets visibility into deployment status, running features, project milestones, invoices, and a direct message channel with the Aeglos team.</p>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const MONTHLY = { starter: 1500, growth: 3500, pro: 6500 };
+const DISCOUNT = 0.05;
+
+let selectedPlan = 'growth';
+let billingCycle = 'monthly';
+
+function fmt(n) {
+  return '$' + n.toLocaleString('en-US');
+}
+
+function setBilling(cycle) {
+  billingCycle = cycle;
+
+  const optM = document.getElementById('opt-monthly');
+  const optA = document.getElementById('opt-annual');
+  const thumb = document.getElementById('toggleThumb');
+
+  if (cycle === 'monthly') {
+    optM.classList.add('active');
+    optA.classList.remove('active');
+    thumb.style.transform = 'translateX(0)';
+    thumb.style.width = optM.offsetWidth + 'px';
+  } else {
+    optA.classList.add('active');
+    optM.classList.remove('active');
+    const offset = optM.offsetWidth;
+    thumb.style.transform = 'translateX(' + offset + 'px)';
+    thumb.style.width = optA.offsetWidth + 'px';
+  }
+
+  updatePrices();
+}
+
+function updatePrices() {
+  const tiers = ['starter', 'growth', 'pro'];
+  const setupFees = { starter: 2500, growth: 5000, pro: 10000 };
+
+  tiers.forEach(tier => {
+    const monthly = MONTHLY[tier];
+    const priceEl = document.getElementById('price-' + tier);
+    const subEl   = document.getElementById('sub-' + tier);
+
+    if (billingCycle === 'annual') {
+      const discounted = Math.round(monthly * (1 - DISCOUNT));
+      const annual     = discounted * 12;
+      priceEl.innerHTML = fmt(discounted) + ' <span>/ mo</span>';
+      subEl.textContent = fmt(annual) + ' billed annually + ' + fmt(setupFees[tier]) + ' setup';
+    } else {
+      priceEl.innerHTML = fmt(monthly) + ' <span>/ mo</span>';
+      subEl.textContent = '+ ' + fmt(setupFees[tier]) + ' setup fee';
+    }
+  });
+}
+
+function initToggle() {
+  const thumb = document.getElementById('toggleThumb');
+  const optM  = document.getElementById('opt-monthly');
+  thumb.style.width = optM.offsetWidth + 'px';
+}
+
+function selectPlan(tier) {
+  selectedPlan = tier;
+  document.querySelectorAll('.pricing-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('card-' + tier).classList.add('selected');
+}
+
+function toast(msg, type = 'ok') {
+  const div = document.createElement('div');
+  div.className = 'toast-msg toast-' + type;
+  div.textContent = msg;
+  document.getElementById('toast').appendChild(div);
+  setTimeout(() => div.remove(), 3500);
+}
+
+async function checkout(tier) {
+  selectPlan(tier);
+  const prefixes = { starter: 's', growth: 'g', pro: 'p' };
+  const p = prefixes[tier];
+  const company = document.getElementById(p + '_company').value.trim();
+  const email   = document.getElementById(p + '_email').value.trim();
+  if (!company || !email) { toast('Please enter company name and email.', 'err'); return; }
+  if (!email.includes('@')) { toast('Please enter a valid email.', 'err'); return; }
+
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.textContent = 'Redirecting…';
+
+  try {
+    const res = await fetch('/api/stripe/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier, billing: billingCycle, company_name: company, email })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      toast(data.error || 'Checkout unavailable. Please contact us.', 'err');
+      btn.disabled = false;
+      btn.textContent = 'Get Started →';
+      return;
+    }
+    window.location.href = data.url;
+  } catch {
+    toast('Network error. Please try again.', 'err');
+    btn.disabled = false;
+    btn.textContent = 'Get Started →';
+  }
+}
+
+window.addEventListener('DOMContentLoaded', initToggle);
+
+if (new URLSearchParams(location.search).get('checkout') === 'cancelled') {
+  toast('Checkout cancelled. No charge was made.', 'err');
+  history.replaceState({}, '', '/pricing.html');
+}
+</script>
+</body>
+</html>

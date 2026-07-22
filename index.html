@@ -1,33 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
-<title>Brent Dempsey — Operator Dossier</title>
+<title>Brent Dempsey — Full-Stack Developer &amp; Systems Builder</title>
+<meta name="description" content="Brent Dempsey — full-stack developer and systems builder. AEGLOS: one platform shipped across intelligence, mobility, commerce, and gaming, plus a bootable OS. Concept to deploy, solo. Six live demos.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Brent Dempsey — Full-Stack Developer &amp; Systems Builder">
+<meta property="og:description" content="One platform, four markets, a bootable OS — designed, built, and deployed solo. Six working demos you can open and use.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
   :root{
     --void:#06090e; --void2:#080d14;
     --surface:rgba(14,22,31,.72); --surface2:rgba(20,30,41,.55);
-    --ink:#cfdbe4; --head:#eaf2f7; --dim:#6a8090; --faint:#3c505e;
+    --ink:#c7d4de; --head:#eef4f8; --dim:#6a8090; --faint:#3c505e;
     --signal:#35e0d4; --signal-dim:#1a9f97;
     --amber:#ffb24d; --live:#74e0a3;
     --line:rgba(120,180,200,.14); --line-strong:rgba(120,190,205,.28);
     --acc:var(--signal);
-    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
-    --sans:system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:'IBM Plex Sans',system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --display:'Archivo',system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
     --max:1180px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{
     background:var(--void); color:var(--ink); font-family:var(--sans);
-    line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    line-height:1.62; -webkit-font-smoothing:antialiased; overflow-x:hidden;
     background-image:
-      radial-gradient(120% 80% at 82% -10%, rgba(53,224,212,.08), transparent 55%),
-      radial-gradient(90% 70% at 8% 108%, rgba(255,178,77,.05), transparent 55%);
+      radial-gradient(120% 80% at 84% -12%, rgba(53,224,212,.09), transparent 55%),
+      radial-gradient(90% 70% at 6% 110%, rgba(255,178,77,.05), transparent 55%);
   }
   #hud{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5}
   .wrap{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 24px}
+  a{color:inherit}
 
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--signal)}
+  /* Aeglos mark */
+  .mk{display:block;color:var(--signal)}
+  .mk-sm{width:22px;height:27px;flex:none}
+  .mk-big{width:190px;height:auto;color:var(--acc);filter:drop-shadow(0 0 16px color-mix(in srgb,var(--acc) 55%,transparent));animation:mkpulse 5s ease-in-out infinite}
+  @keyframes mkpulse{50%{filter:drop-shadow(0 0 26px color-mix(in srgb,var(--acc) 80%,transparent))}}
+  @media (prefers-reduced-motion:reduce){.mk-big{animation:none}}
+
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--signal)}
   .panel{position:relative;background:var(--surface);border:1px solid var(--line);
     backdrop-filter:blur(6px);border-radius:3px}
   .panel::before,.panel::after{content:"";position:absolute;width:9px;height:9px;border:1px solid var(--acc);opacity:.75}
@@ -39,55 +59,73 @@
   .dot.amber{background:var(--amber);box-shadow:0 0 8px var(--amber)}
 
   /* header */
-  header{padding:64px 0 26px}
+  header{padding:34px 0 26px;position:relative}
   .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
-    border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:44px}
-  .sysid{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim)}
-  .sysid b{color:var(--signal);font-weight:600}
+    border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:52px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim)}
+  .brand b{color:var(--signal);font-weight:600}
+  .brand .sep{color:var(--faint)}
   #clock{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dim);font-variant-numeric:tabular-nums}
-  .hero-grid{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end}
-  h1{font-weight:800;letter-spacing:-.02em;line-height:.98;font-size:clamp(44px,8vw,92px);color:var(--head);text-wrap:balance}
+  .hero-grid{display:grid;grid-template-columns:1fr auto;gap:44px;align-items:end;position:relative}
+  .hero-mk{position:absolute;right:-40px;top:-120px;width:min(460px,42vw);height:auto;color:var(--signal);opacity:.05;z-index:-1;pointer-events:none}
+  h1{font-family:var(--display);font-weight:900;letter-spacing:-.025em;line-height:.9;font-size:clamp(46px,8.6vw,98px);color:var(--head);text-wrap:balance}
   h1 .amp{color:var(--signal)}
-  .role{font-family:var(--mono);font-size:13px;letter-spacing:.1em;color:var(--amber);margin-top:18px;text-transform:uppercase}
-  .thesis{max-width:60ch;margin-top:20px;font-size:17px;color:var(--ink)}
+  .role{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;color:var(--amber);margin-top:20px;text-transform:uppercase}
+  .lead{font-family:var(--display);font-weight:600;font-size:clamp(18px,2.4vw,23px);line-height:1.32;color:var(--head);max-width:22ch;margin-top:22px;letter-spacing:-.01em;text-wrap:balance}
+  .thesis{max-width:60ch;margin-top:16px;font-size:16px;color:var(--ink)}
   .thesis b{color:var(--head);font-weight:600} .thesis em{color:var(--signal);font-style:normal;font-weight:600}
-  .heroright{display:flex;flex-direction:column;gap:10px;min-width:200px}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+  .btn{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
+    padding:11px 18px;border-radius:3px;display:inline-flex;align-items:center;gap:8px;transition:transform .16s ease,background .16s ease,border-color .16s ease}
+  .btn-primary{background:var(--signal);color:#04181a;font-weight:600;border:1px solid var(--signal)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(53,224,212,.24)}
+  .btn-ghost{background:transparent;color:var(--signal);border:1px solid color-mix(in srgb,var(--signal) 45%,transparent)}
+  .btn-ghost:hover{background:color-mix(in srgb,var(--signal) 12%,transparent);transform:translateY(-2px)}
+  .heroright{display:flex;flex-direction:column;gap:2px;min-width:210px}
   .statline{display:flex;justify-content:space-between;gap:18px;font-family:var(--mono);font-size:12px;
-    padding:9px 0;border-bottom:1px dashed var(--line);letter-spacing:.05em}
-  .statline span{color:var(--dim)} .statline b{color:var(--head);font-weight:600;font-variant-numeric:tabular-nums}
+    padding:11px 0;border-bottom:1px dashed var(--line);letter-spacing:.04em;align-items:baseline}
+  .statline:first-child{border-top:1px dashed var(--line)}
+  .statline span{color:var(--dim);font-size:10px;letter-spacing:.14em;text-transform:uppercase} .statline b{color:var(--head);font-weight:600;font-variant-numeric:tabular-nums}
   .statline b em{color:var(--signal);font-style:normal}
 
   /* section head */
-  .sec{margin:60px 0 20px;display:flex;align-items:baseline;gap:16px}
-  .sec h2{font-family:var(--mono);font-size:14px;letter-spacing:.24em;text-transform:uppercase;color:var(--head);font-weight:600}
+  .sec{margin:64px 0 20px;display:flex;align-items:baseline;gap:16px}
+  .sec h2{font-family:var(--mono);font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--head);font-weight:600}
   .sec .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line-strong),transparent)}
   .sec .idx{font-family:var(--mono);font-size:11px;color:var(--acc);letter-spacing:.1em}
 
-  /* build panel — full two-column layout for every item */
+  /* build panel */
   .build{display:grid;grid-template-columns:308px 1fr;overflow:hidden;margin-bottom:16px}
   .build.feature{grid-template-columns:360px 1fr}
-  .b-vis{position:relative;border-right:1px solid var(--line);min-height:290px;
+  .b-vis{position:relative;border-right:1px solid var(--line);min-height:296px;display:flex;align-items:center;justify-content:center;
     background:radial-gradient(120% 100% at 30% 18%, color-mix(in srgb, var(--acc) 16%, transparent), transparent 60%),
       linear-gradient(155deg, color-mix(in srgb, var(--acc) 7%, #070d12), color-mix(in srgb, var(--acc) 13%, #0a141c))}
   .b-vis canvas{position:absolute;inset:0;width:100%;height:100%}
   .b-vis .stamp{position:absolute;left:20px;bottom:15px;font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--acc);text-transform:uppercase;z-index:1}
   .b-body{padding:28px 34px 26px}
   .b-body .code{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;margin-top:6px}
-  .b-body h3{font-weight:800;font-size:29px;color:var(--head);letter-spacing:-.01em;margin-top:5px;line-height:1.05}
-  .build.feature .b-body h3{font-size:34px}
-  .b-body .sub{font-family:var(--mono);font-size:12px;color:var(--acc);letter-spacing:.05em;margin-top:5px;text-transform:uppercase}
+  .b-body h3{font-family:var(--display);font-weight:800;font-size:29px;color:var(--head);letter-spacing:-.015em;margin-top:5px;line-height:1.04}
+  .build.feature .b-body h3{font-size:35px}
+  .b-body .sub{font-family:var(--mono);font-size:12px;color:var(--acc);letter-spacing:.04em;margin-top:6px;text-transform:uppercase}
   .b-body p{margin-top:15px;max-width:66ch;color:var(--ink);font-size:15px}
   .b-body p em{color:var(--head);font-style:italic}
   .caps{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:5px 22px;margin-top:20px;list-style:none}
   .caps li{font-size:13px;color:var(--ink);padding-left:16px;position:relative}
   .caps li::before{content:"▸";position:absolute;left:0;color:var(--acc);font-size:11px;top:1px}
   .caps li b{color:var(--head);font-weight:600}
-  .foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;padding-top:15px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px;padding-top:15px;border-top:1px solid var(--line);flex-wrap:wrap}
   .tags{display:flex;flex-wrap:wrap;gap:6px}
   .tags span{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--dim);border:1px solid var(--line);padding:3px 8px;border-radius:2px}
-  .loc{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.06em;white-space:nowrap}
+  .loc{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.08em;white-space:nowrap;text-transform:uppercase}
 
-  footer{margin:66px 0 46px;padding-top:22px;border-top:1px solid var(--line);
+  /* contact */
+  .contact{margin-top:64px;padding:40px 40px 38px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center}
+  .contact h2{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.4vw,32px);color:var(--head);letter-spacing:-.02em;margin-top:12px;line-height:1.08;max-width:20ch;text-wrap:balance}
+  .contact p{margin-top:14px;max-width:52ch;color:var(--ink);font-size:15px}
+  .contact-actions{display:flex;flex-direction:column;gap:10px;min-width:230px}
+  .contact-actions .btn{justify-content:space-between;font-size:12px}
+
+  footer{margin:34px 0 46px;padding-top:22px;border-top:1px solid var(--line);
     display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
   footer .f{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--dim)}
   footer .f b{color:var(--signal)}
@@ -96,9 +134,12 @@
   .reveal.in{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
   @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none} #hud{opacity:.32}}
   @media(max-width:820px){
-    .hero-grid{grid-template-columns:1fr} .heroright{min-width:0}
-    .build,.build.feature{grid-template-columns:1fr} .b-vis{min-height:150px;border-right:0;border-bottom:1px solid var(--line)}
+    .hero-grid{grid-template-columns:1fr} .heroright{min-width:0;margin-top:8px}
+    .lead{max-width:none}
+    .contact{grid-template-columns:1fr;padding:28px 24px} .contact-actions{min-width:0}
+    .build,.build.feature{grid-template-columns:1fr} .b-vis{min-height:170px;border-right:0;border-bottom:1px solid var(--line)}
     .dm-body{grid-template-columns:1fr !important}
+    .mk-big{width:130px}
   }
 
   /* ---- launch-demo button on each panel ---- */
@@ -133,36 +174,6 @@
     width:28px;height:28px;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center}
   .dm-x:hover{color:var(--head);border-color:var(--acc)}
   .dm-stage{flex:1;overflow:auto;position:relative}
-  .dm-body{display:grid;height:100%}
-
-  /* shared demo primitives */
-  .d-tile{background:var(--surface2);border:1px solid var(--line);border-radius:4px;padding:12px 14px}
-  .d-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
-  .d-v{font-family:var(--mono);font-size:22px;color:var(--head);font-weight:600;font-variant-numeric:tabular-nums;margin-top:3px}
-  .d-v small{font-size:12px;color:var(--acc)}
-  .pill{font-family:var(--mono);font-size:9px;letter-spacing:.06em;padding:2px 7px;border-radius:10px;text-transform:uppercase;white-space:nowrap}
-  .sev-crit{background:rgba(255,82,102,.16);color:#ff7a88;border:1px solid rgba(255,82,102,.4)}
-  .sev-warn{background:rgba(255,178,77,.16);color:#ffc46b;border:1px solid rgba(255,178,77,.4)}
-  .sev-info{background:rgba(53,224,212,.14);color:#5fe6da;border:1px solid rgba(53,224,212,.4)}
-  .sev-ok{background:rgba(116,224,163,.14);color:#8fe6b3;border:1px solid rgba(116,224,163,.4)}
-  .d-chip{font-family:var(--mono);font-size:10px;letter-spacing:.05em;padding:5px 11px;border-radius:3px;cursor:pointer;
-    color:var(--dim);border:1px solid var(--line);background:transparent;transition:all .15s}
-  .d-chip.on{color:var(--acc);border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent)}
-  .d-feed{list-style:none;display:flex;flex-direction:column;gap:1px}
-  .d-feed li{display:flex;gap:10px;align-items:center;padding:9px 12px;font-family:var(--mono);font-size:11px;
-    border-bottom:1px solid var(--line);animation:fin .4s ease}
-  @keyframes fin{from{opacity:0;transform:translateX(-8px)}}
-  @media (prefers-reduced-motion:reduce){.d-feed li{animation:none}}
-  .d-btn{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
-    color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent);
-    border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);border-radius:3px;padding:9px 14px;transition:background .15s}
-  .d-btn:hover{background:color-mix(in srgb,var(--acc) 24%,transparent)}
-  .d-sel{font-family:var(--mono);font-size:12px;color:var(--head);background:#0b131b;border:1px solid var(--line);
-    border-radius:3px;padding:8px 10px;width:100%}
-  .d-scroll{overflow:auto}
-  .d-scroll::-webkit-scrollbar,.dm-stage::-webkit-scrollbar{width:8px;height:8px}
-  .d-scroll::-webkit-scrollbar-thumb,.dm-stage::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:4px}
-
   .dm-stage iframe{width:100%;height:100%;border:0;display:block;background:#0a0e14}
   .dm-open{display:inline-flex;align-items:center;gap:5px;margin-left:14px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);text-decoration:none;border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);padding:5px 9px;border-radius:3px}
   .dm-open:hover{background:color-mix(in srgb,var(--acc) 14%,transparent)}
@@ -170,57 +181,81 @@
   .dm-gal figure{margin:0;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#0a0e14}
   .dm-gal img{width:100%;display:block}
   .dm-gal figcaption{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--dim);padding:8px 10px;border-top:1px solid var(--line)}
+  .dm-stage::-webkit-scrollbar{width:8px;height:8px}
+  .dm-stage::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:4px}
 </style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="aeglos-mark" viewBox="0 -32 200 236">
+  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="100,5 190,95 100,185 10,95"/>
+    <line x1="135" y1="95" x2="175" y2="80"/><line x1="125" y1="75" x2="155" y2="45"/><line x1="115" y1="58" x2="130" y2="25"/>
+    <line x1="65" y1="95" x2="25" y2="80"/><line x1="75" y1="75" x2="45" y2="45"/><line x1="85" y1="58" x2="70" y2="25"/>
+    <path d="M 60 105 A 40 40 0 0 1 140 105"/>
+    <line x1="20" y1="105" x2="90" y2="105"/><line x1="30" y1="115" x2="90" y2="115" stroke-width="3"/><line x1="40" y1="125" x2="90" y2="125" stroke-width="2"/><line x1="50" y1="135" x2="90" y2="135" stroke-width="1.5"/>
+    <line x1="110" y1="105" x2="180" y2="105"/><line x1="110" y1="115" x2="170" y2="115" stroke-width="3"/><line x1="110" y1="125" x2="160" y2="125" stroke-width="2"/><line x1="110" y1="135" x2="150" y2="135" stroke-width="1.5"/>
+  </g>
+  <polygon points="100,-25 118,40 108,55 108,185 100,195 92,185 92,55 82,40" fill="currentColor"/>
+</symbol></svg>
 
 <canvas id="hud"></canvas>
 <div class="wrap">
   <header>
     <div class="topbar">
-      <div class="sysid">AEGLOS//<b>OPERATOR&nbsp;DOSSIER</b> · rev 2026.07</div>
+      <div class="brand"><svg class="mk mk-sm"><use href="#aeglos-mark"/></svg> AEGLOS <span class="sep">//</span> <b>OPERATOR&nbsp;DOSSIER</b></div>
       <div id="clock">--:--:-- UTC</div>
     </div>
     <div class="hero-grid">
+      <svg class="hero-mk" aria-hidden="true"><use href="#aeglos-mark"/></svg>
       <div>
-        <div class="eyebrow reveal">Builder · Multi-domain</div>
+        <div class="eyebrow reveal">Concept → code → deploy</div>
         <h1 class="reveal">BRENT<br>DEMP<span class="amp">S</span>EY</h1>
         <div class="role reveal">Full-Stack Developer · Process Developer · Concept Architect</div>
-        <p class="thesis reveal"><em>AEGLOS</em> — the brand Brent built. One core stretched across markets:
-          operational <b>SIGINT / HUMINT</b> fusion, a logarithmic sales-monitoring and pipeline engine for
-          customer data and multi-tenant client tracking, electric-mobility intelligence, and a game built on
-          its own roster — plus <b>an operating system</b> of its own. Concept to running system, solo.</p>
+        <p class="lead reveal">I take software from an empty repo to a running, deployed system — and I do it end to end.</p>
+        <p class="thesis reveal">The proof is <em>AEGLOS</em>: a platform I designed and built solo, then pushed
+          across four markets from one shared core — <b>intelligence fusion</b>, <b>electric mobility</b>,
+          <b>multi-tenant commerce</b>, and <b>gaming</b> — with a bootable operating system alongside it.
+          Front-end, back-end, data pipelines, ML, and the infrastructure underneath: every layer here is a
+          working system, and six of them you can open and use right now.</p>
+        <div class="hero-actions reveal">
+          <a href="#work" class="btn btn-primary">Explore the work ↓</a>
+          <a href="mailto:bdempseygt@gmail.com" class="btn btn-ghost">bdempseygt@gmail.com</a>
+        </div>
       </div>
       <div class="heroright reveal">
-        <div class="statline"><span>PLATFORM FRONTS</span><b><em>5</em></b></div>
-        <div class="statline"><span>BUILDS</span><b>8</b></div>
-        <div class="statline"><span>METHOD</span><b>hand-built · <em>AI-edited</em></b></div>
+        <div class="statline"><span>Scope</span><b>concept → <em>deploy</em></b></div>
+        <div class="statline"><span>Markets</span><b><em>4</em> + systems</b></div>
+        <div class="statline"><span>Live demos</span><b><em>6</em></b></div>
+        <div class="statline"><span>Built</span><b>solo</b></div>
       </div>
     </div>
   </header>
 
   <!-- PLATFORM -->
-  <div class="sec reveal"><span class="idx">00</span><h2>The Aeglos Platform</h2><div class="rule"></div></div>
+  <div class="sec reveal" id="work"><span class="idx">00</span><h2>The Aeglos Platform</h2><div class="rule"></div></div>
   <section class="build feature panel reveal" data-demo="core" style="--acc:#35e0d4">
-    <div class="b-vis"><canvas data-viz="network"></canvas><div class="stamp">AEGLOS // CORE</div></div>
+    <div class="b-vis"><svg class="mk mk-big"><use href="#aeglos-mark"/></svg><div class="stamp">AEGLOS // CORE</div></div>
     <div class="b-body">
       <div class="tick"><span class="dot"></span>Active platform · four fronts</div>
       <div class="code">AEGLOS // PLATFORM</div>
       <h3>Aeglos Systems</h3>
-      <div class="sub">One core → many domains</div>
-      <p>The spine of everything here. From a shared engine and platform layer, Aeglos gets pushed into
-        four very different domains — defense-grade <em>intelligence fusion</em>, public <em>electric-vehicle
-        intelligence</em>, a <em>game</em> built on its own hardware roster, and consumer <em>data
-        products</em>. The same foundation ships a classified-feeling analyst console and a public eBike brand.</p>
+      <div class="sub">One core → many markets</div>
+      <p>The through-line of this portfolio. From a shared engine and platform layer, I pushed Aeglos into
+        four very different markets — <em>intelligence fusion</em>, <em>electric mobility</em>,
+        <em>multi-tenant commerce</em>, and <em>gaming</em> — plus an operating system of its own. One
+        codebase family, one builder, production-grade on every front, from data model to deploy pipeline.</p>
       <ul class="caps">
         <li><b>Shared Engine + Platform</b> core services</li>
         <li><b>Intelligence</b> — OSINT / GEOINT fusion</li>
         <li><b>Mobility</b> — aeglos.systems eBike platform</li>
-        <li><b>Commerce</b> — white-glove sales &amp; concierge</li>
+        <li><b>Commerce</b> — multi-tenant sales &amp; CRM</li>
         <li><b>Gaming</b> — VOLT QUEST on the roster</li>
-        <li><b>Data</b> — market &amp; catalog intelligence</li>
+        <li><b>Systems</b> — a bootable operating system</li>
       </ul>
       <div class="foot">
-        <div class="tags"><span>Python</span><span>JavaScript</span><span>Postgres</span><span>ML</span><span>deploy pipeline</span></div>
-        <div class="loc">~/Aeglos-Platform · Aeglos-Engine</div>
+        <div class="tags"><span>Python</span><span>JavaScript</span><span>Postgres</span><span>ML</span><span>Node</span><span>deploy pipeline</span></div>
+        <div class="loc">Solo build · shared engine + platform</div>
       </div>
     </div>
   </section>
@@ -235,10 +270,10 @@
       <div class="code">AEGLOS // INTELLIGENCE-FUSION</div>
       <h3>AEGLOS Analytics Pro</h3>
       <div class="sub">HUMINT · OSINT · GEOINT fusion</div>
-      <p>A multi-domain open-source intelligence platform: real-time ingestion, ML-based threat
-        classification, 72-hour forecasting, and AI convergence analysis — packaged as a single macOS app
-        or Docker stack. The GeoThreat <em>Situation Room</em> dashboard puts the whole pipeline on one
-        operator screen.</p>
+      <p>A multi-source open-source-intelligence platform: real-time ingestion, ML-based threat
+        classification, 72-hour forecasting, and AI convergence analysis — packaged as a one-click macOS app
+        or a Docker stack. The GeoThreat <em>Situation Room</em> puts the whole pipeline on a single operator
+        screen.</p>
       <ul class="caps">
         <li>Real-time OSINT ingest</li>
         <li>ML threat classification</li>
@@ -249,7 +284,7 @@
       </ul>
       <div class="foot">
         <div class="tags"><span>Python</span><span>ML</span><span>Prophet</span><span>GEOINT</span><span>Docker</span></div>
-        <div class="loc">~/aeglos-analytics · 814M</div>
+        <div class="loc">Solo build · macOS app + Docker</div>
       </div>
     </div>
   </section>
@@ -261,11 +296,11 @@
       <div class="code">AEGLOS // MOBILITY</div>
       <h3>Aeglos eBike Intelligence</h3>
       <div class="sub">aeglos.systems — the public platform</div>
-      <p>The consumer face of Aeglos: a curated electric-bike roster, an interactive US eBike-<em>law</em>
-        map, and a no-guess data pipeline (scrape → verify → apply) that keeps every spec honest. Served
-        live behind a strict content-security policy with its own action-dispatch layer.</p>
+      <p>The consumer face of Aeglos: a curated electric-bike comparison engine, an interactive US
+        eBike-<em>law</em> map, and a no-guess data pipeline (scrape → verify → apply) that keeps every spec
+        honest. Deployed live behind a strict content-security policy with its own action-dispatch layer.</p>
       <ul class="caps">
-        <li>Curated bike roster</li>
+        <li>84-model comparison engine</li>
         <li>Interactive eBike-law map</li>
         <li>No-guess data pipeline</li>
         <li>Per-brand verify triggers</li>
@@ -274,7 +309,7 @@
       </ul>
       <div class="foot">
         <div class="tags"><span>JavaScript</span><span>Python pipeline</span><span>law map</span><span>strict CSP</span></div>
-        <div class="loc">/var/www/aeglos · Ubuntu 24.04</div>
+        <div class="loc">Live · aeglos.systems</div>
       </div>
     </div>
   </section>
@@ -282,26 +317,25 @@
   <section class="build panel reveal" data-demo="sales" style="--acc:#4d9bff">
     <div class="b-vis"><canvas data-viz="funnel"></canvas><div class="stamp">AEGLOS // COMMERCE</div></div>
     <div class="b-body">
-      <div class="tick"><span class="dot"></span>Operating · concierge model</div>
-      <div class="code">AEGLOS // COMMERCE · WHITE-GLOVE</div>
+      <div class="tick"><span class="dot"></span>Operating · multi-tenant</div>
+      <div class="code">AEGLOS // COMMERCE · CRM</div>
       <h3>Aeglos Sales &amp; Concierge</h3>
-      <div class="sub">A white-glove eBike sales platform</div>
-      <p>The commerce layer of the Aeglos mobility business — built as a <em>concierge process</em>, not a
-        checkout cart. Every buyer runs through a guided, high-touch pipeline: consultation-led intake,
-        fit-and-spec matching against the roster, a personal quote-to-order path, then <em>white-glove
-        fulfillment</em> — hand delivery, on-site setup, and a real onboarding hand-off, with after-sale
-        service tracked end to end.</p>
+      <div class="sub">Multi-tenant sales platform + CRM</div>
+      <p>The commerce layer of the Aeglos business — a multi-tenant client platform and CRM built as a
+        <em>concierge process</em>, not a checkout cart. Pipeline tracking from intake through negotiation,
+        client portals with per-tenant deployments, revenue and invoicing, and a white-glove fulfillment
+        path with after-sale service tracked end to end.</p>
       <ul class="caps">
-        <li>Consultation-led intake</li>
-        <li>Roster fit &amp; spec matching</li>
-        <li>Guided quote → order</li>
-        <li>White-glove delivery + setup</li>
-        <li>Onboarding hand-off</li>
+        <li>Multi-tenant client portals</li>
+        <li>Pipeline &amp; deal tracking</li>
+        <li>Revenue &amp; invoicing</li>
+        <li>Per-tenant deployments</li>
+        <li>White-glove fulfillment</li>
         <li>After-sale service tracking</li>
       </ul>
       <div class="foot">
-        <div class="tags"><span>sales pipeline</span><span>CRM</span><span>concierge</span><span>fulfillment</span></div>
-        <div class="loc">Aeglos mobility · aeglos.systems</div>
+        <div class="tags"><span>Node</span><span>Postgres</span><span>CRM</span><span>multi-tenant</span><span>auth</span></div>
+        <div class="loc">Multi-tenant · concierge ops</div>
       </div>
     </div>
   </section>
@@ -313,12 +347,12 @@
       <div class="code">AEGLOS // GAME · iOS</div>
       <h3>VOLT QUEST</h3>
       <div class="sub">Pixel RPG on the Aeglos roster</div>
-      <p>The ten-bike Aeglos lineup, reimagined as a playable party. A SpriteKit pixel-art RPG where the
-        electric machines <em>become the characters</em> — the eBike catalog turned into a world, so the
-        platform's data does double duty as game content.</p>
+      <p>The Aeglos electric-bike lineup, reimagined as a playable party. A SpriteKit pixel-art RPG where the
+        machines <em>become the characters</em> — the eBike catalog turned into a world, so the platform's
+        data does double duty as game content.</p>
       <ul class="caps">
         <li>SpriteKit engine</li>
-        <li>10-bike character roster</li>
+        <li>Roster-driven characters</li>
         <li>Pixel-art tilesets</li>
         <li>Turn-based combat</li>
         <li>Built on Aeglos data</li>
@@ -326,7 +360,7 @@
       </ul>
       <div class="foot">
         <div class="tags"><span>Swift</span><span>SpriteKit</span><span>iOS</span><span>pixel art</span></div>
-        <div class="loc">~/eBike-Quest/VoltQuest · 190M</div>
+        <div class="loc">Solo build · iOS · SpriteKit</div>
       </div>
     </div>
   </section>
@@ -339,8 +373,8 @@
       <h3>Car-Flipping Guide</h3>
       <div class="sub">A per-vehicle Flip Report engine</div>
       <p>A data-first backend for a car-flipping <em>guide</em> — a knowledge product, not a marketplace.
-        Full make / model / year catalog back to 1991, known-issues intelligence, monthly market-price
-        snapshots (fed by the Marketplace Scraper), and where-to-flip guidance, all assembled into a
+        A full make / model / year catalog back to 1991, known-issues intelligence, monthly market-price
+        snapshots (fed by a dedicated Marketplace Scraper), and where-to-flip guidance, all assembled into a
         per-vehicle Flip Report.</p>
       <ul class="caps">
         <li>NHTSA-backed catalog</li>
@@ -352,7 +386,7 @@
       </ul>
       <div class="foot">
         <div class="tags"><span>Postgres</span><span>Python</span><span>NHTSA</span><span>scraper</span></div>
-        <div class="loc">~/car-flipping · Marketplace-Scraper</div>
+        <div class="loc">Solo build · Postgres backend</div>
       </div>
     </div>
   </section>
@@ -363,25 +397,25 @@
   <section class="build panel reveal" data-demo="altimit" style="--acc:#a98bff">
     <div class="b-vis"><canvas data-viz="spiral"></canvas><div class="stamp">[ ALTIMIT ] // OS</div></div>
     <div class="b-body">
-      <div class="tick"><span class="dot"></span>Operational — arm64 · <span style="color:var(--amber)">x86_64 / USB in progress</span></div>
+      <div class="tick"><span class="dot"></span>Operational — arm64 · <span style="color:var(--amber)">x86_64 / USB shipped</span></div>
       <div class="code">SYSTEMS // OPERATING SYSTEM</div>
       <h3>Altimit OS</h3>
-      <div class="sub">Web desktop → functional Linux distro</div>
-      <p>An original homage to the Altimit OS desktop from the <em>.hack</em> franchise that grew into a
-        real, multi-user, networked Debian live distribution — the web UI <em>is</em> the shell. A Python
-        agent gives the sandboxed kiosk browser genuine host powers, so the login you see boots a machine
-        straight into Altimit.</p>
+      <div class="sub">Web desktop → bootable Linux distro</div>
+      <p>A web desktop that became a real, multi-user, networked Debian live distribution — the browser UI
+        <em>is</em> the shell. A Python agent gives the sandboxed kiosk genuine host powers, so the login
+        screen you see boots a physical machine straight into the desktop. Ships as a hybrid BIOS/UEFI ISO
+        you can write to a USB stick.</p>
       <ul class="caps">
         <li>Real boot POST + init scroll</li>
         <li>Windowed desktop + WM</li>
         <li>Multi-user w/ persistence</li>
         <li>Real IMAP / SMTP mail</li>
         <li>Live filesystem + media</li>
-        <li>Live network HUD + bitrate</li>
+        <li>Hybrid BIOS/UEFI USB ISO</li>
       </ul>
       <div class="foot">
         <div class="tags"><span>Debian live-build</span><span>Python agent</span><span>Chromium kiosk</span><span>Xorg</span><span>QEMU</span></div>
-        <div class="loc">web desktop · Debian live ISO</div>
+        <div class="loc">Solo build · web shell + Debian ISO</div>
       </div>
     </div>
   </section>
@@ -394,7 +428,7 @@
       <h3>Open-LLM VTuber</h3>
       <div class="sub">Local-model avatar pipeline</div>
       <p>An on-device AI experiment — a locally-driven LLM VTuber pipeline pairing a local language model
-        with voice synthesis and a live animated avatar. Part of ongoing local-model R&amp;D, no cloud
+        with voice synthesis and a live animated avatar. Part of ongoing local-model R&amp;D, with no cloud
         dependency.</p>
       <ul class="caps">
         <li>Local LLM backend</li>
@@ -404,8 +438,23 @@
       </ul>
       <div class="foot">
         <div class="tags"><span>local model</span><span>TTS</span><span>avatar</span></div>
-        <div class="loc">on-device R&amp;D</div>
+        <div class="loc">R&amp;D · fully on-device</div>
       </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact panel reveal" id="contact" style="--acc:#35e0d4">
+    <div>
+      <div class="eyebrow">Availability</div>
+      <h2>Open to full-stack, platform &amp; applied-ML roles.</h2>
+      <p>I own systems end to end — architecture, code, data, and the deploy underneath — and I ship. If you
+        need someone who can take a product from concept to production without needing a team to hold it up,
+        let's talk.</p>
+    </div>
+    <div class="contact-actions">
+      <a href="mailto:bdempseygt@gmail.com" class="btn btn-primary">Email me <span>→</span></a>
+      <a href="https://github.com/EnzoSemper" target="_blank" rel="noopener" class="btn btn-ghost">GitHub <span>↗</span></a>
     </div>
   </section>
 
@@ -465,18 +514,11 @@
     var c=cv.getContext('2d'), type=cv.dataset.viz;
     c.clearRect(0,0,w,h); c.lineWidth=1.3*d; c.strokeStyle=acc; c.fillStyle=acc;
     var cxp=w*.44, cyp=h*.5, R=r=rnd(type.length*97+7);
-    if(type==='network'){
-      var N=10, pts=[];
-      for(var i=0;i<N;i++)pts.push([w*(.12+.76*r()),h*(.14+.72*r())]);
-      c.globalAlpha=.28;
-      for(i=0;i<N;i++)for(var j=i+1;j<N;j++){var dx=pts[i][0]-pts[j][0],dy=pts[i][1]-pts[j][1];if(Math.hypot(dx,dy)<w*.42){c.beginPath();c.moveTo(pts[i][0],pts[i][1]);c.lineTo(pts[j][0],pts[j][1]);c.stroke();}}
-      c.globalAlpha=1;c.shadowColor=acc;c.shadowBlur=7*d;
-      for(i=0;i<N;i++){c.beginPath();c.arc(pts[i][0],pts[i][1],(i%3?2:3.4)*d,0,7);c.fill();}
-    } else if(type==='radar'){
+    if(type==='radar'){
       c.globalAlpha=.5;
       for(var k=1;k<=4;k++){c.beginPath();c.arc(cxp,cyp,(Math.min(w,h)*.11*k),0,7);c.stroke();}
       c.beginPath();c.moveTo(cxp-Math.min(w,h)*.46,cyp);c.lineTo(cxp+Math.min(w,h)*.46,cyp);c.moveTo(cxp,cyp-h*.44);c.lineTo(cxp,cyp+h*.44);c.stroke();
-      c.globalAlpha=1;var ang=-0.7, rr=Math.min(w,h)*.46, gr2=c.createConicGradient?null:null;
+      c.globalAlpha=1;var ang=-0.7, rr=Math.min(w,h)*.46;
       c.beginPath();c.moveTo(cxp,cyp);c.arc(cxp,cyp,rr,ang-0.5,ang);c.closePath();c.globalAlpha=.16;c.fill();c.globalAlpha=1;
       c.shadowColor=acc;c.shadowBlur=8*d;
       for(k=0;k<5;k++){var a=r()*6.28,rd2=r()*rr*.85;c.beginPath();c.arc(cxp+Math.cos(a)*rd2,cyp+Math.sin(a)*rd2,2.3*d,0,7);c.fill();}
@@ -503,11 +545,6 @@
     } else if(type==='wave'){
       c.shadowColor=acc;c.shadowBlur=8*d;c.beginPath();
       for(var X2=w*.08;X2<=w*.92;X2+=2*d){var env=Math.sin((X2-w*.08)/(w*.84)*Math.PI);var Y2=cyp+Math.sin(X2*.06/d)*h*.24*env*(.6+.4*Math.sin(X2*.013/d));X2>w*.08?c.lineTo(X2,Y2):c.moveTo(X2,Y2);}c.stroke();
-    } else if(type==='ember'){
-      c.globalAlpha=.5;var gr3=c.createLinearGradient(0,h,0,h*.4);gr3.addColorStop(0,acc+'3a');gr3.addColorStop(1,acc+'00');c.fillStyle=gr3;c.fillRect(0,h*.4,w,h*.6);
-      c.fillStyle=acc;c.globalAlpha=1;
-      for(k=0;k<46;k++){var ex=w*r(),ey=h*(.25+.72*r()),sz=(r()*2+.6)*d;c.globalAlpha=.3+r()*.6;c.shadowColor=acc;c.shadowBlur=6*d;c.beginPath();c.arc(ex,ey,sz,0,7);c.fill();}
-      c.globalAlpha=1;
     } else if(type==='spiral'){
       var turns=3.15,steps=300,b=.26,a0=.5*d,mr=a0*Math.exp(b*turns*6.283),sc=(Math.min(w,h)*.34)/mr;
       c.shadowColor=acc;c.shadowBlur=8*d;c.beginPath();
@@ -576,3 +613,5 @@
   addEventListener('keydown', function(e){ if(e.key==='Escape' && overlay.classList.contains('on')) closeDemo(); });
 })();
 </script>
+</body>
+</html>

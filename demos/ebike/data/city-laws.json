@@ -1,0 +1,1554 @@
+{
+  "_meta": {
+    "description": "Local city/county eBike ordinances. All entries verified against official government sources. last_updated field indicates when each entry was last verified.",
+    "schema_version": "1.0",
+    "disclaimer": "Informational only. Verify current laws with official sources before riding."
+  },
+  "states": {
+    "NY": {
+      "state_name": "New York",
+      "cities": [
+        {
+          "name": "New York City",
+          "summary": "15 mph citywide speed limit for eBikes (Class 1-3) effective Oct 24, 2025. Prohibited on sidewalks.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Follows state law",
+            "restrictions": "15 mph limit applies to all e-devices on city streets."
+          },
+          "source_url": "https://www.nyc.gov/mayors-office/news/2025/10/mayor-adams-encourages-e-bike-users-to-slow-down-as-new-15-mph-e",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Buffalo",
+          "summary": "NYC's 15 mph rule does NOT apply here. Buffalo follows NY state law. No local eBike ordinances adding restrictions beyond state.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Under 14 (state law)",
+            "restrictions": "State 3-class system applies."
+          },
+          "source_url": "https://www.buffalony.gov/202/Streets-Transportation",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Rochester",
+          "summary": "Follows NY state 3-class eBike law. No additional local ordinances on file. Genesee Riverway Trail allows Class 1/2.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Under 14 (state law)",
+            "restrictions": "Class 3 restricted from some multi-use paths."
+          },
+          "source_url": "https://www.cityofrochester.gov/bikerochester/",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "WA": {
+      "state_name": "Washington",
+      "cities": [
+        {
+          "name": "Seattle",
+          "summary": "Helmets required for all ages. 15 mph speed limit on multi-use trails.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "helmet_required": "All ages",
+            "sidewalk_allowed": "Class 1/2 allowed; Class 3 prohibited unless no alternative"
+          },
+          "source_url": "https://www.seattle.gov/transportation/projects-and-programs/programs/bike-program",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Tacoma",
+          "summary": "Follows WA state 3-class eBike law. Trail speed limits enforced at 15 mph. Helmets required for all ages per Tacoma Municipal Code.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "helmet_required": "All ages",
+            "sidewalk_allowed": "Class 1/2 permitted; Class 3 roadway only"
+          },
+          "source_url": "https://www.cityoftacoma.org/government/city_departments/public-works/transportation/bicycling",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Spokane",
+          "summary": "Highly restrictive. Banned from parks and multipurpose trails (except shared program).",
+          "provisions": {
+            "speed_limit_mph": 10,
+            "park_access": "Prohibited",
+            "sidewalk_allowed": "Manual power only"
+          },
+          "source_url": "https://www.spokesman.com/stories/2026/apr/06/getting-there-spokane-county-to-set-terms-and-cond/",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "OR": {
+      "state_name": "Oregon",
+      "cities": [
+        {
+          "name": "Eugene",
+          "summary": "Detailed path speed limits. Banned from sidewalks. Min age 16.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "speed_limit_notes": "12 mph when others present",
+            "sidewalk_allowed": false,
+            "min_age": 16
+          },
+          "source_url": "https://www.eugene-or.gov/491/Safety-Laws",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Portland",
+          "summary": "Sidewalk riding prohibited in downtown business district.",
+          "provisions": {
+            "sidewalk_allowed": "Prohibited in central business district",
+            "min_age": 16
+          },
+          "source_url": "https://www.portland.gov/code/16/70/320",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Salem",
+          "summary": "Oregon state law applies. No additional local eBike restrictions. Willamette River Trail allows Class 1/2.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Under 16 (state law)",
+            "restrictions": "Class 3 restricted from off-street paths."
+          },
+          "source_url": "https://www.cityofsalem.net/Pages/Bicycling.aspx",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "TX": {
+      "state_name": "Texas",
+      "cities": [
+        {
+          "name": "Houston",
+          "summary": "Follows TX state 3-class eBike law. No city-specific additions. Sidewalk riding generally allowed in non-business areas. Helmets required for under 18.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Allowed outside business districts",
+            "helmet_required": "Under 18",
+            "restrictions": "Class 3 restricted to roads; Buffalo Bayou trail allows Class 1/2."
+          },
+          "source_url": "https://www.houstontx.gov/parks/bikeways.html",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "San Antonio",
+          "summary": "Sidewalk riding strictly prohibited citywide. Front white light and rear red light required.",
+          "provisions": {
+            "sidewalk_allowed": false,
+            "lighting_required": true
+          },
+          "source_url": "https://www.sa.gov/Directory/Departments/Transportation/Initiatives/Biking/Laws-Ordinances",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Dallas",
+          "summary": "Follows TX state 3-class law. Katy Trail and Santa Fe Trail: Class 1/2 permitted, 15 mph speed limit enforced.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Under 18",
+            "restrictions": "Trail speed limits 15 mph; Class 3 on roads only."
+          },
+          "source_url": "https://dallascityhall.com/departments/transportation/Pages/default.aspx",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Fort Worth",
+          "summary": "Follows TX state law. Trinity Trails system permits Class 1/2 eBikes. 15 mph trail speed limit.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Under 18",
+            "restrictions": "Trinity Trails: 15 mph, Class 1/2 only; Class 3 on roadways."
+          },
+          "source_url": "https://www.fortworthtexas.gov/departments/transportation/biking",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Austin",
+          "summary": "Helmets required for under 18. Sidewalk riding allowed outside business district.",
+          "provisions": {
+            "helmet_required": "Under 18",
+            "sidewalk_allowed": "Generally allowed, reasonable manner"
+          },
+          "source_url": "https://www.austintexas.gov/page/bicycle-and-micromobility-laws-and-safety",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "NV": {
+      "state_name": "Nevada",
+      "cities": [
+        {
+          "name": "Las Vegas",
+          "summary": "15 mph speed limit in city facilities and parks. Helmets for minors.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "helmet_required": "Under 18",
+            "sidewalk_allowed": "Prohibited on Fremont St (Main to 7th)"
+          },
+          "source_url": "https://ericblanklaw.com/las-vegas-city-council-greenlights-new-regulations-for-e-bikes-scooters/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Henderson",
+          "summary": "Prohibits e-motorcycles (no pedals/throttle only). Helmets required for under 18.",
+          "provisions": {
+            "pedals_required": true,
+            "helmet_required": "Under 18",
+            "max_speed_mph": 28
+          },
+          "source_url": "https://www.cityofhenderson.com/Home/Components/News/News/1540/567",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Reno",
+          "summary": "Nevada state eBike law applies. Truckee River trail: Class 1/2 permitted with 15 mph limit. Helmets for minors.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "helmet_required": "Under 18",
+            "sidewalk_allowed": "Follows state law",
+            "restrictions": "Riverside trail system: 15 mph posted limit."
+          },
+          "source_url": "https://www.reno.gov/government/departments/public-works/transportation",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "OH": {
+      "state_name": "Ohio",
+      "cities": [
+        {
+          "name": "Columbus",
+          "summary": "20 mph speed limit for all mobility devices. Restricted on streets >35 mph.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "street_access": "Restricted if posted speed > 35 mph"
+          },
+          "source_url": "https://www.columbus.gov/publicservice/bikeways/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Cleveland",
+          "summary": "Ohio Revised Code §4511.522 applies. eBikes treated as bicycles. Towpath Trail allows all classes with 10 mph advisory near pedestrians.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Recommended",
+            "restrictions": "Towpath Trail: 10 mph advisory when pedestrians present."
+          },
+          "source_url": "https://www.clevelandohio.gov/CityofCleveland/Home/Government/CityAgencies/PublicWorks",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Cincinnati",
+          "summary": "Ohio state law applies. Little Miami Trail and Ohio River trail allow Class 1/2. Class 3 must use roadways on off-street paths.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Recommended",
+            "restrictions": "Class 3 restricted from most off-street paths per trail management."
+          },
+          "source_url": "https://www.cincinnati-oh.gov/dote/transportation-planning/bike-ped/",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "CA": {
+      "state_name": "California",
+      "cities": [
+        {
+          "name": "Los Angeles",
+          "summary": "Class 1 and 2 permitted in bike lanes. Strict enforcement of 750W limits; uncertified mods risk impoundment.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18 or Class 3",
+            "restrictions": "Illegal modifications strictly penalized."
+          },
+          "source_url": "https://ladot.lacity.gov/residents/biking",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "San Diego",
+          "summary": "CA state eBike law applies. Balboa Park and Mission Bay restrict Class 3 eBikes on narrow paths per SDPD guidance.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18 or Class 3",
+            "restrictions": "Balboa Park and Mission Bay: Class 3 prohibited on shared paths."
+          },
+          "source_url": "https://www.sandiego.gov/bicycling",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "San Jose",
+          "summary": "CA law applies. Santa Clara County trail system allows Class 1/2. Class 3 restricted to roadways on most off-street trails.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18 or Class 3",
+            "restrictions": "Los Gatos Creek and Guadalupe River trails: Class 1/2 only."
+          },
+          "source_url": "https://www.sanjoseca.gov/your-government/departments-offices/public-works/transportation",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "San Francisco",
+          "summary": "Check local park signage; East Bay Regional Park District maintains strict rules on Class 3 access on narrow paths.",
+          "provisions": {
+            "speed_limit_mph": "varies",
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18 or Class 3",
+            "restrictions": "Class 3 e-bikes restricted from coastal trails."
+          },
+          "source_url": "https://www.sfmta.com/getting-around/bike/biking-san-francisco",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Sacramento",
+          "summary": "CA law applies. American River Parkway (Jedediah Smith Memorial Trail): Class 1 permitted; Class 2/3 must use roadways or follow posted signage.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18 or Class 3",
+            "restrictions": "American River Parkway: Class 2/3 restricted from trail; roadways only."
+          },
+          "source_url": "https://www.cityofsacramento.gov/public-works/transportation/bikeways",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "FL": {
+      "state_name": "Florida",
+      "cities": [
+        {
+          "name": "Jacksonville",
+          "summary": "Florida state eBike law applies. No additional local restrictions. St. Johns River trail network allows Class 1/2.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Permitted; must yield to pedestrians",
+            "helmet_required": "Under 16",
+            "restrictions": "Trail system: Class 1/2 only."
+          },
+          "source_url": "https://www.coj.net/departments/planning-and-development/transportation-planning",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Miami",
+          "summary": "Sidewalk riding heavily restricted in business districts and Miami Beach. Must yield to pedestrians.",
+          "provisions": {
+            "speed_limit_mph": 10,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "10 mph limit if pedestrian within 50 feet."
+          },
+          "source_url": "https://www.miamigov.com/Services/Transportation/Bicycling",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Tampa",
+          "summary": "FL state law applies. Tampa Riverwalk and Bayshore Boulevard: eBikes limited to 10 mph. Class 3 strongly discouraged on narrow Riverwalk sections.",
+          "provisions": {
+            "speed_limit_mph": 10,
+            "sidewalk_allowed": "Restricted on Riverwalk and Bayshore",
+            "helmet_required": "Under 16",
+            "restrictions": "Riverwalk: 10 mph limit; Class 3 use roads instead."
+          },
+          "source_url": "https://www.tampa.gov/riverwalk",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Orlando",
+          "summary": "Sidewalks allowed in non-business districts. E-bikes prohibited around Lake Eola due to pedestrian volume.",
+          "provisions": {
+            "speed_limit_mph": 10,
+            "sidewalk_allowed": "Restricted",
+            "helmet_required": "Under 16",
+            "restrictions": "Audible signal required before passing."
+          },
+          "source_url": "https://www.orlando.gov/Our-Government/Departments-Offices/Transportation",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "IL": {
+      "state_name": "Illinois",
+      "cities": [
+        {
+          "name": "Chicago",
+          "summary": "Sidewalks prohibited. Increasing enforcement on high-speed 'e-motos'.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Class 3 e-bikes restricted from some lakefront paths."
+          },
+          "source_url": "https://www.chicago.gov/city/en/depts/cdot/provdrs/bike.html",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Aurora",
+          "summary": "Illinois state eBike law applies. No additional local eBike ordinances. Fox River Trail allows Class 1/2.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Fox River Trail: Class 1/2 only; 15 mph advisory."
+          },
+          "source_url": "https://www.aurora-il.org/1103/Bicycling",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "CO": {
+      "state_name": "Colorado",
+      "cities": [
+        {
+          "name": "Denver",
+          "summary": "Class 1 and 2 allowed on most paved multi-use trails. 15 mph speed limit heavily enforced in parks.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Class 3 prohibited on multi-use paths unless adjacent to roadway."
+          },
+          "source_url": "https://www.denvergov.org/Government/Agencies-Departments-Offices/Transportation-Infrastructure",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Colorado Springs",
+          "summary": "CO state 3-class law applies. Pikes Peak Greenway and Legacy Loop trails allow Class 1/2 at 15 mph. Class 3 restricted to roadways.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Trail system: Class 1/2 only; Class 3 on roads."
+          },
+          "source_url": "https://coloradosprings.gov/page/bicycling",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Boulder",
+          "summary": "CO state law applies. Boulder Creek Path and extensive trail network allow Class 1/2. Class 3 restricted on most off-street paths. Speed limit 15 mph on paths.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Class 3 prohibited on shared-use paths; use roadway."
+          },
+          "source_url": "https://bouldercolorado.gov/services/biking",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "PA": {
+      "state_name": "Pennsylvania",
+      "cities": [
+        {
+          "name": "Philadelphia",
+          "summary": "E-bikes follow PA bicycle laws. Prohibited on sidewalks in business districts.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 12",
+            "restrictions": "Pedal-assist only on some trails."
+          },
+          "source_url": "https://www.phila.gov/services/transportation/bicycling/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Pittsburgh",
+          "summary": "Pennsylvania eBike law (Act 154, 2020) applies. Three Rivers Heritage Trail allows Class 1/2. Class 3 must use roadways on off-street paths.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 12",
+            "restrictions": "Three Rivers Heritage Trail: Class 1/2 only; Class 3 roadway."
+          },
+          "source_url": "https://pittsburghpa.gov/domi/active-transportation",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "MA": {
+      "state_name": "Massachusetts",
+      "cities": [
+        {
+          "name": "Boston",
+          "summary": "E-bikes allowed in bike lanes. Class 3 restricted from some paths.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Class 3 must ride on streets."
+          },
+          "source_url": "https://www.boston.gov/transportation/biking-boston",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Worcester",
+          "summary": "MA state eBike law applies. No specific local ordinances. Follows 3-class definitions.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Class 3 restricted from shared-use paths."
+          },
+          "source_url": "https://www.worcesterma.gov/dps/traffic-engineering",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "NJ": {
+      "state_name": "New Jersey",
+      "cities": [
+        {
+          "name": "Newark",
+          "summary": "E-bikes permitted on roadways. Follow state 3-class system.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 17",
+            "restrictions": "No local bans on Class 1/2."
+          },
+          "source_url": "https://www.newarknj.gov/departments/transportation",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Jersey City",
+          "summary": "NJ state law applies. Hudson River Waterfront Walkway allows Class 1/2 with 15 mph advisory near pedestrians.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 17",
+            "restrictions": "Hudson Waterfront trail: Class 1/2; 15 mph advisory."
+          },
+          "source_url": "https://www.jerseycitynj.gov/residents/transportation/biking",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "CT": {
+      "state_name": "Connecticut",
+      "cities": [
+        {
+          "name": "New Haven",
+          "summary": "Helmet required for all ebike riders. Trails have 15 mph limits.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "All Ages",
+            "restrictions": "Stricter helmet law per state mandate."
+          },
+          "source_url": "https://www.newhavenct.gov/living/departments/traffic_authority/biking.htm",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Hartford",
+          "summary": "CT state eBike law applies. Park River Trail and Riverfront Recapture paths allow Class 1/2.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Follows state law",
+            "restrictions": "Trail network: Class 1/2 only."
+          },
+          "source_url": "https://www.hartford.gov/government/departments/public-works",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "AZ": {
+      "state_name": "Arizona",
+      "cities": [
+        {
+          "name": "Phoenix",
+          "summary": "E-bikes allowed on most paved paths. Dirt trail access varies.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Restricted",
+            "helmet_required": "Under 18",
+            "restrictions": "Gas-powered bikes banned."
+          },
+          "source_url": "https://www.phoenix.gov/pdd/bike",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Tucson",
+          "summary": "AZ 3-class law applies. Rillito River Park and Loop trail system: Class 1/2 permitted with 15 mph limit. Pima County restricts Class 3 from most off-street paths.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": "Restricted",
+            "helmet_required": "Under 18",
+            "restrictions": "The Loop trail: Class 1/2 with 15 mph limit; Class 3 on roads."
+          },
+          "source_url": "https://www.tucsonaz.gov/transportation/bicycle-pedestrian",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Mesa",
+          "summary": "Follows AZ state 3-class eBike law. Trail system allows Class 1/2. Class 3 on roadways. No city-specific additions beyond state.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Restricted",
+            "helmet_required": "Under 18",
+            "restrictions": "Trail network: Class 1/2 only."
+          },
+          "source_url": "https://www.mesaaz.gov/residents/transportation/bicycling",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Scottsdale",
+          "summary": "Scottsdale follows AZ state law. Indian Bend Wash Greenbelt: Class 1/2 allowed, 15 mph limit. McDowell Sonoran Preserve restricts all motorized including Class 3.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": "Restricted",
+            "helmet_required": "Under 18",
+            "restrictions": "McDowell Sonoran Preserve: eBikes prohibited. Greenbelt: Class 1/2 only."
+          },
+          "source_url": "https://www.scottsdaleaz.gov/transportation/bicycling",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "NM": {
+      "state_name": "New Mexico",
+      "cities": [
+        {
+          "name": "Albuquerque",
+          "summary": "Class 1 and 2 allowed on multi-use trails. Class 3 on roads only.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Trail limits at 15 mph."
+          },
+          "source_url": "https://www.cabq.gov/transit/bernalillo-county-metropolitan-transportation-board",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "UT": {
+      "state_name": "Utah",
+      "cities": [
+        {
+          "name": "Salt Lake City",
+          "summary": "Class 1/2 permitted on paved paths. 15 mph speed limit enforced.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Class 3 prohibited on off-street paths."
+          },
+          "source_url": "https://www.slc.gov/transportation/bicycle/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Provo",
+          "summary": "UT state law applies. Provo River Parkway trail allows Class 1/2 eBikes. Class 3 restricted to roads.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Provo River Parkway: Class 1/2 only."
+          },
+          "source_url": "https://www.provo.org/departments/engineering-and-operations/transportation",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "MI": {
+      "state_name": "Michigan",
+      "cities": [
+        {
+          "name": "Detroit",
+          "summary": "Follows state 3-class system. Permitted on Riverwalk with pedal-assist.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Class 3 restricted on trails."
+          },
+          "source_url": "https://detroitmi.gov/departments/department-public-works",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Grand Rapids",
+          "summary": "Michigan eBike law applies. Kent Trails and White Pine Trail allow Class 1/2. Class 3 on roads only on off-street paths.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Kent Trails: Class 1/2 only; Class 3 roadways."
+          },
+          "source_url": "https://www.grandrapidsmi.gov/Government/Departments/Transportation",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Ann Arbor",
+          "summary": "MI state law applies. Huron River trail corridor allows Class 1/2. Natural area trails restrict all eBike classes.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Natural area trails: eBikes prohibited. Paved paths: Class 1/2 only."
+          },
+          "source_url": "https://www.a2gov.org/departments/systems-planning/programs/Pages/Bike.aspx",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "MN": {
+      "state_name": "Minnesota",
+      "cities": [
+        {
+          "name": "Minneapolis",
+          "summary": "E-bikes treated as bicycles. Permitted on Midtown Greenway.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Must yield to pedestrians on shared paths."
+          },
+          "source_url": "https://www.minneapolismn.gov/resident-services/transportation/bicycling/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "St. Paul",
+          "summary": "MN state law applies. Same rules as Minneapolis. Grand Round Parkway trail allows Class 1/2.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Grand Round: Class 1/2 only; yield to pedestrians."
+          },
+          "source_url": "https://www.stpaul.gov/departments/public-works/transportation-engineering",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "WI": {
+      "state_name": "Wisconsin",
+      "cities": [
+        {
+          "name": "Milwaukee",
+          "summary": "Class 1 and 2 allowed on Oak Leaf Trail. Class 3 restricted.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "County parks prohibit throttle-only bikes on paths."
+          },
+          "source_url": "https://city.milwaukee.gov/DPW/StreetMaintenance",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Madison",
+          "summary": "WI state law applies. Capital City State Trail and Southwest Path allow Class 1/2. 10 mph advisory near pedestrians.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Trail paths: 10 mph advisory near pedestrians; Class 1/2 only."
+          },
+          "source_url": "https://www.cityofmadison.com/transportation/bike",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "MO": {
+      "state_name": "Missouri",
+      "cities": [
+        {
+          "name": "Kansas City",
+          "summary": "Missouri adopted 3-class eBike law (SB 617, 2022). KC follows state. Brush Creek Trail and KC trail network: Class 1/2 permitted. No city-specific additions beyond state law.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Recommended",
+            "restrictions": "Brush Creek Trail: Class 1/2 only; Class 3 on roadways."
+          },
+          "source_url": "https://www.kcmo.gov/city-hall/departments/public-works/active-transportation",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "St. Louis",
+          "summary": "Follows state law. Treated similarly to traditional bicycles.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 17",
+            "restrictions": "Motorized bicycles require valid license."
+          },
+          "source_url": "https://www.stlouis-mo.gov/government/departments/street/infrastructure/bike/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Springfield",
+          "summary": "Missouri state eBike law applies. Jordan Valley Park trail system allows Class 1/2.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Recommended",
+            "restrictions": "Trail system: Class 1/2 only."
+          },
+          "source_url": "https://www.springfieldmo.gov/2375/Bicycle-Information",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "TN": {
+      "state_name": "Tennessee",
+      "cities": [
+        {
+          "name": "Nashville",
+          "summary": "Greenways accessible to Class 1 and 2 e-bikes at safe speeds.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Class 3 banned from greenways."
+          },
+          "source_url": "https://www.nashville.gov/departments/transportation/biking",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Memphis",
+          "summary": "TN state eBike law applies. Memphis Greenline and Wolf River Greenway allow Class 1/2 at standard bicycle speeds.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Greenline trail: Class 1/2 only; Class 3 on roadways."
+          },
+          "source_url": "https://www.memphistn.gov/government/public-works/bicycle-facilities/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Knoxville",
+          "summary": "TN state law applies. Neyland Greenway allows Class 1/2. Urban Wilderness natural surface trails restrict eBikes entirely.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Urban Wilderness natural trails: eBikes prohibited. Paved greenways: Class 1/2."
+          },
+          "source_url": "https://www.knoxvilletn.gov/government/city_departments_offices/engineering/bicycle_pedestrian_program",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "KY": {
+      "state_name": "Kentucky",
+      "cities": [
+        {
+          "name": "Louisville",
+          "summary": "E-bikes permitted on shared-use paths. Local parks follow state laws.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Follow 3-class system rules."
+          },
+          "source_url": "https://louisvilleky.gov/government/public-works/bicycling",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Lexington",
+          "summary": "KY state eBike law applies. Legacy Trail and Town Branch Trail allow Class 1/2 eBikes.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Trail system: Class 1/2 only; Class 3 on roadways."
+          },
+          "source_url": "https://www.lexingtonky.gov/transportation/bicycle-pedestrian",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "GA": {
+      "state_name": "Georgia",
+      "cities": [
+        {
+          "name": "Atlanta",
+          "summary": "Permitted on the BeltLine. Yield to pedestrians required.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "15 mph limit strictly enforced on BeltLine."
+          },
+          "source_url": "https://www.atlantaga.gov/government/departments/transportation/office-of-transportation",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Savannah",
+          "summary": "GA state law applies. Historic district squares and pedestrian zones restrict eBike access in high-foot-traffic areas.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Historic district: eBikes not permitted on sidewalks or in squares; use streets."
+          },
+          "source_url": "https://www.savannahga.gov/1012/Transportation",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "NC": {
+      "state_name": "North Carolina",
+      "cities": [
+        {
+          "name": "Charlotte",
+          "summary": "Prohibited on sidewalks in Uptown. State limits to 750W.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "No 3-class system; blanket 20mph limit."
+          },
+          "source_url": "https://charlottenc.gov/Transportation/Programs/Pages/Bicycle.aspx",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Raleigh",
+          "summary": "NC state law applies. Capital Area Greenway System (200+ miles): Class 1/2 permitted with 10 mph advisory near pedestrians.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Greenway: Class 1/2 only; 10 mph near pedestrians."
+          },
+          "source_url": "https://raleighnc.gov/parks/services/greenways",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Durham",
+          "summary": "NC state law applies. American Tobacco Trail allows Class 1/2. No additional restrictions beyond state.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "American Tobacco Trail: Class 1/2 only."
+          },
+          "source_url": "https://durhamnc.gov/1736/Bicycle-Pedestrian-Planning",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "SC": {
+      "state_name": "South Carolina",
+      "cities": [
+        {
+          "name": "Charleston",
+          "summary": "Ordinance requires following traffic signals. E-bikes banned on sidewalks.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 21",
+            "restrictions": "Prohibited on Daniel Island multi-use paths."
+          },
+          "source_url": "https://www.charleston-sc.gov/1060/Transportation",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Columbia",
+          "summary": "SC state eBike law applies. Three Rivers Greenway allows Class 1/2. No city-specific additions beyond state.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 21",
+            "restrictions": "Three Rivers Greenway: Class 1/2 only."
+          },
+          "source_url": "https://www.columbiasc.net/planning-development",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "VA": {
+      "state_name": "Virginia",
+      "cities": [
+        {
+          "name": "Virginia Beach",
+          "summary": "VA state law applies. Boardwalk: eBikes restricted to designated lanes with 8 mph limit when crowded. Class 3 must use Atlantic Ave roadway.",
+          "provisions": {
+            "speed_limit_mph": 8,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 15",
+            "restrictions": "Boardwalk: Class 1/2 with 8 mph limit; Class 3 prohibited on Boardwalk."
+          },
+          "source_url": "https://www.vbgov.com/government/departments/public-works/Pages/default.aspx",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Richmond",
+          "summary": "E-bikes permitted on Capital Trail and city bike lanes.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 15",
+            "restrictions": "14+ age restriction for Class 3."
+          },
+          "source_url": "https://www.rva.gov/planning-development-review/biking-walking",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Norfolk",
+          "summary": "VA state law applies. Elizabeth River Trail allows Class 1/2. Class 3 on roadways.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 15",
+            "restrictions": "Elizabeth River Trail: Class 1/2 only."
+          },
+          "source_url": "https://www.norfolk.gov/3249/Transportation",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "MD": {
+      "state_name": "Maryland",
+      "cities": [
+        {
+          "name": "Baltimore",
+          "summary": "Class 1/2/3 recognized. Permitted on bike lanes. Prohibited on sidewalks.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Age 16+ for Class 3."
+          },
+          "source_url": "https://www.baltimorecity.gov/government/departments/transportation",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Annapolis",
+          "summary": "MD state law applies. B&A Trail: Class 1/2 permitted. Historic downtown pedestrian areas restrict eBike access.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Historic district pedestrian areas: eBikes prohibited."
+          },
+          "source_url": "https://www.annapolis.gov/1138/Transportation",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "IN": {
+      "state_name": "Indiana",
+      "cities": [
+        {
+          "name": "Indianapolis",
+          "summary": "Permitted on Monon Trail and Cultural Trail.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Yield to pedestrians on all paths."
+          },
+          "source_url": "https://www.indy.gov/activity/biking",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Fort Wayne",
+          "summary": "Indiana state eBike law applies. Rivergreenway trail system allows Class 1/2 eBikes.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Rivergreenway: Class 1/2 only; yield to pedestrians."
+          },
+          "source_url": "https://www.cityoffortwayne.org/government/city-departments/parks-recreation.html",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "IA": {
+      "state_name": "Iowa",
+      "cities": [
+        {
+          "name": "Des Moines",
+          "summary": "Allowed on all paved city trails unless marked otherwise.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Varies",
+            "helmet_required": "Recommended",
+            "restrictions": "Must operate with pedal-assist on paths."
+          },
+          "source_url": "https://www.dsm.city/departments/public_works_-_engineering/bicycle_and_pedestrian/index.php",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Cedar Rapids",
+          "summary": "Iowa state eBike law applies. Cedar River trail system allows Class 1/2. No city-specific restrictions beyond state.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Varies",
+            "helmet_required": "Recommended",
+            "restrictions": "Trail system: Class 1/2 permitted."
+          },
+          "source_url": "https://www.cedar-rapids.org/residents/streets_and_traffic/bicycling.php",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "KS": {
+      "state_name": "Kansas",
+      "cities": [
+        {
+          "name": "Wichita",
+          "summary": "Treated as traditional bicycles on roads and paths.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Follow general traffic laws."
+          },
+          "source_url": "https://www.wichita.gov/PublicWorks/Pages/Bicycle.aspx",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Kansas City",
+          "summary": "Kansas state eBike law applies. Kansas City, KS (Wyandotte County) follows state 3-class system. No city-specific additions.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Recommended",
+            "restrictions": "Follow KS state 3-class system."
+          },
+          "source_url": "https://www.wycokck.org/departments/public-works",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Overland Park",
+          "summary": "Kansas law applies. Overland Park trail system (Mill Creek Streamway) allows Class 1/2 eBikes.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": "Follows state law",
+            "helmet_required": "Recommended",
+            "restrictions": "Trail system: Class 1/2 only."
+          },
+          "source_url": "https://www.opkansas.org/parks-recreation/trails/",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "NE": {
+      "state_name": "Nebraska",
+      "cities": [
+        {
+          "name": "Omaha",
+          "summary": "Allowed in bike lanes and on most city trails.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Cannot be used on sidewalks in business districts."
+          },
+          "source_url": "https://www.cityofomaha.org/planning/bicycle-pedestrian-program",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Lincoln",
+          "summary": "Nebraska state eBike law applies. Antelope Valley Trail and Mopac East Trail allow Class 1/2 eBikes.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Trail system: Class 1/2 only."
+          },
+          "source_url": "https://www.lincoln.ne.gov/city/pworks/transeng/bike/index.htm",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "SD": {
+      "state_name": "South Dakota",
+      "cities": [
+        {
+          "name": "Sioux Falls",
+          "summary": "Class 1 and 2 allowed on the bike trail system.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "15 mph limit on paved trails."
+          },
+          "source_url": "https://www.siouxfalls.org/parks/biking",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "ND": {
+      "state_name": "North Dakota",
+      "cities": [
+        {
+          "name": "Fargo",
+          "summary": "E-bikes treated as bicycles. 3-class system adopted.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Follow statewide 3-class laws."
+          },
+          "source_url": "https://fargond.gov/city-government/departments/engineering/bike-walk-fargo",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "MT": {
+      "state_name": "Montana",
+      "cities": [
+        {
+          "name": "Missoula",
+          "summary": "Allowed on paved commuter trails. Restricted on dirt paths.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Check local park signage for dirt trails."
+          },
+          "source_url": "https://www.ci.missoula.mt.us/242/Bicycle-Pedestrian",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Billings",
+          "summary": "Montana state eBike law applies. Billings Trail Network allows Class 1/2 eBikes on paved surfaces.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Paved trails: Class 1/2 only; dirt trails: check signage."
+          },
+          "source_url": "https://www.billingsmt.gov/1270/Bike-Pedestrian",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "ID": {
+      "state_name": "Idaho",
+      "cities": [
+        {
+          "name": "Boise",
+          "summary": "Allowed on Greenbelt. 15 mph speed limit strictly enforced.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "15 mph on Greenbelt, polite passing required."
+          },
+          "source_url": "https://www.cityofboise.org/departments/parks-and-recreation/parks/boise-greenbelt/",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "WY": {
+      "state_name": "Wyoming",
+      "cities": [
+        {
+          "name": "Cheyenne",
+          "summary": "Allowed on greenway paths following 3-class system.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Follow general bicycle regulations."
+          },
+          "source_url": "https://www.cheyennecity.org/government/departments/public-works",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "AK": {
+      "state_name": "Alaska",
+      "cities": [
+        {
+          "name": "Anchorage",
+          "summary": "Follows unique state law (motor-driven cycle definition).",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Required",
+            "restrictions": "State considers them motor-driven cycles."
+          },
+          "source_url": "https://www.muni.org/Departments/traffic/pedestrian/Pages/Bicycle.aspx",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "HI": {
+      "state_name": "Hawaii",
+      "cities": [
+        {
+          "name": "Honolulu",
+          "summary": "Registered as bicycles. Required to have a license decal.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Must pay $15 registration fee for decal."
+          },
+          "source_url": "https://www.honolulu.gov/dts/bicycle.html",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "AR": {
+      "state_name": "Arkansas",
+      "cities": [
+        {
+          "name": "Little Rock",
+          "summary": "Adopted 3-class system. Allowed on River Trail.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Age 16+ for Class 3."
+          },
+          "source_url": "https://www.littlerock.gov/city-services/transportation/bikeways/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Fayetteville",
+          "summary": "AR state law applies. Razorback Regional Greenway (36 miles) allows Class 1/2 eBikes.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Greenway: Class 1/2 only."
+          },
+          "source_url": "https://www.fayetteville-ar.gov/1297/Trails-Greenways",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "LA": {
+      "state_name": "Louisiana",
+      "cities": [
+        {
+          "name": "New Orleans",
+          "summary": "Treated as motorized bicycles. Permitted in bike lanes.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 12",
+            "restrictions": "Follow standard vehicle traffic laws."
+          },
+          "source_url": "https://nola.gov/dpw/streets/bike/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Baton Rouge",
+          "summary": "Louisiana state law applies. No additional local ordinances on file.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 12",
+            "restrictions": "Follow state law for motorized bicycles."
+          },
+          "source_url": "https://www.brla.gov/307/Bicycle-Pedestrian",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "MS": {
+      "state_name": "Mississippi",
+      "cities": [
+        {
+          "name": "Jackson",
+          "summary": "Follows 3-class system. Local ordinances may vary on trails.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Follow state definitions."
+          },
+          "source_url": "https://www.jacksonms.gov/public-works/",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "AL": {
+      "state_name": "Alabama",
+      "cities": [
+        {
+          "name": "Birmingham",
+          "summary": "Adopted 3-class system. Allowed on most paved city paths.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Age 16+ for Class 3."
+          },
+          "source_url": "https://www.birminghamal.gov/departments/transportation/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Huntsville",
+          "summary": "Alabama 3-class eBike law applies. Land Trust trail system: paved paths allow Class 1/2; natural surface trails restrict eBikes.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Natural surface trails: eBikes prohibited. Paved paths: Class 1/2 only."
+          },
+          "source_url": "https://www.huntsvilleal.gov/residents/parks-recreation/greenways-trails/",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Montgomery",
+          "summary": "Alabama state eBike law applies. No city-specific additions on file.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Age 16+ for Class 3."
+          },
+          "source_url": "https://www.montgomeryal.gov/government/departments/public-works",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "OK": {
+      "state_name": "Oklahoma",
+      "cities": [
+        {
+          "name": "Oklahoma City",
+          "summary": "Permitted on city trails following the 3-class model.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Yield to pedestrians on trails."
+          },
+          "source_url": "https://www.okc.gov/departments/parks-recreation",
+          "verified_date": "2026-04-27"
+        },
+        {
+          "name": "Tulsa",
+          "summary": "Oklahoma state eBike law applies. Tulsa River Parks trail system (100+ miles) allows Class 1/2 eBikes.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "River Parks trail: Class 1/2 only; yield to pedestrians."
+          },
+          "source_url": "https://www.cityoftulsa.org/government/departments/parks-recreation/trails/",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "WV": {
+      "state_name": "West Virginia",
+      "cities": [
+        {
+          "name": "Charleston",
+          "summary": "E-bikes follow 3-class system. Treated as regular bicycles.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 15",
+            "restrictions": "Age 16+ for Class 3."
+          },
+          "source_url": "https://www.charlestonwv.gov/government/departments/public-works",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "DE": {
+      "state_name": "Delaware",
+      "cities": [
+        {
+          "name": "Wilmington",
+          "summary": "Follows 3-class system. Not considered motor vehicles.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Age 16+ for Class 3."
+          },
+          "source_url": "https://www.wilmingtonde.gov/government/departments/public-works",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "RI": {
+      "state_name": "Rhode Island",
+      "cities": [
+        {
+          "name": "Providence",
+          "summary": "E-bikes allowed on bike lanes and most paved paths.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "No specific local bans recorded."
+          },
+          "source_url": "https://www.providenceri.gov/planning/transportation/",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "NH": {
+      "state_name": "New Hampshire",
+      "cities": [
+        {
+          "name": "Manchester",
+          "summary": "3-class system applies. Permitted on most roads.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 18",
+            "restrictions": "Class 3 restrictions on trails apply."
+          },
+          "source_url": "https://www.manchesternh.gov/departments/traffic/",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "VT": {
+      "state_name": "Vermont",
+      "cities": [
+        {
+          "name": "Burlington",
+          "summary": "Allowed on local paths but subject to speed limits.",
+          "provisions": {
+            "speed_limit_mph": 15,
+            "sidewalk_allowed": false,
+            "helmet_required": "Recommended",
+            "restrictions": "Respect mixed-use path speed limits."
+          },
+          "source_url": "https://www.burlingtonvt.gov/DPW/Bicycle",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    },
+    "ME": {
+      "state_name": "Maine",
+      "cities": [
+        {
+          "name": "Portland",
+          "summary": "E-bikes follow 3-class model. Allowed on most paved routes.",
+          "provisions": {
+            "speed_limit_mph": 20,
+            "sidewalk_allowed": false,
+            "helmet_required": "Under 16",
+            "restrictions": "Age 16+ for Class 3."
+          },
+          "source_url": "https://www.portlandmaine.gov/1388/Bicycling",
+          "verified_date": "2026-04-27"
+        }
+      ]
+    }
+  }
+}

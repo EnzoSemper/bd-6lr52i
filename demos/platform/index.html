@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="demo-stub.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aeglos Systems — White-Label Data Platforms</title>
+<meta name="description" content="Deploy a fully branded product data platform for any industry — comparison tools, AI filters, marketplaces, and regulatory content. Built to white-label.">
+<link rel="stylesheet" href="css/platform.css">
+<style>
+  /* Hero */
+  .hero {
+    padding: 100px 0 90px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 18px;
+    display: inline-block;
+  }
+  .hero h1 {
+    font-size: 3.4rem;
+    font-weight: 800;
+    max-width: 760px;
+    margin: 0 auto 18px;
+    line-height: 1.15;
+    background: linear-gradient(135deg, #fff 40%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    max-width: 580px;
+    margin: 0 auto 36px;
+    line-height: 1.7;
+  }
+  .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .hero-stat-row {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    margin-top: 64px;
+    flex-wrap: wrap;
+  }
+  .hero-stat .val { font-size: 2rem; font-weight: 700; color: var(--text); font-family: var(--font-mono); }
+  .hero-stat .lbl { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); }
+
+  /* Features */
+  .features-section { padding: 80px 0; }
+  .features-section h2 { text-align: center; margin-bottom: 10px; }
+  .features-section .sub { text-align: center; color: var(--text-dim); margin-bottom: 56px; max-width: 540px; margin-left: auto; margin-right: auto; }
+  .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+  .feature-card:hover { border-color: var(--gold-dim); }
+  .feature-icon { font-size: 1.6rem; margin-bottom: 12px; }
+  .feature-card h3 { font-size: 1rem; margin-bottom: 8px; }
+  .feature-card p { font-size: 0.85rem; }
+
+  /* How it works */
+  .how-section { padding: 80px 0; background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .how-section h2 { text-align: center; margin-bottom: 10px; }
+  .how-section .sub { text-align: center; color: var(--text-dim); margin-bottom: 52px; }
+  .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+  .step {
+    text-align: center;
+    padding: 8px;
+  }
+  .step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+  }
+  .step h3 { font-size: 0.95rem; margin-bottom: 8px; }
+  .step p { font-size: 0.83rem; }
+
+  /* Industries */
+  .industries-section { padding: 80px 0; }
+  .industries-section h2 { text-align: center; margin-bottom: 10px; }
+  .industries-section .sub { text-align: center; color: var(--text-dim); margin-bottom: 48px; }
+  .industry-pills { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .industry-pill {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    transition: all 0.15s;
+  }
+  .industry-pill:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+  /* Contact */
+  .contact-section { padding: 80px 0; background: var(--bg-card); border-top: 1px solid var(--border); }
+  .contact-inner { max-width: 640px; margin: 0 auto; text-align: center; }
+  .contact-inner h2 { margin-bottom: 10px; }
+  .contact-inner .sub { margin-bottom: 36px; }
+  .contact-form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+  .contact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--border); padding: 32px 0; }
+  .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .footer-logo { font-family: var(--font-mono); font-size: 0.9rem; color: var(--gold); font-weight: 700; }
+  .footer-links { display: flex; gap: 20px; }
+  .footer-links a { font-size: 0.82rem; color: var(--text-muted); }
+  .footer-links a:hover { color: var(--text-dim); }
+
+  #toast { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+
+  @media (max-width: 900px) {
+    .hero h1 { font-size: 2.2rem; }
+    .features-grid, .steps-grid { grid-template-columns: 1fr 1fr; }
+    .hero { padding: 60px 0; }
+  }
+  @media (max-width: 600px) {
+    .features-grid, .steps-grid { grid-template-columns: 1fr; }
+    .contact-row { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.8rem; }
+    .hero-stat-row { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">AEGLOS <span>Systems</span></a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="#contact">Contact</a>
+      <a href="login.html" class="btn btn-ghost btn-sm">Sign in</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="page-container">
+    <div class="hero-eyebrow">White-Label Data Platforms</div>
+    <h1>Deploy a branded product data platform for any industry</h1>
+    <p>Aeglos builds the infrastructure — data ingestion, AI-powered comparison tools, marketplaces, regulatory content — and hands you a fully branded, client-ready deployment.</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn btn-primary btn-lg">Book a Demo</a>
+      <a href="pricing.html" class="btn btn-secondary btn-lg">View Pricing</a>
+    </div>
+    <div class="hero-stat-row">
+      <div class="hero-stat"><div class="val">12+</div><div class="lbl">Platform features</div></div>
+      <div class="hero-stat"><div class="val">Any</div><div class="lbl">Industry vertical</div></div>
+      <div class="hero-stat"><div class="val">72hr</div><div class="lbl">Portal access after signup</div></div>
+      <div class="hero-stat"><div class="val">100%</div><div class="lbl">Your brand, your domain</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Features -->
+<section class="features-section page-container" id="features">
+  <h2>Everything your platform needs</h2>
+  <p class="sub">Built once, deployed for any industry. Every feature is configurable per client.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <h3>Data Ingestion &amp; Catalog</h3>
+      <p>Structured product data scraped, normalized, and loaded into a searchable catalog with spec-level accuracy.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚖️</div>
+      <h3>Comparison Tool</h3>
+      <p>Side-by-side product comparisons with smart filtering, spec tables, and clean branded UI your users will trust.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>AI Natural Language Filter</h3>
+      <p>Let users search in plain English — "under 50 lbs, 750W motor, under $3,000" — and get precise results instantly.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🛒</div>
+      <h3>Buy &amp; Sell Marketplace</h3>
+      <p>A full community marketplace module for used and new listings, integrated with your product catalog.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📍</div>
+      <h3>Dealer Directory</h3>
+      <p>Geo-searchable directory of authorized dealers and resellers, embedded in your platform.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚖️</div>
+      <h3>Regulatory Content</h3>
+      <p>State and city-level laws and regulations, displayed on an interactive map and kept current.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📰</div>
+      <h3>Blog &amp; News Aggregation</h3>
+      <p>Curated industry news and blog content, keeping your platform fresh without manual editorial work.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔁</div>
+      <h3>Scrapers &amp; Automation</h3>
+      <p>Custom scrapers keep your data catalog fresh. New models, updated specs, price changes — automatically.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Analytics Dashboard</h3>
+      <p>Traffic, search queries, popular products, and conversion signals — visibility into what your users want.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- How it works -->
+<section class="how-section" id="how-it-works">
+  <div class="page-container">
+    <h2>From contract to live in weeks</h2>
+    <p class="sub">We handle the build. You focus on your industry relationships.</p>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Scope &amp; Sign</h3>
+        <p>Pick your tier, define your industry vertical, and sign. We create your client record and portal access instantly.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Brand &amp; Configure</h3>
+        <p>We apply your brand colors, logo, and domain. Your comparison tool looks native to your company from day one.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Data Ingestion</h3>
+        <p>We build scrapers for your product categories and load your initial data catalog. You review and approve.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Launch &amp; Iterate</h3>
+        <p>Your platform goes live. Track feature status, milestones, and messages through your client portal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Industries -->
+<section class="industries-section page-container">
+  <h2>Built for verticals with complex products</h2>
+  <p class="sub">Any industry where specs matter and buyers want to compare before they buy.</p>
+  <div class="industry-pills">
+    <div class="industry-pill">⚡ eBikes &amp; E-Scooters</div>
+    <div class="industry-pill">🚐 RVs &amp; Campers</div>
+    <div class="industry-pill">⛵ Marine &amp; Boats</div>
+    <div class="industry-pill">🏍️ ATVs &amp; UTVs</div>
+    <div class="industry-pill">🔧 Power Tools</div>
+    <div class="industry-pill">🚜 Agricultural Equipment</div>
+    <div class="industry-pill">🏠 Real Estate</div>
+    <div class="industry-pill">💻 Consumer Electronics</div>
+    <div class="industry-pill">🌿 Outdoor Gear</div>
+    <div class="industry-pill">🏋️ Fitness Equipment</div>
+    <div class="industry-pill">🔋 Solar &amp; Energy</div>
+    <div class="industry-pill">🛻 Commercial Vehicles</div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact-section" id="contact">
+  <div class="contact-inner page-container">
+    <h2>Talk to us</h2>
+    <p class="sub">Tell us your industry and what you're trying to build. We'll scope it and get back within one business day.</p>
+    <div id="contactSuccess" class="alert alert-success hidden" style="margin-bottom:20px;text-align:left;"></div>
+    <form class="contact-form" onsubmit="submitContact(event)">
+      <div class="contact-row">
+        <div class="form-group">
+          <label>Your Name *</label>
+          <input type="text" id="c_name" required placeholder="Brent Dempsey">
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="c_email" required placeholder="brent@company.com">
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="form-group">
+          <label>Company</label>
+          <input type="text" id="c_company" placeholder="Acme Data Co.">
+        </div>
+        <div class="form-group">
+          <label>Industry</label>
+          <input type="text" id="c_industry" placeholder="e.g. eBike, Marine, RV…">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>What are you trying to build? *</label>
+        <textarea id="c_message" required placeholder="Brief description of your platform idea, audience, and timeline…" style="min-height:100px;"></textarea>
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary btn-lg" id="contactBtn">Send Message</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">AEGLOS Systems</div>
+    <div class="footer-links">
+      <a href="pricing.html">Pricing</a>
+      <a href="login.html">Portal Login</a>
+      <a href="mailto:hello@aeglos.systems">hello@aeglos.systems</a>
+    </div>
+    <div style="font-size:0.78rem;color:var(--text-muted);">© 2026 Aeglos Systems</div>
+  </div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+function toast(msg, type='ok') {
+  const div = document.createElement('div');
+  div.className = `toast-msg toast-${type}`;
+  div.textContent = msg;
+  document.getElementById('toast').appendChild(div);
+  setTimeout(() => div.remove(), 4000);
+}
+
+async function submitContact(e) {
+  e.preventDefault();
+  const btn = document.getElementById('contactBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  const body = {
+    name:     document.getElementById('c_name').value.trim(),
+    email:    document.getElementById('c_email').value.trim(),
+    company:  document.getElementById('c_company').value.trim(),
+    industry: document.getElementById('c_industry').value.trim(),
+    message:  document.getElementById('c_message').value.trim(),
+  };
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) { toast(data.error || 'Submission failed.', 'err'); return; }
+    const success = document.getElementById('contactSuccess');
+    success.textContent = `Thanks ${body.name}! We'll be in touch within one business day.`;
+    success.classList.remove('hidden');
+    e.target.reset();
+    success.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch {
+    toast('Network error. Please try again.', 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
+  }
+}
+</script>
+</body>
+</html>

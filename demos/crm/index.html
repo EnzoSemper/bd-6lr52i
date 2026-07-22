@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="demo-stub.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM — Aeglos Platform</title>
+<link rel="stylesheet" href="css/platform.css">
+<style>
+  .client-row { cursor: pointer; }
+  .client-row td:first-child { font-weight: 500; }
+  .pipeline-col { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .pipeline-lane {
+    min-width: 160px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+  }
+  .pipeline-lane h4 { font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .pipeline-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    font-size: 0.83rem;
+    cursor: pointer;
+  }
+  .pipeline-card:hover { border-color: var(--gold-dim); }
+  .pipeline-card .co { font-weight: 500; }
+  .pipeline-card .tier-tag { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+  /* Detail panel */
+  #detailPanel {
+    position: fixed;
+    right: 0; top: 0; bottom: 0;
+    width: 600px;
+    background: var(--bg-card);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 200;
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: -8px 0 40px rgba(0,0,0,0.5);
+  }
+  #detailPanel.open { transform: translateX(0); }
+  .detail-header {
+    position: sticky; top: 0;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 10;
+  }
+  .detail-tabs { display: flex; gap: 0; overflow-x: auto; border-bottom: 1px solid var(--border); padding: 0 20px; background: var(--bg-card); }
+  .detail-tab { padding: 8px 14px; font-size: 0.82rem; color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; margin-bottom: -1px; }
+  .detail-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .detail-body { padding: 20px; }
+  .detail-section { margin-bottom: 24px; }
+  .detail-section h4 { font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 0.5px; }
+  /* Feature toggle rows */
+  .feat-admin-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-dim); gap: 10px; }
+  .feat-admin-row:last-child { border-bottom: none; }
+  .feat-admin-left { flex: 1; }
+  .feat-admin-right { display: flex; align-items: center; gap: 8px; }
+  /* Invite link box */
+  .invite-link { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); word-break: break-all; }
+  /* Revenue cards */
+  .rev-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+  /* Contact row */
+  .contact-row { padding: 10px 0; border-bottom: 1px solid var(--border-dim); }
+  .contact-row:last-child { border-bottom: none; }
+  .contact-row .co { font-weight: 500; font-size: 0.88rem; }
+  .contact-row .msg { font-size: 0.82rem; color: var(--text-dim); margin-top: 3px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">AEGLOS <small>Platform Admin</small></div>
+    <div class="sidebar-nav">
+      <div class="sidebar-section">Workspace</div>
+      <div class="sidebar-item active" onclick="navTo('clients')" id="nav-clients"><span class="icon">👥</span> Clients</div>
+      <div class="sidebar-item" onclick="navTo('pipeline')" id="nav-pipeline"><span class="icon">⚡</span> Pipeline</div>
+      <div class="sidebar-item" onclick="navTo('revenue')" id="nav-revenue"><span class="icon">📈</span> Revenue</div>
+      <div class="sidebar-item" onclick="navTo('contacts')" id="nav-contacts"><span class="icon">📬</span> Contacts</div>
+      <div class="sidebar-section" style="margin-top:12px;">Engine</div>
+      <div class="sidebar-item" onclick="navTo('deploy')" id="nav-deploy"><span class="icon">🚀</span> Deploy</div>
+    </div>
+    <div class="sidebar-footer">
+      <div id="adminName" class="text-xs" style="margin-bottom:8px;"></div>
+      <button class="btn btn-ghost btn-sm w-full" onclick="doLogout()">Sign out</button>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <!-- Clients view -->
+    <div id="view-clients">
+      <div class="main-header">
+        <h1>Clients</h1>
+        <div class="flex gap-2">
+          <div class="search-bar">
+            <input type="text" id="clientSearch" placeholder="Search clients…" oninput="filterClients()" style="width:220px;">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openNewClient()">+ New Client</button>
+        </div>
+      </div>
+      <div class="main-body">
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table id="clientTable">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Contact</th>
+                  <th>Tier</th>
+                  <th>Status</th>
+                  <th>Stage</th>
+                  <th>Msgs</th>
+                  <th>Invoices</th>
+                  <th>Joined</th>
+                </tr>
+              </thead>
+              <tbody id="clientTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pipeline view -->
+    <div id="view-pipeline" class="hidden">
+      <div class="main-header"><h1>Pipeline</h1></div>
+      <div class="main-body">
+        <div class="pipeline-col" id="pipelineCol"></div>
+      </div>
+    </div>
+
+    <!-- Revenue view -->
+    <div id="view-revenue" class="hidden">
+      <div class="main-header"><h1>Revenue</h1></div>
+      <div class="main-body">
+        <div class="rev-grid" id="revStats"></div>
+        <div class="grid-2" style="gap:16px;">
+          <div class="card">
+            <div class="card-header"><h3>Active by Tier</h3></div>
+            <div id="tierBreakdown"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Pipeline Stages</h3></div>
+            <div id="pipelineBreakdown"></div>
+          </div>
+        </div>
+        <div class="card mt-4">
+          <div class="card-header"><h3>Recent Invoices</h3></div>
+          <div id="recentInvoices"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contacts view -->
+    <div id="view-contacts" class="hidden">
+      <div class="main-header"><h1>Demo Requests</h1></div>
+      <div class="main-body">
+        <div class="card">
+          <div id="contactsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deploy view -->
+    <div id="view-deploy" class="hidden">
+      <div class="main-header">
+        <h1>Engine Deploy</h1>
+        <button class="btn btn-primary btn-sm" onclick="openNewTenant()">+ New Tenant</button>
+      </div>
+      <div class="main-body">
+        <div id="tenantGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Client detail panel -->
+<div id="detailPanel">
+  <div class="detail-header">
+    <div>
+      <h2 id="detailName" style="font-size:1.1rem;"></h2>
+      <div id="detailSub" class="text-xs" style="margin-top:3px;color:var(--text-muted);"></div>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn btn-ghost btn-sm" onclick="closeDetail()">✕</button>
+    </div>
+  </div>
+  <div class="detail-tabs">
+    <div class="detail-tab active" onclick="detailTab('info')">Info</div>
+    <div class="detail-tab" onclick="detailTab('deployment')">Deployment</div>
+    <div class="detail-tab" onclick="detailTab('projects')">Projects</div>
+    <div class="detail-tab" onclick="detailTab('messages')">Messages</div>
+    <div class="detail-tab" onclick="detailTab('invoices')">Invoices</div>
+    <div class="detail-tab" onclick="detailTab('documents')">Documents</div>
+    <div class="detail-tab" onclick="detailTab('contacts')">Contacts</div>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- New Client Modal -->
+<div class="modal-overlay hidden" id="newClientModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>New Client</h2>
+      <button class="modal-close" onclick="closeNewClient()">✕</button>
+    </div>
+    <div class="modal-form" id="newClientForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Company Name *</label>
+          <input type="text" id="nc_company" required>
+        </div>
+        <div class="form-group">
+          <label>Contact Name *</label>
+          <input type="text" id="nc_contact" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="nc_email" required>
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="nc_phone">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Industry</label>
+          <input type="text" id="nc_industry" placeholder="e.g. eBike, RV, Marine…">
+        </div>
+        <div class="form-group">
+          <label>Tier</label>
+          <select id="nc_tier">
+            <option value="">— Select —</option>
+            <option value="starter">Starter</option>
+            <option value="growth">Growth</option>
+            <option value="pro">Pro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Pipeline Stage</label>
+        <select id="nc_stage">
+          <option value="lead">Lead</option>
+          <option value="qualified">Qualified</option>
+          <option value="proposal">Proposal</option>
+          <option value="negotiation">Negotiation</option>
+          <option value="closed_won">Closed Won</option>
+          <option value="closed_lost">Closed Lost</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="nc_notes"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeNewClient()">Cancel</button>
+      <button class="btn btn-primary" onclick="createClient()">Create Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Tenant Modal -->
+<div class="modal-overlay hidden" id="newTenantModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>New Engine Tenant</h2>
+      <button class="modal-close" onclick="closeNewTenant()">✕</button>
+    </div>
+    <div class="modal-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Slug <span class="text-xs" style="color:var(--text-muted);">(url-safe, no spaces)</span></label>
+          <input type="text" id="nt_slug" placeholder="e.g. acme-rv">
+        </div>
+        <div class="form-group">
+          <label>Brand Name</label>
+          <input type="text" id="nt_brand" placeholder="e.g. Acme RV Finder">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Industry</label>
+          <input type="text" id="nt_industry" placeholder="e.g. RV, Marine, eBike">
+        </div>
+        <div class="form-group">
+          <label>Product Noun</label>
+          <input type="text" id="nt_noun" placeholder="e.g. RV, boat, bike">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Domain(s) <span class="text-xs" style="color:var(--text-muted);">(comma-separated)</span></label>
+        <input type="text" id="nt_domains" placeholder="e.g. rv.client.com, localhost">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Primary Color</label>
+          <input type="text" id="nt_color" value="#C9A84C" placeholder="#C9A84C">
+        </div>
+        <div class="form-group">
+          <label>Accent Color</label>
+          <input type="text" id="nt_accent" value="#A07030" placeholder="#A07030">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeNewTenant()">Cancel</button>
+      <button class="btn btn-primary" onclick="createTenant()">Create Tenant</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tenant Config Modal -->
+<div class="modal-overlay hidden" id="tenantConfigModal" style="z-index:300;">
+  <div class="modal" style="max-width:700px;width:95vw;">
+    <div class="modal-header">
+      <h2 id="tcm_title">Tenant Config</h2>
+      <button class="modal-close" onclick="closeTenantConfig()">✕</button>
+    </div>
+    <div style="padding:0 24px 4px;border-bottom:1px solid var(--border);display:flex;gap:0;">
+      <div class="detail-tab active" onclick="tcTab('brand')" id="tct-brand">Brand</div>
+      <div class="detail-tab" onclick="tcTab('features')" id="tct-features">Features</div>
+      <div class="detail-tab" onclick="tcTab('specs')" id="tct-specs">Specs</div>
+      <div class="detail-tab" onclick="tcTab('catalog')" id="tct-catalog">Catalog</div>
+    </div>
+    <div id="tcm_body" style="padding:20px;max-height:60vh;overflow-y:auto;"></div>
+    <div class="modal-footer" style="gap:8px;">
+      <button class="btn btn-ghost" onclick="closeTenantConfig()">Close</button>
+      <button class="btn btn-secondary btn-sm" onclick="reloadTenant()">↺ Reload Config</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+let allClients = [];
+let currentClient = null;
+let currentDetailTab = 'info';
+
+/* ── Utilities ── */
+function toast(msg, type='ok') {
+  const div = document.createElement('div');
+  div.className = `toast-msg toast-${type}`;
+  div.textContent = msg;
+  document.getElementById('toast').appendChild(div);
+  setTimeout(() => div.remove(), 3000);
+}
+function fmtDate(s) { if (!s) return '—'; return new Date(s).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); }
+function fmtMoney(cents) { return '$'+(cents/100).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+function capitalize(s) { return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+
+/* ── Nav ── */
+function navTo(view) {
+  ['clients','pipeline','revenue','contacts','deploy'].forEach(v => {
+    document.getElementById('view-'+v).classList.toggle('hidden', v !== view);
+    document.getElementById('nav-'+v).classList.toggle('active', v === view);
+  });
+  closeDetail();
+  if (view === 'pipeline') renderPipeline();
+  if (view === 'revenue') loadRevenue();
+  if (view === 'contacts') loadContacts();
+  if (view === 'deploy') loadTenants();
+}
+
+/* ── Auth ── */
+async function checkAuth() {
+  const res = await fetch('/api/auth/admin/me');
+  if (res.status === 401) { window.location.href = '/login.html'; return; }
+  const data = await res.json();
+  document.getElementById('adminName').textContent = data.name || data.email;
+}
+async function doLogout() {
+  await fetch('/api/auth/admin/logout', { method: 'POST' });
+  window.location.href = '/login.html';
+}
+
+/* ── Clients ── */
+async function loadClients() {
+  const res = await fetch('/api/crm/clients');
+  if (res.status === 401) { window.location.href = '/login.html'; return; }
+  allClients = await res.json();
+  renderClients(allClients);
+}
+
+function filterClients() {
+  const q = document.getElementById('clientSearch').value.toLowerCase();
+  renderClients(allClients.filter(c =>
+    c.company_name.toLowerCase().includes(q) ||
+    c.contact_name.toLowerCase().includes(q) ||
+    (c.email||'').toLowerCase().includes(q)
+  ));
+}
+
+const STATUS_BADGE = { active:'badge-active', prospect:'badge-prospect', churned:'badge-churned' };
+
+function renderClients(clients) {
+  const tbody = document.getElementById('clientTbody');
+  if (!clients.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No clients yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = clients.map(c => `
+    <tr class="client-row" onclick="openDetail('${c.id}')">
+      <td>${c.company_name}</td>
+      <td><div>${c.contact_name}</div><div class="text-xs">${c.email}</div></td>
+      <td>${c.tier ? capitalize(c.tier) : '<span class="muted">—</span>'}</td>
+      <td><span class="badge ${STATUS_BADGE[c.status]||'badge-prospect'}">${c.status}</span></td>
+      <td class="text-xs">${c.pipeline_stage?.replace('_',' ')}</td>
+      <td>${c.unread_messages > 0 ? `<span class="badge badge-pending">${c.unread_messages}</span>` : '<span class="muted">—</span>'}</td>
+      <td>${c.pending_invoices > 0 ? `<span class="badge badge-pending">${c.pending_invoices} pending</span>` : '<span class="muted">—</span>'}</td>
+      <td class="text-xs">${fmtDate(c.created_at)}</td>
+    </tr>
+  `).join('');
+}
+
+/* ── Pipeline ── */
+const STAGES = ['lead','qualified','proposal','negotiation','closed_won','closed_lost'];
+const STAGE_LABELS = { lead:'Lead', qualified:'Qualified', proposal:'Proposal', negotiation:'Negotiation', closed_won:'Closed Won', closed_lost:'Closed Lost' };
+
+function renderPipeline() {
+  const col = document.getElementById('pipelineCol');
+  col.innerHTML = STAGES.map(stage => {
+    const clients = allClients.filter(c => c.pipeline_stage === stage);
+    return `
+      <div class="pipeline-lane">
+        <h4>${STAGE_LABELS[stage]} <span style="color:var(--text-muted);font-weight:400;">(${clients.length})</span></h4>
+        ${clients.map(c => `
+          <div class="pipeline-card" onclick="openDetail('${c.id}')">
+            <div class="co">${c.company_name}</div>
+            <div class="tier-tag">${c.tier ? capitalize(c.tier) : 'No tier'} · ${c.status}</div>
+          </div>
+        `).join('') || '<div style="font-size:0.78rem;color:var(--text-muted);text-align:center;padding:12px 0;">Empty</div>'}
+      </div>
+    `;
+  }).join('');
+}
+
+/* ── Revenue ── */
+async function loadRevenue() {
+  const res = await fetch('/api/crm/revenue');
+  const data = await res.json();
+  document.getElementById('revStats').innerHTML = `
+    <div class="stat-card"><div class="stat-label">MRR</div><div class="stat-value">${fmtMoney(data.mrr)}</div><div class="stat-sub">monthly recurring</div></div>
+    <div class="stat-card"><div class="stat-label">Active Clients</div><div class="stat-value">${data.byTier.reduce((a,b)=>a+b.count,0)}</div></div>
+    <div class="stat-card"><div class="stat-label">Paid This Month</div><div class="stat-value">${fmtMoney(data.paidThisMonth)}</div></div>
+    <div class="stat-card"><div class="stat-label">Pipeline</div><div class="stat-value">${data.pipeline.reduce((a,b)=>a+b.count,0)}</div><div class="stat-sub">total records</div></div>
+  `;
+  document.getElementById('tierBreakdown').innerHTML = data.byTier.length
+    ? data.byTier.map(t => `<div class="feature-row"><span>${capitalize(t.tier||'Unknown')}</span><strong>${t.count}</strong></div>`).join('')
+    : '<div class="dim text-sm">No active clients.</div>';
+  document.getElementById('pipelineBreakdown').innerHTML = data.pipeline
+    .map(p => `<div class="feature-row"><span>${STAGE_LABELS[p.pipeline_stage]||p.pipeline_stage}</span><strong>${p.count}</strong></div>`).join('');
+  document.getElementById('recentInvoices').innerHTML = data.recentInvoices.length
+    ? data.recentInvoices.map(inv => `
+        <div class="inv-row" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-dim);font-size:0.85rem;">
+          <div><div>${inv.company_name}</div><div class="text-xs">${inv.description||'Invoice'}</div></div>
+          <div class="flex items-center gap-2">${fmtMoney(inv.amount_cents)} <span class="badge badge-${inv.status}">${inv.status}</span></div>
+        </div>
+      `).join('')
+    : '<div class="dim text-sm">No invoices.</div>';
+}
+
+/* ── Contacts ── */
+async function loadContacts() {
+  const res = await fetch('/api/crm/contacts');
+  const data = await res.json();
+  const el = document.getElementById('contactsList');
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="icon">📬</div><p>No demo requests yet.</p></div>'; return; }
+  el.innerHTML = data.map(c => `
+    <div class="contact-row">
+      <div class="flex justify-between items-center">
+        <div class="co">${c.name} — ${c.company||'—'} <span class="text-xs">${c.industry||''}</span></div>
+        <div class="text-xs">${fmtDate(c.created_at)}</div>
+      </div>
+      <div class="text-xs" style="color:var(--gold);margin-top:2px;">${c.email}</div>
+      <div class="msg">${c.message}</div>
+    </div>
+  `).join('');
+}
+
+/* ── Client Detail ── */
+async function openDetail(id) {
+  const res = await fetch(`/api/crm/clients/${id}`);
+  currentClient = await res.json();
+  document.getElementById('detailName').textContent = currentClient.client.company_name;
+  document.getElementById('detailSub').textContent = `${currentClient.client.contact_name} · ${currentClient.client.email}`;
+  document.getElementById('detailPanel').classList.add('open');
+  detailTab('info');
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+  currentClient = null;
+}
+
+function detailTab(tab) {
+  currentDetailTab = tab;
+  document.querySelectorAll('.detail-tab').forEach((t,i) => {
+    const tabs = ['info','deployment','projects','messages','invoices','documents','contacts'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  const body = document.getElementById('detailBody');
+  if (tab === 'info')       renderDetailInfo(body);
+  if (tab === 'deployment') renderDetailDeployment(body);
+  if (tab === 'projects')   renderDetailProjects(body);
+  if (tab === 'messages')   renderDetailMessages(body);
+  if (tab === 'invoices')   renderDetailInvoices(body);
+  if (tab === 'documents')  renderDetailDocuments(body);
+  if (tab === 'contacts')   renderDetailContacts(body);
+}
+
+function renderDetailInfo(body) {
+  const { client } = currentClient;
+  body.innerHTML = `
+    <div class="detail-section">
+      <div class="grid-2" style="gap:12px;margin-bottom:16px;">
+        <div><div class="text-xs mb-2">Status</div><span class="badge ${STATUS_BADGE[client.status]||'badge-prospect'}">${client.status}</span></div>
+        <div><div class="text-xs mb-2">Tier</div><span>${capitalize(client.tier)||'—'}</span></div>
+        <div><div class="text-xs mb-2">Phone</div><span class="text-sm">${client.phone||'—'}</span></div>
+        <div><div class="text-xs mb-2">Industry</div><span class="text-sm">${client.industry||'—'}</span></div>
+        <div><div class="text-xs mb-2">MRR</div><span class="text-sm">${fmtMoney(client.monthly_amount_cents||0)}</span></div>
+        <div><div class="text-xs mb-2">Pipeline</div><span class="text-sm">${client.pipeline_stage?.replace('_',' ')}</span></div>
+      </div>
+      ${client.notes ? `<div class="text-xs mb-2">Notes</div><div class="text-sm" style="color:var(--text-dim);">${client.notes}</div>` : ''}
+    </div>
+    <div class="detail-section">
+      <h4>Edit Client</h4>
+      <div class="modal-form">
+        <div class="form-row">
+          <div class="form-group"><label>Company</label><input type="text" id="e_company" value="${client.company_name}"></div>
+          <div class="form-group"><label>Contact</label><input type="text" id="e_contact" value="${client.contact_name}"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Email</label><input type="email" id="e_email" value="${client.email}"></div>
+          <div class="form-group"><label>Phone</label><input type="text" id="e_phone" value="${client.phone||''}"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Status</label>
+            <select id="e_status">
+              <option value="prospect" ${client.status==='prospect'?'selected':''}>Prospect</option>
+              <option value="active" ${client.status==='active'?'selected':''}>Active</option>
+              <option value="churned" ${client.status==='churned'?'selected':''}>Churned</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Tier</label>
+            <select id="e_tier">
+              <option value="" ${!client.tier?'selected':''}>—</option>
+              <option value="starter" ${client.tier==='starter'?'selected':''}>Starter</option>
+              <option value="growth" ${client.tier==='growth'?'selected':''}>Growth</option>
+              <option value="pro" ${client.tier==='pro'?'selected':''}>Pro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Pipeline Stage</label>
+          <select id="e_stage">
+            ${STAGES.map(s=>`<option value="${s}" ${client.pipeline_stage===s?'selected':''}>${STAGE_LABELS[s]}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label>Notes</label><textarea id="e_notes">${client.notes||''}</textarea></div>
+        <div class="flex gap-2 mt-2">
+          <button class="btn btn-primary btn-sm" onclick="saveClient()">Save Changes</button>
+          <button class="btn btn-secondary btn-sm" onclick="sendInvite()">Send Portal Invite</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteClient()">Delete</button>
+        </div>
+      </div>
+    </div>
+    <div id="inviteLinkWrap" class="hidden detail-section">
+      <h4>Invite Link</h4>
+      <div class="invite-link" id="inviteLinkText"></div>
+      <button class="btn btn-ghost btn-sm mt-2" onclick="copyInvite()">Copy Link</button>
+    </div>
+  `;
+}
+
+function renderDetailDeployment(body) {
+  const { deployment, features } = currentClient;
+  if (!deployment) { body.innerHTML = '<div class="dim text-sm">No deployment record.</div>'; return; }
+  const STATUS_OPT = ['not_started','in_progress','review','done','blocked'];
+  const STATUS_LABELS = { not_started:'Not Started', in_progress:'Building', review:'Review', done:'Live', blocked:'Blocked' };
+  body.innerHTML = `
+    <div class="detail-section">
+      <h4>Deployment Config</h4>
+      <div class="modal-form" style="gap:12px;">
+        <div class="form-row">
+          <div class="form-group"><label>Brand Name</label><input type="text" id="d_brand" value="${deployment.brand_name||''}"></div>
+          <div class="form-group"><label>Domain</label><input type="text" id="d_domain" value="${deployment.domain||''}" placeholder="e.g. data.brand.com"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Industry</label><input type="text" id="d_industry" value="${deployment.industry||''}"></div>
+          <div class="form-group"><label>Primary Color</label><input type="text" id="d_color" value="${deployment.primary_color||'#C9A84C'}"></div>
+        </div>
+        <div class="form-group"><label>Status</label>
+          <select id="d_status">
+            ${['pending','building','review','live','paused'].map(s=>`<option value="${s}" ${deployment.status===s?'selected':''}>${capitalize(s)}</option>`).join('')}
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveDeployment('${deployment.id}')">Save Deployment</button>
+      </div>
+    </div>
+    <div class="detail-section">
+      <h4>Features</h4>
+      ${features.map(f => `
+        <div class="feat-admin-row">
+          <div class="feat-admin-left">
+            <div class="text-sm" style="font-weight:500;">${f.label}</div>
+            <div class="text-xs" style="margin-top:3px;">
+              <input type="text" id="fn_${f.id}" value="${f.status_note||''}" placeholder="Status note…" style="width:100%;font-size:0.75rem;padding:4px 8px;">
+            </div>
+          </div>
+          <div class="feat-admin-right">
+            <select id="fs_${f.id}" style="padding:4px 8px;font-size:0.78rem;width:110px;">
+              ${STATUS_OPT.map(s=>`<option value="${s}" ${f.status===s?'selected':''}>${STATUS_LABELS[s]}</option>`).join('')}
+            </select>
+            <label class="toggle">
+              <input type="checkbox" id="fe_${f.id}" ${f.enabled?'checked':''} onchange="saveFeature('${f.id}')">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderDetailProjects(body) {
+  const { projects, milestones, client } = currentClient;
+  body.innerHTML = `
+    <div class="detail-section">
+      <h4>New Project</h4>
+      <div class="modal-form" style="gap:10px;">
+        <div class="form-group"><label>Title</label><input type="text" id="proj_title" placeholder="Project name"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Due Date</label><input type="date" id="proj_due"></div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="proj_desc" style="min-height:60px;"></textarea></div>
+        <button class="btn btn-secondary btn-sm" onclick="createProject('${client.id}')">Add Project</button>
+      </div>
+    </div>
+    <div class="detail-section">
+      <h4>Projects</h4>
+      ${!projects.length ? '<div class="dim text-sm">No projects.</div>' : projects.map(p => {
+        const pMiles = milestones.filter(m => m.project_id === p.id);
+        return `
+          <div class="proj-card" style="margin-bottom:10px;">
+            <div class="flex justify-between items-center mb-2">
+              <strong style="font-size:0.9rem;">${p.title}</strong>
+              <div class="flex gap-2 items-center">
+                ${p.due_date ? `<span class="text-xs">${fmtDate(p.due_date)}</span>` : ''}
+                <button class="btn btn-danger btn-sm" style="padding:2px 8px;font-size:0.72rem;" onclick="deleteProject('${p.id}')">✕</button>
+              </div>
+            </div>
+            ${p.description ? `<div class="text-sm dim mb-2">${p.description}</div>` : ''}
+            <div style="margin-bottom:8px;">
+              ${pMiles.map(m => `
+                <div class="milestone-row">
+                  <input type="checkbox" ${m.completed?'checked':''} onchange="toggleMilestone('${m.id}', this.checked)">
+                  <span>${m.title}</span>
+                  <button onclick="deleteMilestone('${m.id}')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;margin-left:auto;font-size:0.75rem;">✕</button>
+                </div>
+              `).join('')}
+            </div>
+            <div class="flex gap-2 items-center">
+              <input type="text" id="mile_${p.id}" placeholder="New milestone…" style="flex:1;font-size:0.8rem;padding:5px 8px;">
+              <button class="btn btn-ghost btn-sm" onclick="addMilestone('${p.id}')">+ Add</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderDetailMessages(body) {
+  const { messages, client } = currentClient;
+  body.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:2px;min-height:100px;max-height:340px;overflow-y:auto;padding-bottom:8px;margin-bottom:12px;">
+      ${!messages.length ? '<div class="empty-state"><div class="icon">💬</div><p>No messages.</p></div>' :
+        [...messages].reverse().map(m => `
+          <div>
+            <div class="message-bubble msg-${m.sender}">
+              ${m.body}
+              <div class="msg-meta">${m.sender==='admin'?'You (Aeglos)':'Client'} · ${fmtDate(m.created_at)}</div>
+            </div>
+          </div>
+        `).join('')}
+    </div>
+    <div class="flex gap-2">
+      <textarea id="adminMsgInput" placeholder="Type a message to the client…" style="flex:1;min-height:60px;"></textarea>
+      <button class="btn btn-primary btn-sm" onclick="sendAdminMsg('${client.id}')" style="align-self:flex-end;">Send</button>
+    </div>
+  `;
+}
+
+function renderDetailInvoices(body) {
+  const { invoices, client } = currentClient;
+  body.innerHTML = `
+    <div class="detail-section">
+      <h4>New Invoice</h4>
+      <div class="modal-form" style="gap:10px;">
+        <div class="form-group"><label>Description</label><input type="text" id="inv_desc" placeholder="e.g. Setup fee"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Amount (USD)</label><input type="number" id="inv_amount" placeholder="0.00" step="0.01" min="0"></div>
+          <div class="form-group"><label>Due Date</label><input type="date" id="inv_due"></div>
+        </div>
+        <div class="form-group"><label>Payment URL <span style="color:var(--text-muted);font-weight:400;">(optional — overrides Stripe link)</span></label><input type="url" id="inv_pay_url" placeholder="https://pay.example.com/..."></div>
+        <div class="flex gap-2">
+          <button class="btn btn-secondary btn-sm" onclick="createInvoice('${client.id}')">Create Invoice</button>
+          <button class="btn btn-primary btn-sm" onclick="createAndSendInvoice('${client.id}')">Create &amp; Send Notice</button>
+        </div>
+      </div>
+    </div>
+    <div class="detail-section">
+      <h4>Invoices</h4>
+      ${!invoices.length ? '<div class="dim text-sm">No invoices.</div>' : invoices.map(inv => `
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-dim);gap:10px;font-size:0.85rem;">
+          <div>
+            <div>${inv.description||'Invoice'}</div>
+            <div class="text-xs">${fmtDate(inv.due_date||inv.created_at)}</div>
+            ${inv.payment_url ? `<div class="text-xs" style="color:var(--text-muted);margin-top:2px;">Pay link set</div>` : ''}
+          </div>
+          <div class="flex items-center gap-2" style="flex-wrap:wrap;justify-content:flex-end;">
+            <strong>${fmtMoney(inv.amount_cents)}</strong>
+            <span class="badge badge-${inv.status}">${inv.status}</span>
+            ${(inv.stripe_hosted_url||inv.payment_url) ? `<a href="${inv.stripe_hosted_url||inv.payment_url}" target="_blank" class="btn btn-ghost btn-sm" style="font-size:0.7rem;">View ↗</a>` : ''}
+            ${inv.status!=='paid' ? `<button class="btn btn-ghost btn-sm" style="font-size:0.7rem;" onclick="sendInvoiceNotice('${inv.id}')">Send Notice</button>` : ''}
+            ${inv.status!=='paid' ? `<button class="btn btn-secondary btn-sm" style="font-size:0.7rem;" onclick="markPaid('${inv.id}')">Mark Paid</button>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderDetailDocuments(body) {
+  const { documents, client } = currentClient;
+  body.innerHTML = `
+    <div class="detail-section">
+      <h4>Upload Document</h4>
+      <form id="adminDocForm" onsubmit="uploadAdminDoc(event,'${client.id}')" style="display:flex;flex-direction:column;gap:10px;">
+        <div class="form-group"><label>Label / Name</label><input type="text" id="adoc_name" placeholder="e.g. Signed Agreement"></div>
+        <div class="flex gap-2 items-center">
+          <label class="toggle">
+            <input type="checkbox" id="adoc_ack">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+          <span class="text-sm">Requires client acknowledgment</span>
+        </div>
+        <input type="file" id="adoc_file" required>
+        <button type="submit" class="btn btn-secondary btn-sm">Upload</button>
+      </form>
+    </div>
+    <div class="detail-section">
+      <h4>Documents</h4>
+      ${!documents.length ? '<div class="dim text-sm">No documents.</div>' : documents.map(doc => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-dim);gap:10px;font-size:0.85rem;">
+          <div>
+            <div>${doc.name}</div>
+            <div class="text-xs">${fmtDate(doc.created_at)} · ${doc.uploaded_by==='admin'?'Admin':'Client'}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            ${doc.requires_ack && !doc.acked_at ? '<span class="badge badge-pending">Needs Ack</span>' : ''}
+            ${doc.acked_at ? `<span class="badge badge-active" title="Signed by ${doc.ack_name}">Ack'd</span>` : ''}
+            <a href="uploads/${doc.filename}" target="_blank" class="btn btn-ghost btn-sm" style="font-size:0.72rem;">View</a>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+/* ── Actions ── */
+async function saveClient() {
+  const { client } = currentClient;
+  const body = {
+    company_name:   document.getElementById('e_company').value,
+    contact_name:   document.getElementById('e_contact').value,
+    email:          document.getElementById('e_email').value,
+    phone:          document.getElementById('e_phone').value,
+    status:         document.getElementById('e_status').value,
+    tier:           document.getElementById('e_tier').value,
+    pipeline_stage: document.getElementById('e_stage').value,
+    notes:          document.getElementById('e_notes').value,
+  };
+  const res = await fetch(`/api/crm/clients/${client.id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  if (!res.ok) { toast('Save failed.','err'); return; }
+  toast('Client saved.', 'ok');
+  await loadClients();
+  await openDetail(client.id);
+}
+
+async function deleteClient() {
+  const { client } = currentClient;
+  if (!confirm(`Delete ${client.company_name}? This cannot be undone.`)) return;
+  await fetch(`/api/crm/clients/${client.id}`, { method:'DELETE' });
+  toast('Client deleted.', 'ok');
+  closeDetail();
+  await loadClients();
+}
+
+async function sendInvite() {
+  const { client } = currentClient;
+  const res = await fetch(`/api/crm/clients/${client.id}/invite`, { method:'POST', headers:{'Content-Type':'application/json'} });
+  const data = await res.json();
+  if (!res.ok) { toast('Invite failed.','err'); return; }
+  toast('Invite sent!','ok');
+  const wrap = document.getElementById('inviteLinkWrap');
+  wrap.classList.remove('hidden');
+  document.getElementById('inviteLinkText').textContent = data.link;
+}
+
+function copyInvite() {
+  navigator.clipboard.writeText(document.getElementById('inviteLinkText').textContent);
+  toast('Link copied.','ok');
+}
+
+async function saveDeployment(depId) {
+  const body = {
+    brand_name:    document.getElementById('d_brand').value,
+    domain:        document.getElementById('d_domain').value,
+    industry:      document.getElementById('d_industry').value,
+    primary_color: document.getElementById('d_color').value,
+    status:        document.getElementById('d_status').value,
+  };
+  const res = await fetch(`/api/crm/deployments/${depId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  if (!res.ok) { toast('Save failed.','err'); return; }
+  toast('Deployment saved.','ok');
+  await openDetail(currentClient.client.id);
+  detailTab('deployment');
+}
+
+async function saveFeature(fId) {
+  const enabled = document.getElementById('fe_'+fId).checked;
+  const status  = document.getElementById('fs_'+fId).value;
+  const note    = document.getElementById('fn_'+fId).value;
+  await fetch(`/api/crm/features/${fId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ enabled, status, status_note:note }) });
+  toast('Feature updated.','ok');
+}
+
+async function createProject(clientId) {
+  const title = document.getElementById('proj_title').value.trim();
+  if (!title) { toast('Title required.','err'); return; }
+  await fetch('/api/crm/projects', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ client_id:clientId, title, description:document.getElementById('proj_desc').value, due_date:document.getElementById('proj_due').value||null }) });
+  toast('Project created.','ok');
+  await openDetail(clientId);
+  detailTab('projects');
+}
+
+async function deleteProject(projId) {
+  if (!confirm('Delete this project?')) return;
+  await fetch(`/api/crm/projects/${projId}`, { method:'DELETE' });
+  toast('Project deleted.','ok');
+  const id = currentClient.client.id;
+  await openDetail(id);
+  detailTab('projects');
+}
+
+async function addMilestone(projId) {
+  const input = document.getElementById('mile_'+projId);
+  const title = input.value.trim();
+  if (!title) return;
+  await fetch('/api/crm/milestones', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ project_id:projId, title }) });
+  const id = currentClient.client.id;
+  await openDetail(id);
+  detailTab('projects');
+}
+
+async function toggleMilestone(mId, completed) {
+  const existing = currentClient.milestones.find(m => m.id === mId);
+  await fetch(`/api/crm/milestones/${mId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ completed, title:existing?.title||'' }) });
+}
+
+async function deleteMilestone(mId) {
+  await fetch(`/api/crm/milestones/${mId}`, { method:'DELETE' });
+  const id = currentClient.client.id;
+  await openDetail(id);
+  detailTab('projects');
+}
+
+async function sendAdminMsg(clientId) {
+  const body = document.getElementById('adminMsgInput').value.trim();
+  if (!body) return;
+  const res = await fetch('/api/crm/messages', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ client_id:clientId, body }) });
+  if (!res.ok) { toast('Failed to send.','err'); return; }
+  toast('Message sent.','ok');
+  await openDetail(clientId);
+  detailTab('messages');
+}
+
+async function createInvoice(clientId) {
+  const desc   = document.getElementById('inv_desc').value.trim();
+  const amount = parseFloat(document.getElementById('inv_amount').value);
+  const due    = document.getElementById('inv_due').value;
+  const payUrl = document.getElementById('inv_pay_url').value.trim();
+  if (!desc || !amount) { toast('Description and amount required.','err'); return; }
+  const res = await fetch('/api/crm/invoices', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ client_id:clientId, description:desc, amount_cents:Math.round(amount*100), due_date:due||null, payment_url:payUrl||null }) });
+  const data = await res.json();
+  if (!res.ok) { toast('Invoice failed.','err'); return; }
+  toast('Invoice created.','ok');
+  await openDetail(clientId);
+  detailTab('invoices');
+}
+
+async function markPaid(invId) {
+  await fetch(`/api/crm/invoices/${invId}/status`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ status:'paid' }) });
+  toast('Marked as paid.','ok');
+  const id = currentClient.client.id;
+  await openDetail(id);
+  detailTab('invoices');
+}
+
+async function uploadAdminDoc(e, clientId) {
+  e.preventDefault();
+  const file = document.getElementById('adoc_file').files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('client_id', clientId);
+  fd.append('name', document.getElementById('adoc_name').value || file.name);
+  fd.append('requires_ack', document.getElementById('adoc_ack').checked ? 'true' : 'false');
+  const res = await fetch('/api/crm/documents', { method:'POST', body:fd });
+  if (!res.ok) { toast('Upload failed.','err'); return; }
+  toast('Document uploaded.','ok');
+  await openDetail(clientId);
+  detailTab('documents');
+}
+
+function renderDetailContacts(body) {
+  const { contacts = [], portalUsers = [], client } = currentClient;
+  const ROLE_BADGE = { owner:'badge-active', member:'badge-prospect', billing:'badge-pending', technical:'badge-prospect' };
+  body.innerHTML = `
+    <div class="detail-section">
+      <h4>Add Contact</h4>
+      <div class="modal-form" style="gap:10px;">
+        <div class="form-row">
+          <div class="form-group"><label>Name *</label><input type="text" id="nc2_name" placeholder="Full name"></div>
+          <div class="form-group"><label>Role</label>
+            <select id="nc2_role">
+              <option value="member">Member</option>
+              <option value="owner">Owner</option>
+              <option value="billing">Billing</option>
+              <option value="technical">Technical</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Email</label><input type="email" id="nc2_email" placeholder="email@company.com"></div>
+          <div class="form-group"><label>Phone</label><input type="text" id="nc2_phone" placeholder="+1 (555) 000-0000"></div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="addContact('${client.id}')">Add Contact</button>
+      </div>
+    </div>
+    <div class="detail-section">
+      <h4>Contacts (${contacts.length})</h4>
+      ${!contacts.length ? '<div class="dim text-sm">No additional contacts.</div>' : contacts.map(c => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-dim);gap:10px;font-size:0.85rem;">
+          <div>
+            <div style="font-weight:500;">${c.name} <span class="badge ${ROLE_BADGE[c.role]||'badge-prospect'}" style="font-size:0.65rem;margin-left:4px;">${c.role}</span></div>
+            <div class="text-xs">${c.email||'—'} ${c.phone ? '· '+c.phone : ''}</div>
+          </div>
+          <button class="btn btn-danger btn-sm" style="font-size:0.7rem;padding:2px 8px;" onclick="removeContact('${c.id}','${client.id}')">✕</button>
+        </div>
+      `).join('')}
+    </div>
+    <div class="detail-section">
+      <h4>Portal Users (${portalUsers.length})</h4>
+      <p class="text-sm" style="margin-bottom:10px;">These users can log in to the client portal with their own credentials.</p>
+      <div class="modal-form" style="gap:10px;margin-bottom:16px;">
+        <div class="form-row">
+          <div class="form-group"><label>Name *</label><input type="text" id="pu_name" placeholder="Full name"></div>
+          <div class="form-group"><label>Email *</label><input type="email" id="pu_email" placeholder="user@company.com"></div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="invitePortalUser('${client.id}')">Invite Portal User</button>
+      </div>
+      ${!portalUsers.length ? '<div class="dim text-sm">No portal users yet.</div>' : portalUsers.map(u => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-dim);gap:10px;font-size:0.85rem;">
+          <div>
+            <div style="font-weight:500;">${u.name}</div>
+            <div class="text-xs">${u.email} · Added ${fmtDate(u.created_at)}</div>
+          </div>
+          <button class="btn btn-danger btn-sm" style="font-size:0.7rem;padding:2px 8px;" onclick="removePortalUser('${u.id}','${client.id}')">Remove</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+async function addContact(clientId) {
+  const name  = document.getElementById('nc2_name').value.trim();
+  const email = document.getElementById('nc2_email').value.trim();
+  const phone = document.getElementById('nc2_phone').value.trim();
+  const role  = document.getElementById('nc2_role').value;
+  if (!name) { toast('Name required.', 'err'); return; }
+  const res = await fetch(`/api/crm/clients/${clientId}/contacts`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, phone, role }),
+  });
+  if (!res.ok) { toast('Failed to add contact.', 'err'); return; }
+  toast('Contact added.', 'ok');
+  await openDetail(clientId);
+  detailTab('contacts');
+}
+
+async function removeContact(contactId, clientId) {
+  if (!confirm('Remove this contact?')) return;
+  await fetch(`/api/crm/contacts/${contactId}`, { method: 'DELETE' });
+  toast('Contact removed.', 'ok');
+  await openDetail(clientId);
+  detailTab('contacts');
+}
+
+async function invitePortalUser(clientId) {
+  const name  = document.getElementById('pu_name').value.trim();
+  const email = document.getElementById('pu_email').value.trim();
+  if (!name || !email) { toast('Name and email required.', 'err'); return; }
+  const res = await fetch(`/api/crm/clients/${clientId}/portal-users`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email }),
+  });
+  const data = await res.json();
+  if (!res.ok) { toast(data.error || 'Invite failed.', 'err'); return; }
+  toast('Invite sent!', 'ok');
+  await openDetail(clientId);
+  detailTab('contacts');
+}
+
+async function removePortalUser(userId, clientId) {
+  if (!confirm('Remove this portal user?')) return;
+  await fetch(`/api/crm/portal-users/${userId}`, { method: 'DELETE' });
+  toast('Portal user removed.', 'ok');
+  await openDetail(clientId);
+  detailTab('contacts');
+}
+
+async function sendInvoiceNotice(invId) {
+  const res = await fetch(`/api/crm/invoices/${invId}/send-notice`, { method: 'POST' });
+  if (!res.ok) { toast('Failed to send notice.', 'err'); return; }
+  toast('Invoice notice sent to client.', 'ok');
+}
+
+async function createAndSendInvoice(clientId) {
+  const desc   = document.getElementById('inv_desc').value.trim();
+  const amount = parseFloat(document.getElementById('inv_amount').value);
+  const due    = document.getElementById('inv_due').value;
+  const payUrl = document.getElementById('inv_pay_url').value.trim();
+  if (!desc || !amount) { toast('Description and amount required.', 'err'); return; }
+  const res = await fetch('/api/crm/invoices', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ client_id: clientId, description: desc, amount_cents: Math.round(amount*100), due_date: due||null, payment_url: payUrl||null }),
+  });
+  const data = await res.json();
+  if (!res.ok) { toast('Invoice failed.', 'err'); return; }
+  // send notice immediately
+  await fetch(`/api/crm/invoices/${data.id}/send-notice`, { method: 'POST' });
+  toast('Invoice created and notice sent!', 'ok');
+  await openDetail(clientId);
+  detailTab('invoices');
+}
+
+/* ── New Client modal ── */
+function openNewClient() { document.getElementById('newClientModal').classList.remove('hidden'); }
+function closeNewClient() { document.getElementById('newClientModal').classList.add('hidden'); }
+
+async function createClient() {
+  const body = {
+    company_name:   document.getElementById('nc_company').value.trim(),
+    contact_name:   document.getElementById('nc_contact').value.trim(),
+    email:          document.getElementById('nc_email').value.trim(),
+    phone:          document.getElementById('nc_phone').value.trim(),
+    industry:       document.getElementById('nc_industry').value.trim(),
+    tier:           document.getElementById('nc_tier').value,
+    pipeline_stage: document.getElementById('nc_stage').value,
+    notes:          document.getElementById('nc_notes').value.trim(),
+  };
+  if (!body.company_name || !body.contact_name || !body.email) { toast('Company, contact, and email required.','err'); return; }
+  const res = await fetch('/api/crm/clients', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  const data = await res.json();
+  if (!res.ok) { toast(data.error||'Create failed.','err'); return; }
+  toast('Client created!','ok');
+  closeNewClient();
+  await loadClients();
+  openDetail(data.id);
+}
+
+/* ══════════════════════════════════════════════════
+   ENGINE DEPLOY
+══════════════════════════════════════════════════ */
+
+let allTenants = [];
+let currentTenantSlug = null;
+let currentTenantData = null;
+let currentTcTab = 'brand';
+
+async function loadTenants() {
+  const res = await fetch('/api/engine-proxy/tenants');
+  if (!res.ok) {
+    document.getElementById('tenantGrid').innerHTML =
+      '<div class="dim text-sm" style="padding:20px;">Engine offline or not configured.</div>';
+    return;
+  }
+  allTenants = await res.json();
+  renderTenants();
+}
+
+function renderTenants() {
+  const grid = document.getElementById('tenantGrid');
+  if (!allTenants.length) {
+    grid.innerHTML = '<div class="dim text-sm" style="padding:20px;">No tenants yet. Create one to get started.</div>';
+    return;
+  }
+  grid.innerHTML = allTenants.map(t => {
+    const domain = (t.domains || [])[0] || '—';
+    const color  = t.primary_color || '#C9A84C';
+    const stats  = t.stats || {};
+    return `
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="height:4px;background:${color};"></div>
+        <div style="padding:16px 18px;">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <div style="font-weight:600;font-size:0.95rem;">${t.brand_name || t.slug}</div>
+              <div class="text-xs" style="color:var(--text-muted);font-family:var(--font-mono);">${t.slug}</div>
+            </div>
+            <span class="badge badge-active" style="font-size:0.68rem;">${t.industry || '—'}</span>
+          </div>
+          <div class="text-xs" style="margin-bottom:10px;color:var(--text-dim);">
+            <span style="margin-right:12px;">🌐 ${domain}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+            <div style="text-align:center;background:var(--bg-surface);border-radius:var(--radius);padding:8px 4px;">
+              <div style="font-size:1.1rem;font-weight:600;">${stats.products ?? '—'}</div>
+              <div class="text-xs" style="color:var(--text-muted);">Products</div>
+            </div>
+            <div style="text-align:center;background:var(--bg-surface);border-radius:var(--radius);padding:8px 4px;">
+              <div style="font-size:1.1rem;font-weight:600;">${stats.users ?? '—'}</div>
+              <div class="text-xs" style="color:var(--text-muted);">Users</div>
+            </div>
+            <div style="text-align:center;background:var(--bg-surface);border-radius:var(--radius);padding:8px 4px;">
+              <div style="font-size:1.1rem;font-weight:600;">${stats.listings ?? '—'}</div>
+              <div class="text-xs" style="color:var(--text-muted);">Listings</div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="openTenantConfig('${t.slug}')">Configure</button>
+            <a href="https://${domain}" target="_blank" class="btn btn-ghost btn-sm" style="flex:1;text-align:center;">View ↗</a>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* New tenant modal */
+function openNewTenant() { document.getElementById('newTenantModal').classList.remove('hidden'); }
+function closeNewTenant() { document.getElementById('newTenantModal').classList.add('hidden'); }
+
+async function createTenant() {
+  const slug    = document.getElementById('nt_slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  const brand   = document.getElementById('nt_brand').value.trim();
+  const industry = document.getElementById('nt_industry').value.trim();
+  const noun    = document.getElementById('nt_noun').value.trim();
+  const domains = document.getElementById('nt_domains').value.split(',').map(d => d.trim()).filter(Boolean);
+  const color   = document.getElementById('nt_color').value.trim() || '#C9A84C';
+  const accent  = document.getElementById('nt_accent').value.trim() || '#A07030';
+  if (!slug || !brand || !domains.length) { toast('Slug, brand name, and at least one domain required.', 'err'); return; }
+  const res = await fetch('/api/engine-proxy/tenants', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug, brand_name: brand, industry, product_noun: noun, domains, primary_color: color, accent_color: accent }),
+  });
+  const data = await res.json();
+  if (!res.ok) { toast(data.error || 'Create failed.', 'err'); return; }
+  toast('Tenant created!', 'ok');
+  closeNewTenant();
+  await loadTenants();
+}
+
+/* Tenant config modal */
+async function openTenantConfig(slug) {
+  currentTenantSlug = slug;
+  const res = await fetch(`/api/engine-proxy/tenants/${slug}`);
+  const raw = await res.json();
+  // API returns config properties at top level alongside stats
+  currentTenantData = { config: raw, stats: raw.stats };
+  document.getElementById('tcm_title').textContent = `Configure — ${slug}`;
+  document.getElementById('tenantConfigModal').classList.remove('hidden');
+  tcTab('brand');
+}
+
+function closeTenantConfig() {
+  document.getElementById('tenantConfigModal').classList.add('hidden');
+  currentTenantSlug = null;
+  currentTenantData = null;
+}
+
+function tcTab(tab) {
+  currentTcTab = tab;
+  ['brand','features','specs','catalog'].forEach(t => {
+    document.getElementById('tct-'+t).classList.toggle('active', t === tab);
+  });
+  const body = document.getElementById('tcm_body');
+  if (tab === 'brand')    renderTcBrand(body);
+  if (tab === 'features') renderTcFeatures(body);
+  if (tab === 'specs')    renderTcSpecs(body);
+  if (tab === 'catalog')  renderTcCatalog(body);
+}
+
+function renderTcBrand(body) {
+  const cfg = currentTenantData?.config || {};
+  body.innerHTML = `
+    <div class="modal-form" style="gap:12px;">
+      <div class="form-row">
+        <div class="form-group"><label>Brand Name</label><input type="text" id="tc_brand" value="${cfg.brand_name||''}"></div>
+        <div class="form-group"><label>Industry</label><input type="text" id="tc_industry" value="${cfg.industry||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Product Noun</label><input type="text" id="tc_noun" value="${cfg.product_noun||''}"></div>
+        <div class="form-group"><label>Tagline</label><input type="text" id="tc_tagline" value="${cfg.tagline||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Primary Color</label><input type="text" id="tc_color" value="${cfg.primary_color||'#C9A84C'}"></div>
+        <div class="form-group"><label>Accent Color</label><input type="text" id="tc_accent" value="${cfg.accent_color||'#A07030'}"></div>
+      </div>
+      <div class="form-group">
+        <label>Domains <span class="text-xs" style="color:var(--text-muted);">(comma-separated)</span></label>
+        <input type="text" id="tc_domains" value="${(cfg.domains||[]).join(', ')}">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="saveTcBrand()">Save Brand Config</button>
+    </div>
+  `;
+}
+
+async function saveTcBrand() {
+  const cfg = currentTenantData?.config || {};
+  const patch = {
+    brand_name:   document.getElementById('tc_brand').value.trim(),
+    industry:     document.getElementById('tc_industry').value.trim(),
+    product_noun: document.getElementById('tc_noun').value.trim(),
+    tagline:      document.getElementById('tc_tagline').value.trim(),
+    primary_color: document.getElementById('tc_color').value.trim(),
+    accent_color:  document.getElementById('tc_accent').value.trim(),
+    domains: document.getElementById('tc_domains').value.split(',').map(d=>d.trim()).filter(Boolean),
+  };
+  const merged = Object.assign({}, cfg, patch);
+  const res = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}/config`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(merged),
+  });
+  if (!res.ok) { toast('Save failed.', 'err'); return; }
+  toast('Config saved.', 'ok');
+  const r2 = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}`);
+  const raw2 = await r2.json();
+  currentTenantData = { config: raw2, stats: raw2.stats };
+}
+
+function renderTcFeatures(body) {
+  const features = currentTenantData?.config?.features || {};
+  const ALL_FEATURES = ['comparison','ai_filter','marketplace','dealer_directory','laws','news','community','user_accounts'];
+  const FEAT_LABELS  = {
+    comparison:'Comparison Tool', ai_filter:'AI Natural Language Filter', marketplace:'Marketplace Listings',
+    dealer_directory:'Dealer Directory', laws:'Laws & Regulations', news:'News Feed',
+    community:'Community', user_accounts:'User Accounts',
+  };
+  body.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:16px;">
+      ${ALL_FEATURES.map(f => `
+        <div class="feat-admin-row">
+          <div class="feat-admin-left">
+            <div class="text-sm" style="font-weight:500;">${FEAT_LABELS[f]||f}</div>
+            <div class="text-xs" style="color:var(--text-muted);font-family:var(--font-mono);">${f}</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="tcf_${f}" ${features[f]?'checked':''}>
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+      `).join('')}
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="saveTcFeatures()">Save Features</button>
+  `;
+}
+
+async function saveTcFeatures() {
+  const ALL_FEATURES = ['comparison','ai_filter','marketplace','dealer_directory','laws','news','community','user_accounts'];
+  const features = {};
+  ALL_FEATURES.forEach(f => { features[f] = document.getElementById('tcf_'+f).checked; });
+  const cfg = currentTenantData?.config || {};
+  const merged = Object.assign({}, cfg, { features });
+  const res = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}/config`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(merged),
+  });
+  if (!res.ok) { toast('Save failed.', 'err'); return; }
+  toast('Features saved.', 'ok');
+  const r2 = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}`);
+  const raw2 = await r2.json();
+  currentTenantData = { config: raw2, stats: raw2.stats };
+}
+
+function renderTcSpecs(body) {
+  const specs = currentTenantData?.config?.spec_schema || [];
+  const TYPE_OPTS = ['range','select','toggle'];
+  const FILTER_OPTS = ['range','select','toggle'];
+  body.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <h4 style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Current Specs (${specs.length})</h4>
+      ${!specs.length ? '<div class="dim text-sm">No specs defined.</div>' : `
+        <div class="table-wrap" style="margin-bottom:12px;">
+          <table style="font-size:0.8rem;">
+            <thead><tr><th>Key</th><th>Label</th><th>Type</th><th>Unit</th><th>Filterable</th><th>Card</th><th></th></tr></thead>
+            <tbody>
+              ${specs.map(s => `
+                <tr>
+                  <td style="font-family:var(--font-mono);font-size:0.72rem;">${s.key}</td>
+                  <td>${s.label}</td>
+                  <td>${s.type}</td>
+                  <td>${s.unit||'—'}</td>
+                  <td>${s.filterable?'✓':'—'}</td>
+                  <td>${s.card?'✓':'—'}</td>
+                  <td><button class="btn btn-danger btn-sm" style="font-size:0.7rem;padding:2px 8px;" onclick="deleteSpec('${s.key}')">✕</button></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `}
+    </div>
+    <h4 style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Add Spec</h4>
+    <div class="modal-form" style="gap:10px;">
+      <div class="form-row">
+        <div class="form-group"><label>Key <span class="text-xs" style="color:var(--text-muted);">(snake_case)</span></label><input type="text" id="ns_key" placeholder="e.g. range_miles"></div>
+        <div class="form-group"><label>Label</label><input type="text" id="ns_label" placeholder="e.g. Range (mi)"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Type</label>
+          <select id="ns_type">
+            ${TYPE_OPTS.map(t=>`<option value="${t}">${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label>Unit</label><input type="text" id="ns_unit" placeholder="e.g. mi, W, lbs"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Filter Type</label>
+          <select id="ns_filter_type">
+            ${FILTER_OPTS.map(t=>`<option value="${t}">${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:16px;padding-top:20px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;"><input type="checkbox" id="ns_filterable" checked> Filterable</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;"><input type="checkbox" id="ns_comparable" checked> Comparable</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;"><input type="checkbox" id="ns_card"> Card</label>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="addSpec()">Add Spec</button>
+    </div>
+  `;
+}
+
+async function addSpec() {
+  const spec = {
+    key:         document.getElementById('ns_key').value.trim(),
+    label:       document.getElementById('ns_label').value.trim(),
+    type:        document.getElementById('ns_type').value,
+    unit:        document.getElementById('ns_unit').value.trim() || null,
+    filter_type: document.getElementById('ns_filter_type').value,
+    filterable:  document.getElementById('ns_filterable').checked,
+    comparable:  document.getElementById('ns_comparable').checked,
+    sortable:    false,
+    card:        document.getElementById('ns_card').checked,
+  };
+  if (!spec.key || !spec.label) { toast('Key and label required.', 'err'); return; }
+  const res = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}/specs`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(spec),
+  });
+  if (!res.ok) { toast('Add spec failed.', 'err'); return; }
+  toast('Spec added.', 'ok');
+  const r2 = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}`);
+  const raw2 = await r2.json();
+  currentTenantData = { config: raw2, stats: raw2.stats };
+  renderTcSpecs(document.getElementById('tcm_body'));
+}
+
+async function deleteSpec(key) {
+  if (!confirm(`Delete spec "${key}"?`)) return;
+  const res = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}/specs/${key}`, { method: 'DELETE' });
+  if (!res.ok) { toast('Delete failed.', 'err'); return; }
+  toast('Spec deleted.', 'ok');
+  const r2 = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}`);
+  const raw2 = await r2.json();
+  currentTenantData = { config: raw2, stats: raw2.stats };
+  renderTcSpecs(document.getElementById('tcm_body'));
+}
+
+async function renderTcCatalog(body) {
+  body.innerHTML = '<div class="dim text-sm">Loading catalog stats…</div>';
+  const res = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}/catalog`);
+  if (!res.ok) { body.innerHTML = '<div class="dim text-sm">Catalog unavailable.</div>'; return; }
+  const data = await res.json();
+  const brands = data.brands || [];
+  body.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+      <div class="stat-card" style="margin:0;"><div class="stat-label">Products</div><div class="stat-value">${data.count ?? '—'}</div></div>
+      <div class="stat-card" style="margin:0;"><div class="stat-label">Brands</div><div class="stat-value">${brands.length}</div></div>
+      <div class="stat-card" style="margin:0;"><div class="stat-label">Sample</div><div class="stat-value" style="font-size:0.72rem;">${(data.sample||[]).map(p=>p.name).join(', ') || '—'}</div></div>
+    </div>
+    <h4 style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Brands</h4>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+      ${brands.length ? brands.map(b => `<span class="badge badge-prospect" style="font-size:0.72rem;">${b}</span>`).join('') : '<span class="dim text-sm">No products yet.</span>'}
+    </div>
+    <div class="dim text-sm">Catalog is managed via <code style="font-family:var(--font-mono);">tenants/${currentTenantSlug}/catalog.json</code> on the engine server.</div>
+  `;
+}
+
+async function reloadTenant() {
+  if (!currentTenantSlug) return;
+  const res = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}/reload`, { method: 'POST' });
+  if (!res.ok) { toast('Reload failed.', 'err'); return; }
+  toast('Config reloaded on engine.', 'ok');
+  const r2 = await fetch(`/api/engine-proxy/tenants/${currentTenantSlug}`);
+  const raw2 = await r2.json();
+  currentTenantData = { config: raw2, stats: raw2.stats };
+  tcTab(currentTcTab);
+}
+
+/* ── Init ── */
+checkAuth();
+loadClients();
+</script>
+</body>
+</html>

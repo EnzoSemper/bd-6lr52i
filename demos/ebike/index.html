@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="demo-stub.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aeglos — Electric Bike Comparison 2026</title>
+  <meta name="description" content="Comprehensive 2026 eBike and electric dirt bike comparison. Filter by weight, budget, motor type, regen braking, and more.">
+  <meta property="og:title" content="Aeglos — Electric Bike Comparison 2026">
+  <meta property="og:description" content="76 eBikes and electric dirt bikes. Filter by weight, budget, motor type, regen braking, US dealers, and more. Real specs, real verdicts.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://aeglos.systems/">
+  <meta property="og:image" content="https://aeglos.systems/images/og-cover.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=7">
+</head>
+<body>
+<div class="top-color-bar">
+  <div class="scrolling-text">Aeglos.Systems - Bringing you the best information on eMoto's - All in one place!</div>
+</div>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <div class="nav-brand" style="display:flex; align-items:center; cursor:help;" title="An eBike and eMoto comparison tool, designed by the eBike community for the eBike community."><img src="favicon.svg" style="height:48px; filter:drop-shadow(0 0 4px var(--gold));"></div>
+    <div class="nav-links">
+      <a href="/" class="active">Comparison</a>
+      <a href="sell.html">Sell Your Bike</a>
+      <a href="resellers.html">Resellers</a>
+      <a href="laws.html">eBike Laws</a>
+      <a href="blog">Blog</a>
+    </div>
+    <div class="nav-right" style="display:flex; align-items:center; gap: 16px; position:relative;">
+      <!-- Smaller Theme Toggle -->
+      <div class="theme-switch-wrapper nav-theme-toggle">
+        <label class="theme-switch" for="themeToggleCheckbox">
+          <input type="checkbox" id="themeToggleCheckbox" style="opacity:0; width:0; height:0;" />
+          <span class="slider">
+             <span class="slider-knob"></span>
+          </span>
+        </label>
+      </div>
+
+      <button id="navLoginBtn" style="color:var(--text); background:none; border:none; text-decoration:none; font-size:13px; font-weight:600; margin-right:0px; cursor:pointer;">Login</button>
+      <strong id="lastUpdatedDate" style="font-size: 14px; font-family: var(--font-sans); color: var(--gold); white-space: nowrap;">Last Updated June 2026</strong>
+      <button style="background:rgba(201,168,76,0.1); border: 1px solid var(--gold); color:var(--gold); border-radius:4px; padding: 6px 14px; font-size:13px; font-weight:600; font-family: var(--font-sans); cursor:pointer;" data-action="openRUModal">Request Update</button>
+
+      <!-- Login Dropdown -->
+      <div id="loginDropdown" style="position:absolute; top:50px; right:0; width:260px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; z-index:100; transform:translateY(-150%); opacity:0; pointer-events:none; transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+          <h3 style="margin-top:0;margin-bottom:16px;font-size:16px;">Log In</h3>
+          <div style="margin-bottom:12px;">
+               <input type="email" id="ddEmail" class="form-control" placeholder="you@example.com" style="width:100%; box-sizing:border-box;" />
+          </div>
+          <div style="margin-bottom:12px;">
+               <input type="password" id="ddPassword" class="form-control" placeholder="••••••••" style="width:100%; box-sizing:border-box;" />
+          </div>
+          <div id="ddError" class="form-error" style="margin-bottom:10px;"></div>
+          <button id="ddSubmit" class="btn btn-gold btn-full">Sign In</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<div class="page-layout">
+
+  <!-- FILTERS SIDEBAR -->
+  <aside class="filters-sidebar" id="filtersSidebar">
+
+    <!-- Active filter count badge -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <span style="font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;">Filters</span>
+      <span class="filter-active-badge hidden" id="activeFilterBadge">0 active</span>
+    </div>
+
+    <div class="filter-section-title">Rider Profile</div>
+
+    <div class="filter-group">
+      <label class="filter-label">
+        Rider Weight
+        <span class="filter-value" id="weightVal">285 lbs</span>
+      </label>
+      <input type="range" id="riderWeight" min="100" max="400" step="5" value="285">
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">
+        Max Budget
+        <span class="filter-value" id="budgetVal">No limit</span>
+      </label>
+      <input type="range" id="budgetRange" min="0" max="14000" step="250" value="14000">
+    </div>
+
+    <div class="filter-section-title">Category</div>
+    <div class="multi-select" id="categoryFilter">
+      <span class="ms-chip active" data-val="dirt">Dirt / Off-Road</span>
+      <span class="ms-chip active" data-val="street">Street / Moto</span>
+      <span class="ms-chip active" data-val="ebike">eBike / Commuter</span>
+    </div>
+
+    <div class="filter-section-title">Motor Type</div>
+    <div class="multi-select" id="motorTypeFilter">
+      <span class="ms-chip active" data-val="mid-drive">Mid-Drive</span>
+      <span class="ms-chip active" data-val="hub">Hub Drive</span>
+    </div>
+
+    <div class="filter-section-title">Select Brand</div>
+    <select id="brandSelectFilter" class="form-control" style="margin-bottom: 12px; width: 100%; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-dim); padding: 8px; border-radius: 4px; font-family: var(--font-sans); cursor: pointer; height: auto;">
+      <option value="all">All Brands</option>
+    </select>
+
+    <div class="filter-section-title">Select Model</div>
+    <select id="modelSelectFilter" class="form-control" style="margin-bottom: 24px; width: 100%; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-dim); padding: 8px; border-radius: 4px; font-family: var(--font-sans); cursor: pointer; height: auto;" disabled>
+      <option value="all">All Models</option>
+    </select>
+
+    <div class="filter-section-title">Throttle Type</div>
+    <div class="multi-select" id="throttleTypeFilter">
+      <!-- Built dynamically from data -->
+    </div>
+
+    <div class="filter-section-title">Brake Type</div>
+    <div class="multi-select" id="brakeTypeFilter">
+      <!-- Built dynamically from data -->
+    </div>
+
+    <div class="filter-section-title">Requirements</div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">Regen Braking Required</span>
+      <label class="toggle">
+        <input type="checkbox" id="regenRequired">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">Open/Tunable Controller</span>
+      <label class="toggle">
+        <input type="checkbox" id="openController">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">US Dealers Only</span>
+      <label class="toggle">
+        <input type="checkbox" id="usDealers">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">Within Weight Limit</span>
+      <label class="toggle">
+        <input type="checkbox" id="withinWeightLimit">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="filter-section-title">Bike Size</div>
+    <div class="multi-select" id="bikeSizeFilter">
+      <span class="ms-chip active" data-val="pit-bike">Pit Bike</span>
+      <span class="ms-chip active" data-val="intermediate">Intermediate</span>
+      <span class="ms-chip active" data-val="full-size">Full Size</span>
+    </div>
+
+    <details style="margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">
+      <summary class="filter-section-title" style="cursor:pointer; outline:none; margin-bottom: 0; padding-bottom: 0; border-bottom: none; display: flex; align-items: center; justify-content: space-between;">Wheel Size <span style="font-size:10px;">▼</span></summary>
+      <div class="multi-select" id="wheelComboFilter" style="padding-top: 10px;">
+        <!-- Built dynamically from data -->
+      </div>
+    </details>
+
+    <div class="filter-section-title">Voltage</div>
+    <div class="multi-select" id="voltageFilter">
+      <!-- Built dynamically from data -->
+    </div>
+
+    <div class="filter-section-title">Riding Style</div>
+    <div class="multi-select" id="ridingFilter">
+      <span class="ms-chip" data-val="backyard">Backyard</span>
+      <span class="ms-chip" data-val="light-trail">Light Trail</span>
+      <span class="ms-chip" data-val="trail">Trail</span>
+      <span class="ms-chip" data-val="off-road">Off-Road</span>
+      <span class="ms-chip" data-val="town">Town</span>
+      <span class="ms-chip" data-val="countryside">Countryside</span>
+      <span class="ms-chip" data-val="acreage">Acreage</span>
+      <span class="ms-chip" data-val="commuter">Commuter</span>
+      <span class="ms-chip" data-val="supermoto">Supermoto</span>
+    </div>
+
+    <button class="filter-reset-btn" id="resetFilters">↺ Reset All Filters</button>
+  </aside>
+
+  <!-- CARDS MAIN -->
+  <main class="cards-main">
+    <div class="results-header">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class="results-count" id="resultsCount">Loading…</span>
+        <button class="mobile-filter-btn" id="mobileFilterBtn">⚙ Filters</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select id="sortSelect" style="background:var(--bg-card);border:1px solid var(--border-light);color:var(--text-dim);padding:4px 10px;border-radius:4px;font-size:12px;cursor:pointer;">
+          <option value="rank">Sort: Rank</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="weight-limit">Weight Limit</option>
+          <option value="motor-watts">Motor Power</option>
+        </select>
+        <button class="show-eliminated-btn" id="showEliminatedBtn">Show Eliminated</button>
+      </div>
+    </div>
+
+    <!-- No results message -->
+    <div id="noResults" class="hidden" style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+      <div style="font-size:32px;margin-bottom:12px;">🔍</div>
+      <div style="font-size:16px;color:var(--text-dim);margin-bottom:8px;">No bikes match your filters</div>
+      <div id="noResultsReason" style="font-size:13px;margin-bottom:16px;"></div>
+      <button class="btn btn-outline btn-sm" data-action="clickEl" data-args='["resetFilters"]'>Reset Filters</button>
+    </div>
+
+    <div id="bikesList" class="bikes-list">
+      <div style="text-align:center;padding:40px;color:var(--text-muted);">
+        <div class="spinner"></div>
+        <p style="margin-top:12px;">Loading bikes...</p>
+      </div>
+    </div>
+  </main>
+
+
+</div>
+
+<div class="filter-overlay" id="filterOverlay"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="footer-bottom-info">
+      <span class="footer-copy">© 2026 Aeglos Systems LLC.</span>
+    </div>
+
+    <div class="footer-links">
+      <a href="mailto:AeglosSystems@gmail.com">Contact Us</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="https://buymeacoffee.com/aeglos" target="_blank" rel="noopener noreferrer" class="footer-bmc">☕ Buy Me a Coffee</a>
+    </div>
+  </div>
+</footer>
+
+
+
+<!-- Aeglos Intelligence Agent (AI Chat) -->
+<div class="ai-chat-bubble" id="aiChatBubble" title="Explain what you're looking for">
+  <svg viewBox="0 0 24 24"><path d="M12,2A10,10,0,0,0,2,12a9.89,9.89,0,0,0,2.26,6.33l-2,2a1,1,0,0,0-.21,1.09A1,1,0,0,0,3,22h9a10,10,0,0,0,0-20Zm0,18H5.41l.29-.29a1,1,0,0,0,.3-.71,1,1,0,0,0-.3-.71A7.92,7.92,0,0,1,4,12,8,8,0,0,1,12,4a8,8,0,0,1,0,16Z"/><path d="M8,13a1,1,0,1,0-1-1A1,1,0,0,0,8,13Z"/><path d="M12,13a1,1,0,1,0-1-1A1,1,0,0,0,12,13Z"/><path d="M16,13a1,1,0,1,0-1-1A1,1,0,0,0,16,13Z"/></svg>
+</div>
+
+<div class="ai-chat-window" id="aiChatWindow">
+  <div class="ai-chat-header">
+    <h3>Aeglos Intelligence</h3>
+    <div class="ai-chat-close" id="aiChatClose">×</div>
+  </div>
+  <div class="ai-chat-body" id="aiChatBody">
+    <div class="ai-chat-msg agent">
+      Describe what you're looking for in natural language. I'll analyze the database and apply the correct filters for you.<br><br>
+      <i>Example: "Fast mid-drive bike for trails under $5000"</i>
+    </div>
+  </div>
+  <div class="ai-chat-input-area">
+    <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="Explain what you need...">
+    <button class="ai-chat-send" id="aiChatSend">Analyze</button>
+  </div>
+</div>
+
+<script src="js/app.js?v=10" defer></script>
+  <script src="js/csp-actions.js" defer></script>
+  <script src="js/ru-modal.js?v=2" defer></script>
+  <script src="js/theme.js" defer></script>
+  <script src="js/index_auth.js" defer></script>
+  <script src="js/tracker.js" defer></script>
+</body>
+</html>

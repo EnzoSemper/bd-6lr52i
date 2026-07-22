@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>AEGLOS — Platform Whitepaper</title>
+<meta name="description" content="The Aeglos Platform Whitepaper: one shared core, pushed across intelligence, mobility, commerce, automotive data, and systems — what each product does and how it changes its industry.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AEGLOS — Platform Whitepaper">
+<meta property="og:description" content="One core, many markets. How the Aeglos products change the industries they operate in.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+  :root{
+    --void:#06090e; --surface:rgba(14,22,31,.6); --surface2:rgba(20,30,41,.5);
+    --ink:#c7d4de; --head:#eef4f8; --dim:#6a8090; --faint:#3c505e;
+    --signal:#35e0d4; --amber:#ffb24d;
+    --line:rgba(120,180,200,.14); --line-strong:rgba(120,190,205,.28);
+    --acc:var(--signal);
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    --display:'Archivo',system-ui,sans-serif;
+    --max:1120px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void);color:var(--ink);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 70% at 84% -10%, rgba(53,224,212,.07), transparent 55%);overflow-x:hidden}
+  a{color:var(--signal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  #progress{position:fixed;top:0;left:0;height:2px;background:var(--signal);width:0;z-index:100;box-shadow:0 0 10px var(--signal)}
+  .mk{display:block;color:var(--signal)}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 28px}
+
+  /* topbar */
+  .top{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);margin-bottom:0}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim)}
+  .brand b{color:var(--signal);font-weight:600}
+  .brand .mk{width:20px;height:25px}
+  .back{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+  .back:hover{color:var(--signal);text-decoration:none}
+
+  /* cover */
+  .cover{padding:58px 0 42px;border-bottom:1px solid var(--line);position:relative}
+  .cover .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--signal)}
+  .cover h1{font-family:var(--display);font-weight:900;font-size:clamp(40px,7vw,76px);letter-spacing:-.03em;line-height:.94;color:var(--head);margin-top:16px}
+  .cover h1 span{color:var(--signal)}
+  .cover .tagline{font-family:var(--display);font-weight:600;font-size:clamp(17px,2.3vw,21px);color:var(--head);margin-top:18px;max-width:34ch;line-height:1.35}
+  .cover .meta{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:26px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--dim)}
+  .cover .meta b{color:var(--head);font-weight:500}
+  .cover-mk{position:absolute;right:0;top:30px;width:min(300px,30vw);height:auto;color:var(--signal);opacity:.06;pointer-events:none}
+  .abstract{margin-top:30px;max-width:70ch;font-size:17px;color:var(--ink)}
+  .abstract b{color:var(--head);font-weight:600} .abstract em{color:var(--signal);font-style:normal;font-weight:600}
+
+  /* doc layout */
+  .doc{display:grid;grid-template-columns:220px 1fr;gap:52px;padding:46px 0 20px;align-items:start}
+  .toc{position:sticky;top:24px}
+  .toc .toc-h{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+  .toc ol{list-style:none;display:flex;flex-direction:column;gap:2px}
+  .toc a{display:flex;gap:10px;padding:7px 10px;border-left:2px solid var(--line);font-size:13px;color:var(--dim);border-radius:0 3px 3px 0;transition:all .15s}
+  .toc a:hover{color:var(--ink);background:rgba(53,224,212,.05);text-decoration:none}
+  .toc a.active{color:var(--signal);border-left-color:var(--signal);background:color-mix(in srgb,var(--signal) 8%,transparent)}
+  .toc a .n{font-family:var(--mono);font-size:11px;color:var(--faint);flex:none}
+  .toc a.active .n{color:var(--signal)}
+
+  article{min-width:0}
+  section{scroll-margin-top:24px;padding-bottom:48px;margin-bottom:48px;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  .s-head{display:flex;gap:18px;align-items:flex-start}
+  .s-num{font-family:var(--mono);font-size:12px;color:var(--acc);letter-spacing:.1em;padding-top:8px;flex:none}
+  .s-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  h2{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,36px);letter-spacing:-.02em;line-height:1.05;color:var(--head);margin-top:6px}
+  .lead{font-family:var(--display);font-weight:600;font-size:19px;line-height:1.4;color:var(--head);margin:18px 0 6px;max-width:60ch;text-wrap:balance}
+  h3{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin:26px 0 8px}
+  p{margin-top:10px;max-width:70ch;font-size:16px;color:var(--ink)}
+  p b{color:var(--head);font-weight:600} p em{color:var(--head);font-style:italic}
+  .fit{list-style:none;margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px 22px;max-width:72ch}
+  .fit li{position:relative;padding-left:18px;font-size:15px;color:var(--ink)}
+  .fit li::before{content:"▸";position:absolute;left:0;color:var(--acc);font-size:11px;top:2px}
+  .fit li b{color:var(--head);font-weight:600}
+  .stack{display:flex;flex-wrap:wrap;gap:7px;margin-top:22px}
+  .stack span{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--dim);border:1px solid var(--line);padding:4px 9px;border-radius:2px}
+  .s-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .s-actions a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:8px 13px;border-radius:3px;
+    border:1px solid color-mix(in srgb,var(--acc) 42%,transparent);color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent)}
+  .s-actions a:hover{background:color-mix(in srgb,var(--acc) 20%,transparent);text-decoration:none}
+  .s-actions a.ghost{border-color:var(--line);color:var(--dim);background:transparent}
+  .s-actions a.ghost:hover{color:var(--ink)}
+
+  .callout{background:var(--surface2);border:1px solid var(--line);border-left:2px solid var(--acc);border-radius:0 4px 4px 0;padding:14px 18px;margin-top:20px;max-width:72ch}
+  .callout .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+  .callout p{margin-top:5px;font-size:15px;color:var(--head)}
+
+  footer{border-top:1px solid var(--line);padding:34px 0 60px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;align-items:center}
+  footer .f{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--dim)}
+  footer .f b{color:var(--signal)}
+  .cta{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:var(--signal);color:#04181a;font-weight:600;padding:11px 18px;border-radius:3px}
+  .cta:hover{text-decoration:none}
+
+  @media(max-width:820px){
+    .doc{grid-template-columns:1fr;gap:28px}
+    .toc{position:static;border:1px solid var(--line);border-radius:4px;padding:16px}
+    .toc ol{gap:0}
+    .cover-mk{opacity:.04;width:44vw}
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="aeglos-mark" viewBox="0 -32 200 236">
+  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="100,5 190,95 100,185 10,95"/>
+    <line x1="135" y1="95" x2="175" y2="80"/><line x1="125" y1="75" x2="155" y2="45"/><line x1="115" y1="58" x2="130" y2="25"/>
+    <line x1="65" y1="95" x2="25" y2="80"/><line x1="75" y1="75" x2="45" y2="45"/><line x1="85" y1="58" x2="70" y2="25"/>
+    <path d="M 60 105 A 40 40 0 0 1 140 105"/>
+    <line x1="20" y1="105" x2="90" y2="105"/><line x1="30" y1="115" x2="90" y2="115" stroke-width="3"/><line x1="40" y1="125" x2="90" y2="125" stroke-width="2"/><line x1="50" y1="135" x2="90" y2="135" stroke-width="1.5"/>
+    <line x1="110" y1="105" x2="180" y2="105"/><line x1="110" y1="115" x2="170" y2="115" stroke-width="3"/><line x1="110" y1="125" x2="160" y2="125" stroke-width="2"/><line x1="110" y1="135" x2="150" y2="135" stroke-width="1.5"/>
+  </g>
+  <polygon points="100,-25 118,40 108,55 108,185 100,195 92,185 92,55 82,40" fill="currentColor"/>
+</symbol></svg>
+
+<div id="progress"></div>
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><svg class="mk"><use href="#aeglos-mark"/></svg> AEGLOS <span style="color:var(--faint)">//</span> <b>WHITEPAPER</b></div>
+    <a class="back" href="index.html">← Portfolio</a>
+  </div>
+
+  <header class="cover">
+    <svg class="cover-mk" aria-hidden="true"><use href="#aeglos-mark"/></svg>
+    <div class="eyebrow">Platform Whitepaper · v1.0</div>
+    <h1>One core.<br><span>Many markets.</span></h1>
+    <p class="tagline">A single, well-architected foundation — carried into industries that normally share nothing in common.</p>
+    <div class="meta">
+      <span>Author · <b>Brent Dempsey</b></span>
+      <span>Scope · <b>7 products</b></span>
+      <span>Status · <b>Live demos included</b></span>
+    </div>
+    <p class="abstract">Most software is built for one job. <em>Aeglos</em> is built to prove the opposite: that a
+      disciplined shared engine — data models, ingestion, auth, multi-tenancy, and a deploy pipeline — can be
+      pushed into radically different verticals without starting over each time. This paper walks each Aeglos
+      product, the industry it lives in, and the specific problem it removes. Where a product has a working
+      interface, a <b>live demo</b> is linked inline.</p>
+  </header>
+
+  <div class="doc">
+    <nav class="toc">
+      <div class="toc-h">Contents</div>
+      <ol>
+        <li><a href="#summary"><span class="n">00</span> Thesis</a></li>
+        <li><a href="#platform"><span class="n">01</span> The Platform &amp; Engine</a></li>
+        <li><a href="#analytics"><span class="n">02</span> Analytics Pro</a></li>
+        <li><a href="#ebike"><span class="n">03</span> eBike Intelligence</a></li>
+        <li><a href="#crm"><span class="n">04</span> Sales &amp; Concierge</a></li>
+        <li><a href="#carflip"><span class="n">05</span> Car-Flipping Guide</a></li>
+        <li><a href="#altimit"><span class="n">06</span> Altimit OS</a></li>
+        <li><a href="#vtuber"><span class="n">07</span> Open-LLM VTuber</a></li>
+        <li><a href="#contact"><span class="n">08</span> Contact</a></li>
+      </ol>
+    </nav>
+
+    <article>
+      <section id="summary">
+        <div class="s-head"><span class="s-num">00</span><div><div class="s-eyebrow">Thesis</div><h2>One core, many markets</h2></div></div>
+        <p class="lead">The expensive part of software is rarely the product. It's the plumbing you rebuild every time.</p>
+        <p>Ingestion, storage, auth, multi-tenancy, a data-verification loop, and a repeatable path to
+          production — every serious product needs these, and most teams rebuild them from scratch per project.
+          Aeglos treats that plumbing as a <b>shared engine</b> and puts the product-specific work on top of it.
+          The result is that one builder can ship a defense-grade intelligence console and a public consumer
+          marketplace from the same foundation, in the same quarter.</p>
+        <p>This paper covers seven products spanning intelligence, micromobility, B2B commerce, automotive data,
+          operating systems, and on-device AI. They look unrelated. They aren't: each is the same engine,
+          pointed at a different industry's unsolved problem.</p>
+      </section>
+
+      <section id="platform">
+        <div class="s-head"><span class="s-num">01</span><div><div class="s-eyebrow">SaaS Infrastructure · White-label platforms</div><h2>The Aeglos Platform &amp; Engine</h2></div></div>
+        <p class="lead">The shared foundation every other product is built on.</p>
+        <h3>The industry</h3>
+        <p>Vertical SaaS and agencies live and die on time-to-launch. The market is full of teams that can
+          design a great product for one client but can't reproduce it for the next without another full build —
+          auth, billing, tenant isolation, deployment, and access control get re-implemented every engagement.</p>
+        <h3>What it does</h3>
+        <p>Aeglos-Platform and Aeglos-Engine provide the common layer: <b>multi-tenant client portals</b>,
+          per-tenant deployments and feature flags, authentication, and a scripted deploy pipeline that ships
+          behind a strict content-security policy. New products plug into this rather than reinventing it.</p>
+        <h3>Why it matters</h3>
+        <p>It collapses the cost of productization. A branded, client-ready data product goes from a multi-month
+          rebuild to a configuration exercise. That is the entire reason the six products below could exist at
+          once, built by one person.</p>
+        <h3>Best suited for</h3>
+        <ul class="fit">
+          <li><b>Agencies</b> productizing repeat client work</li>
+          <li><b>Vertical SaaS</b> serving many tenants</li>
+          <li><b>Founders</b> validating several bets cheaply</li>
+          <li><b>Internal platform teams</b> standardizing delivery</li>
+        </ul>
+        <div class="stack"><span>Node</span><span>Postgres</span><span>multi-tenant</span><span>auth</span><span>strict CSP</span><span>deploy pipeline</span></div>
+        <div class="s-actions"><a href="index.html#work" class="ghost">Live demo in portfolio ↗</a></div>
+      </section>
+
+      <section id="analytics">
+        <div class="s-head"><span class="s-num">02</span><div><div class="s-eyebrow">Intelligence · OSINT / GEOINT</div><h2>AEGLOS Analytics Pro</h2></div></div>
+        <p class="lead">Fused, forecasted, correlated open-source intelligence on a single operator screen.</p>
+        <h3>The industry</h3>
+        <p>Serious intelligence tooling — fusion of many sources, geospatial correlation, forecasting — has
+          historically been the domain of seven-figure government and enterprise platforms. Everyone else
+          (corporate security, risk teams, journalists, NGOs, analysts) is left stitching together tabs, RSS,
+          and spreadsheets.</p>
+        <h3>What it does</h3>
+        <p>The GeoThreat engine ingests open sources in real time, applies <b>ML threat classification</b>,
+          clusters raw events into multi-source stories, runs <b>72-hour Prophet forecasting</b>, and computes
+          region-to-region correlation and AI convergence — surfaced in a <b>Situation Room</b> that ships as a
+          one-click macOS app or a Docker stack.</p>
+        <h3>Why it matters</h3>
+        <p>It compresses a capability normally gated behind enormous contracts into something a single analyst
+          can run locally. The value isn't more data — it's <em>fused</em> data: severity, geography, and trend
+          on one screen, updating live.</p>
+        <div class="callout"><div class="k">In one line</div><p>Palantir-shaped capability, laptop-shaped footprint.</p></div>
+        <h3>Best suited for</h3>
+        <ul class="fit">
+          <li><b>Corporate &amp; physical security</b> teams</li>
+          <li><b>Risk &amp; geopolitical</b> analysts</li>
+          <li><b>Journalists &amp; OSINT</b> researchers</li>
+          <li><b>NGOs</b> monitoring conflict &amp; crises</li>
+        </ul>
+        <div class="stack"><span>Python</span><span>ML</span><span>Prophet</span><span>GEOINT</span><span>Docker</span><span>Chart.js</span></div>
+        <div class="s-actions"><a href="demos/analytics/index.html" target="_blank" rel="noopener">Launch GeoThreat demo ↗</a></div>
+      </section>
+
+      <section id="ebike">
+        <div class="s-head"><span class="s-num">03</span><div><div class="s-eyebrow">Micromobility · Consumer research &amp; compliance</div><h2>Aeglos eBike Intelligence</h2></div></div>
+        <p class="lead">A trust layer for a market drowning in spec inflation and legal ambiguity.</p>
+        <h3>The industry</h3>
+        <p>Electric bikes and light electric vehicles are one of the fastest-growing consumer categories — and
+          one of the noisiest. Marketing specs are routinely inflated, and the legal picture (Class 1/2/3 rules,
+          power limits, helmet and age laws) fractures state by state. Buyers and dealers make expensive
+          decisions on bad information.</p>
+        <h3>What it does</h3>
+        <p>aeglos.systems is a verified <b>comparison engine</b> across dozens of models, driven by a
+          <b>no-guess data pipeline</b> — scrape, verify against official sources, then apply — so every spec is
+          traceable. An interactive <b>US eBike-law map</b> turns the regulatory patchwork into something a
+          normal person can read before they buy.</p>
+        <h3>Why it matters</h3>
+        <p>In a category defined by hype, verified data and legible law are the differentiators. It shifts the
+          buyer from "which ad do I believe" to "which machine is actually legal and actually performs where I
+          ride."</p>
+        <h3>Best suited for</h3>
+        <ul class="fit">
+          <li><b>Consumers</b> comparing before a major purchase</li>
+          <li><b>Dealers &amp; resellers</b> needing honest specs</li>
+          <li><b>Fleet buyers</b> weighing compliance</li>
+          <li><b>Anyone</b> navigating state eBike law</li>
+        </ul>
+        <div class="stack"><span>JavaScript</span><span>Python pipeline</span><span>law map</span><span>strict CSP</span></div>
+        <div class="s-actions"><a href="demos/ebike/index.html" target="_blank" rel="noopener">Launch eBike demo ↗</a></div>
+      </section>
+
+      <section id="crm">
+        <div class="s-head"><span class="s-num">04</span><div><div class="s-eyebrow">B2B Commerce · CRM &amp; client delivery</div><h2>Aeglos Sales &amp; Concierge</h2></div></div>
+        <p class="lead">CRM, client portal, and delivery in one system — built for high-touch, not checkout.</p>
+        <h3>The industry</h3>
+        <p>Businesses that sell high-value, high-touch products run their sales in a CRM, their delivery in
+          project tools, and their client relationship in a separate portal — three disconnected systems, with
+          the customer experience falling through the seams.</p>
+        <h3>What it does</h3>
+        <p>Aeglos Sales &amp; Concierge unifies them: a <b>pipeline</b> from intake through negotiation,
+          <b>multi-tenant client portals</b> with per-tenant deployments, <b>revenue and invoicing</b>, and a
+          <b>white-glove fulfillment</b> path — consultation, configuration, delivery, onboarding, and after-sale
+          service tracked end to end.</p>
+        <h3>Why it matters</h3>
+        <p>It treats the sale as a <em>concierge process</em> rather than a transaction. For anyone selling
+          bespoke or premium offerings, that continuity — one record from first contact to ongoing service — is
+          the difference between a client and a churned line item.</p>
+        <h3>Best suited for</h3>
+        <ul class="fit">
+          <li><b>Agencies</b> delivering per-client platforms</li>
+          <li><b>High-touch B2B</b> sales teams</li>
+          <li><b>Premium / bespoke</b> product businesses</li>
+          <li><b>Verticalized SaaS</b> with concierge onboarding</li>
+        </ul>
+        <div class="stack"><span>Node</span><span>Postgres</span><span>CRM</span><span>multi-tenant</span><span>auth</span></div>
+        <div class="s-actions"><a href="demos/crm/index.html" target="_blank" rel="noopener">Launch CRM demo ↗</a></div>
+      </section>
+
+      <section id="carflip">
+        <div class="s-head"><span class="s-num">05</span><div><div class="s-eyebrow">Automotive · Data &amp; knowledge products</div><h2>Car-Flipping Guide</h2></div></div>
+        <p class="lead">Tribal resale knowledge, turned into a structured per-vehicle report.</p>
+        <h3>The industry</h3>
+        <p>Used-car arbitrage runs on scattered, tribal knowledge — which model years hide expensive faults,
+          what a car really resells for, where demand is strongest. That intelligence lives in forums, private
+          spreadsheets, and experience, not in any single usable product.</p>
+        <h3>What it does</h3>
+        <p>The Car-Flipping Guide is a <b>data-first backend</b>, not a marketplace. A full make/model/year
+          catalog back to 1991, <b>known-issues intelligence</b>, <b>monthly market-price snapshots</b> fed by a
+          dedicated scraper, and regional demand guidance — assembled into a single per-vehicle <b>Flip
+          Report</b>.</p>
+        <h3>Why it matters</h3>
+        <p>It productizes judgment. Instead of years of accumulated gut feel, a flipper gets a structured
+          buy/sell picture per vehicle: what to inspect, what it's worth, and where to move it.</p>
+        <h3>Best suited for</h3>
+        <ul class="fit">
+          <li><b>Car flippers</b> and resale arbitrageurs</li>
+          <li><b>Independent dealers</b> sourcing inventory</li>
+          <li><b>Buyers</b> avoiding known-problem years</li>
+          <li><b>Data teams</b> building automotive products</li>
+        </ul>
+        <div class="stack"><span>Postgres</span><span>Python</span><span>NHTSA</span><span>scraper</span></div>
+        <div class="s-actions"><a href="index.html#work" class="ghost">Overview in portfolio ↗</a></div>
+      </section>
+
+      <section id="altimit">
+        <div class="s-head"><span class="s-num">06</span><div><div class="s-eyebrow">Systems · Kiosk &amp; appliance computing</div><h2>Altimit OS</h2></div></div>
+        <p class="lead">A web interface that is the operating system — bootable to real hardware.</p>
+        <h3>The industry</h3>
+        <p>Kiosks, digital signage, appliances, and single-purpose devices are usually built one of two painful
+          ways: a locked-down native app that's slow to change, or a browser bolted onto a stock OS with no real
+          system access. Neither is fast to build <em>and</em> genuinely capable.</p>
+        <h3>What it does</h3>
+        <p>Altimit OS makes the <b>browser UI the shell</b> of a real, multi-user Debian live distribution. A
+          Python agent gives the sandboxed kiosk genuine host powers — filesystem, mail, networking — so a
+          web-tech interface drives an actual machine. It ships as a <b>hybrid BIOS/UEFI USB ISO</b> that boots
+          straight to the desktop.</p>
+        <h3>Why it matters</h3>
+        <p>It's a model for appliance and edge computing: build the entire experience in fast, themeable web
+          tech, but keep real system capability underneath. Fast to iterate, trivial to brand, deployable to
+          bare metal.</p>
+        <h3>Best suited for</h3>
+        <ul class="fit">
+          <li><b>Kiosks &amp; digital signage</b></li>
+          <li><b>Branded appliance</b> experiences</li>
+          <li><b>Single-purpose &amp; edge</b> devices</li>
+          <li><b>Rapid OS/UX</b> prototyping</li>
+        </ul>
+        <div class="stack"><span>Debian live-build</span><span>Python agent</span><span>Chromium kiosk</span><span>Xorg</span><span>QEMU</span></div>
+        <div class="s-actions"><a href="demos/altimit/index.html" target="_blank" rel="noopener">Launch Altimit demo ↗</a></div>
+      </section>
+
+      <section id="vtuber">
+        <div class="s-head"><span class="s-num">07</span><div><div class="s-eyebrow">R&amp;D · On-device AI</div><h2>Open-LLM VTuber</h2></div></div>
+        <p class="lead">A conversational AI avatar that runs entirely on the device — no cloud.</p>
+        <h3>The industry</h3>
+        <p>Most conversational AI is a round trip to someone else's servers: cost per token, network latency,
+          and every word leaving the device. For privacy-sensitive, offline, or regulated settings, that's a
+          non-starter.</p>
+        <h3>What it does</h3>
+        <p>Open-LLM VTuber is a fully <b>on-device pipeline</b> — a local language model paired with voice
+          synthesis and a live animated avatar, running in a real-time loop with no cloud dependency.</p>
+        <h3>Why it matters</h3>
+        <p>It's a working proof that capable conversational agents can live entirely at the edge — private by
+          construction, zero marginal cost, and available offline. That's directly relevant to assistants in
+          regulated industries, accessibility tools, and anything that can't send data out.</p>
+        <h3>Best suited for</h3>
+        <ul class="fit">
+          <li><b>Privacy-first</b> assistants</li>
+          <li><b>Offline / edge</b> AI deployments</li>
+          <li><b>Streamers</b> and interactive avatars</li>
+          <li><b>Regulated</b> environments</li>
+        </ul>
+        <div class="stack"><span>local LLM</span><span>TTS</span><span>avatar</span><span>real-time</span></div>
+        <div class="s-actions"><a href="index.html#work" class="ghost">Overview in portfolio ↗</a></div>
+      </section>
+
+      <section id="contact">
+        <div class="s-head"><span class="s-num">08</span><div><div class="s-eyebrow">Contact</div><h2>Build with the person who built all of this</h2></div></div>
+        <p>Every product in this paper — the engine, the intelligence console, the mobility platform, the CRM,
+          the data backends, the operating system — was designed, built, and deployed by one person, end to end.
+          If you need someone who can own a system from architecture to production, that's the whole point.</p>
+        <div class="s-actions">
+          <a href="mailto:bdempseygt@gmail.com" style="color:#04181a;background:var(--signal);border-color:var(--signal)">Email me →</a>
+          <a href="index.html" class="ghost">Back to portfolio ←</a>
+        </div>
+      </section>
+    </article>
+  </div>
+
+  <footer>
+    <div class="f">AEGLOS · <b>Platform Whitepaper v1.0</b> · Brent Dempsey</div>
+    <a class="cta" href="index.html">View the portfolio →</a>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var bar=document.getElementById('progress');
+  function onScroll(){
+    var h=document.documentElement, max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%';
+  }
+  addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  var links={}, secs=[];
+  document.querySelectorAll('.toc a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  document.querySelectorAll('article section').forEach(function(s){ secs.push(s); });
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        Object.values(links).forEach(function(l){l.classList.remove('active');});
+        var a=links[e.target.id]; if(a)a.classList.add('active');
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px'});
+  secs.forEach(function(s){io.observe(s);});
+})();
+</script>
+</body>
+</html>

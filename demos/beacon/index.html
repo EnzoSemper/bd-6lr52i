@@ -1,0 +1,1647 @@
+<html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aeglos — Beacon</title>
+<style>
+#aeglos-oh {
+  --accent: #159c92;
+  --accent2: #FF7744;
+  --bg-dark: #1a1a1a;
+  --bg-mid: #222;
+  --bg-light: #f0eeeb;
+  --fz: 12px;
+  font-family: 'Lucida Grande', Helvetica, Arial, sans-serif;
+  font-size: var(--fz);
+  background: var(--bg-dark);
+  color: #ccc;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  isolation: isolate;
+  position: relative;
+}
+#aeglos-oh *, #aeglos-oh *::before, #aeglos-oh *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+}
+
+/* ── Topbar ── */
+#aeglos-oh #oh-topbar {
+  background: linear-gradient(to bottom, #2a2a2a, #111);
+  border-bottom: 3px solid var(--accent);
+  padding: 0 18px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+#aeglos-oh .oh-logo {
+  width: 34px; height: 34px;
+  background: var(--accent); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+#aeglos-oh .oh-title { font-size: 15px; font-weight: bold; color: #fff; line-height: 1.2; }
+#aeglos-oh .oh-sub   { font-size: 9px; color: #aaa; letter-spacing: 1.5px; text-transform: uppercase; }
+#aeglos-oh .oh-divider { width: 1px; height: 28px; background: #444; }
+#aeglos-oh .oh-badge {
+  padding: 4px 14px; border-radius: 2px;
+  font-size: 10px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;
+}
+#aeglos-oh .oh-badge.active  { background: #3a0000; color: #ff7777; border: 1px solid #660000; }
+#aeglos-oh .oh-badge.clear   { background: #0a2a0a; color: #5ad68e; border: 1px solid #2d6644; }
+#aeglos-oh #oh-sync {
+  font-size: 9px; color: #555; letter-spacing: 0.3px;
+}
+#aeglos-oh .oh-user { font-size: 10px; color: #888; letter-spacing: 0.3px; display: inline-flex; align-items: center; gap: 5px; }
+#aeglos-oh .oh-user .oh-user-dot { width: 6px; height: 6px; border-radius: 50%; background: #39861f; box-shadow: 0 0 4px #39861f88; }
+#aeglos-oh .oh-user.anon .oh-user-dot { background: #777; box-shadow: none; }
+#aeglos-oh .oh-user b { color: #ccc; font-weight: bold; }
+#aeglos-oh .oh-tb-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+#aeglos-oh #oh-post-btn {
+  padding: 7px 18px;
+  background: linear-gradient(to bottom, var(--accent), #0d6b64);
+  border: none; border-radius: 2px;
+  color: #fff; font-family: inherit; font-size: 10px;
+  font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;
+  cursor: pointer;
+}
+#aeglos-oh #oh-post-btn:hover { opacity: 0.85; }
+
+/* ── Main ── */
+#aeglos-oh #oh-main {
+  background: var(--bg-light);
+  padding: 20px;
+  min-height: 400px;
+}
+
+/* ── Empty state ── */
+#aeglos-oh #oh-empty {
+  text-align: center; padding: 60px 20px; color: #888;
+}
+#aeglos-oh #oh-empty .oh-ei { font-size: 52px; margin-bottom: 14px; }
+#aeglos-oh #oh-empty h2 { font-size: 20px; color: #444; margin-bottom: 8px; }
+#aeglos-oh #oh-empty p  { font-size: 12px; color: #888; line-height: 1.7; max-width: 400px; margin: 0 auto; }
+
+/* ── Section labels ── */
+#aeglos-oh .oh-section-label {
+  font-size: 9px; font-weight: bold; letter-spacing: 1.5px;
+  text-transform: uppercase; color: #aaa;
+  border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-bottom: 12px;
+}
+
+/* ── Outage card ── */
+#aeglos-oh .oh-card {
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.07);
+  transition: box-shadow 0.12s;
+}
+#aeglos-oh .oh-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.12); }
+#aeglos-oh .oh-card.s-investigating { border-left: 5px solid #cc0000; }
+#aeglos-oh .oh-card.s-identified    { border-left: 5px solid #f67a09; }
+#aeglos-oh .oh-card.s-resolving     { border-left: 5px solid #e1c20d; }
+#aeglos-oh .oh-card.s-resolved      { border-left: 5px solid #39861f; filter: grayscale(0.3); opacity: 0.7; }
+
+/* Card header */
+#aeglos-oh .oh-ch {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-bottom: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+}
+#aeglos-oh .oh-pill {
+  font-size: 9px; font-weight: bold; text-transform: uppercase;
+  letter-spacing: 0.8px; padding: 3px 10px; border-radius: 2px;
+  white-space: nowrap; flex-shrink: 0;
+}
+#aeglos-oh .oh-pill.investigating { background: #3a0000; color: #ff7777; border: 1px solid #660000; }
+#aeglos-oh .oh-pill.identified    { background: #3a1a00; color: #ffaa44; border: 1px solid #664400; }
+#aeglos-oh .oh-pill.resolving     { background: #2a2a00; color: #e8d44d; border: 1px solid #555500; }
+#aeglos-oh .oh-pill.resolved      { background: #0a2a0a; color: #5ad68e; border: 1px solid #2d6644; }
+#aeglos-oh .oh-provider { font-size: 15px; font-weight: bold; color: #1a1a1a; flex: 1; }
+#aeglos-oh .oh-svc-tag {
+  font-size: 10px; color: #888; background: #f5f5f5;
+  border: 1px solid #e0e0e0; padding: 2px 8px; border-radius: 2px;
+}
+#aeglos-oh .oh-actions { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; }
+#aeglos-oh .oh-btn {
+  padding: 4px 11px; border-radius: 2px; cursor: pointer;
+  font-family: inherit; font-size: 9px; font-weight: bold;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  border: 1px solid #ccc; background: #f0f0f0; color: #555;
+  transition: background 0.1s;
+}
+#aeglos-oh .oh-btn:hover { background: #e0e0e0; color: #222; }
+#aeglos-oh .oh-btn.resolve { background: #0a2a0a; color: #5ad68e; border-color: #2d6644; }
+#aeglos-oh .oh-btn.resolve:hover { background: #0d3a0d; }
+#aeglos-oh .oh-btn.dismiss { background: #2a0000; color: #ff8888; border-color: #550000; }
+#aeglos-oh .oh-btn.dismiss:hover { background: #3a0000; }
+
+/* Card body — metadata grid */
+#aeglos-oh .oh-cb {
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 16px;
+  background: #fff;
+}
+#aeglos-oh .oh-f { display: flex; flex-direction: column; gap: 3px; }
+#aeglos-oh .oh-f.full { grid-column: 1 / -1; }
+#aeglos-oh .oh-fl {
+  font-size: 9px; font-weight: bold; text-transform: uppercase;
+  letter-spacing: 1px; color: #aaa;
+}
+#aeglos-oh .oh-fv { font-size: 12px; color: #333; line-height: 1.5; }
+#aeglos-oh .oh-dur { font-size: 10px; color: #aaa; font-style: italic; }
+#aeglos-oh .oh-scope-chip {
+  display: inline-block; padding: 2px 10px; border-radius: 10px;
+  font-size: 10px; font-weight: bold;
+  background: #fde8d0; color: #881a00; border: 1px solid var(--accent);
+}
+
+/* Notes */
+#aeglos-oh .oh-notes-block {
+  padding: 0 14px 12px;
+}
+#aeglos-oh .oh-notes-label {
+  font-size: 9px; font-weight: bold; text-transform: uppercase;
+  letter-spacing: 1px; color: #aaa; margin-bottom: 4px;
+}
+#aeglos-oh .oh-notes-text {
+  background: #fff9e0; border-left: 3px solid #e0a020;
+  padding: 7px 10px; border-radius: 0 3px 3px 0;
+  font-size: 11px; color: #444; white-space: pre-wrap;
+  word-break: break-word; line-height: 1.6;
+}
+
+/* Customer list */
+#aeglos-oh .oh-cust-block {
+  padding: 0 14px 12px;
+}
+#aeglos-oh .oh-cust-label {
+  font-size: 9px; font-weight: bold; text-transform: uppercase;
+  letter-spacing: 1px; color: #4a90d9; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+#aeglos-oh .oh-cust-count {
+  font-size: 9px; font-weight: normal; color: #aaa;
+  background: #e8f0fc; border: 1px solid #b0c8f0;
+  padding: 1px 6px; border-radius: 8px;
+}
+#aeglos-oh .oh-cust-text {
+  background: #f4f8ff; border-left: 3px solid #4a90d9;
+  padding: 8px 10px; border-radius: 0 3px 3px 0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px; color: #333;
+  white-space: pre-wrap; word-break: break-word; line-height: 1.6;
+  max-height: 200px; overflow-y: auto;
+}
+
+/* Image */
+#aeglos-oh .oh-img-block {
+  margin: 0 14px 12px;
+  border: 1px solid #ddd; border-radius: 3px; overflow: hidden;
+}
+#aeglos-oh .oh-img-block img {
+  max-width: 100%; display: block; cursor: zoom-in;
+}
+#aeglos-oh .oh-img-ref {
+  font-size: 9px; color: #aaa; padding: 4px 8px;
+  background: #f5f5f5; border-top: 1px solid #eee;
+  font-family: 'Courier New', monospace;
+}
+
+/* Lightbox */
+#aeglos-oh #oh-lb {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88); z-index: 99999;
+  align-items: center; justify-content: center;
+  cursor: zoom-out;
+}
+#aeglos-oh #oh-lb.open { display: flex; }
+#aeglos-oh #oh-lb img {
+  max-width: 92vw; max-height: 88vh;
+  border-radius: 3px; box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+
+/* Update log */
+#aeglos-oh .oh-log {
+  background: #fafafa; border-top: 1px solid #eee;
+  padding: 8px 14px;
+}
+#aeglos-oh .oh-log-title {
+  font-size: 9px; font-weight: bold; text-transform: uppercase;
+  letter-spacing: 1px; color: #bbb; margin-bottom: 6px;
+}
+#aeglos-oh .oh-log-row {
+  display: flex; gap: 10px; padding: 4px 0;
+  border-bottom: 1px solid #f0f0f0; font-size: 11px;
+}
+#aeglos-oh .oh-log-row:last-child { border-bottom: none; }
+#aeglos-oh .oh-log-time { color: #bbb; white-space: nowrap; flex-shrink: 0; width: 130px; }
+#aeglos-oh .oh-log-text { color: #444; line-height: 1.5; }
+
+/* ── Collapsible cards ── */
+#aeglos-oh .oh-ch {
+  cursor: pointer;
+  user-select: none;
+}
+#aeglos-oh .oh-ch:hover { background: #fafafa; }
+#aeglos-oh .oh-card-body {
+  overflow: hidden;
+  transition: max-height 0.22s ease, opacity 0.18s ease;
+  max-height: 2000px;
+  opacity: 1;
+}
+#aeglos-oh .oh-card-body.collapsed {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+#aeglos-oh .oh-toggle-arrow {
+  margin-left: 6px;
+  font-size: 10px;
+  color: #aaa;
+  flex-shrink: 0;
+  transition: transform 0.18s;
+  display: inline-block;
+}
+#aeglos-oh .oh-card.collapsed .oh-toggle-arrow {
+  transform: rotate(-90deg);
+}
+
+/* Archive toggle */
+#aeglos-oh #oh-arch-toggle {
+  margin-top: 20px; padding: 8px 14px;
+  background: #e8e8e8; border: 1px solid #ccc; border-radius: 2px;
+  font-size: 10px; font-weight: bold; text-transform: uppercase;
+  letter-spacing: 0.5px; color: #666; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+}
+#aeglos-oh #oh-arch-toggle:hover { background: #ddd; }
+#aeglos-oh #oh-arch { display: none; margin-top: 10px; }
+#aeglos-oh #oh-arch.open { display: block; }
+
+/* ── Modals ── */
+#aeglos-oh .oh-overlay {
+  display: none !important; position: fixed !important; inset: 0;
+  background: rgba(0,0,0,0.72); z-index: 9000;
+  align-items: flex-start; justify-content: center;
+  overflow-y: auto; padding: 24px;
+}
+#aeglos-oh .oh-overlay.open { display: flex !important; }
+
+/* Overlay rules repeated without scope — modals live outside #aeglos-oh */
+/* ── Modal overlays — scoped to their IDs so Custom Knowledge Management System is unaffected ── */
+#oh-post-overlay,
+#oh-upd-overlay {
+  display: none !important;
+  position: fixed !important;
+  top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+  background: rgba(0,0,0,0.72) !important;
+  z-index: 99000 !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  overflow-y: auto !important;
+  padding: 24px !important;
+  box-sizing: border-box !important;
+  font-family: 'Lucida Grande', Helvetica, Arial, sans-serif !important;
+  font-size: 12px !important;
+}
+#oh-post-overlay.open,
+#oh-upd-overlay.open { display: flex !important; }
+
+#oh-post-overlay .oh-modal,
+#oh-upd-overlay .oh-modal {
+  background: #fff !important;
+  border-radius: 4px !important;
+  width: 100% !important;
+  max-width: 640px !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5) !important;
+  flex-shrink: 0 !important;
+  margin: auto !important;
+  display: block !important;
+  float: none !important;
+  position: relative !important;
+  font-family: 'Lucida Grande', Helvetica, Arial, sans-serif !important;
+  font-size: 12px !important;
+  color: #333 !important;
+  box-sizing: border-box !important;
+}
+#oh-post-overlay .oh-modal *,
+#oh-upd-overlay .oh-modal * { box-sizing: border-box !important; }
+
+#oh-post-overlay label,
+#oh-upd-overlay label {
+  display: block !important;
+  float: none !important;
+  width: auto !important;
+  padding: 0 0 4px 0 !important;
+  margin: 0 !important;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  color: #666 !important;
+  background: none !important;
+  border: none !important;
+}
+#oh-post-overlay label span,
+#oh-upd-overlay label span {
+  font-weight: normal !important;
+  color: #aaa !important;
+  text-transform: none !important;
+}
+#oh-post-overlay input[type="text"],
+#oh-post-overlay input[type="email"],
+#oh-post-overlay input[type="tel"],
+#oh-post-overlay select,
+#oh-post-overlay textarea,
+#oh-upd-overlay input[type="text"],
+#oh-upd-overlay input[type="email"],
+#oh-upd-overlay input[type="tel"],
+#oh-upd-overlay select,
+#oh-upd-overlay textarea {
+  display: block !important;
+  width: 100% !important;
+  padding: 8px 10px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 2px !important;
+  font-family: 'Lucida Grande', Helvetica, Arial, sans-serif !important;
+  font-size: 12px !important;
+  color: #333 !important;
+  background: #fff !important;
+  outline: none !important;
+  margin: 0 !important;
+  float: none !important;
+  height: auto !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+}
+#oh-post-overlay textarea,
+#oh-upd-overlay textarea {
+  resize: vertical !important;
+  min-height: 80px !important;
+}
+#oh-post-overlay textarea.mono,
+#oh-upd-overlay textarea.mono {
+  font-family: 'Courier New', monospace !important;
+  font-size: 11px !important;
+  min-height: 120px !important;
+  background: #f4f8ff !important;
+  border-color: #4a90d9 !important;
+}
+#oh-post-overlay select,
+#oh-upd-overlay select { background: #fff !important; }
+#oh-post-overlay input:focus,
+#oh-post-overlay select:focus,
+#oh-post-overlay textarea:focus,
+#oh-upd-overlay input:focus,
+#oh-upd-overlay select:focus,
+#oh-upd-overlay textarea:focus { border-color: #159c92 !important; }
+
+#oh-post-overlay .oh-mh,
+#oh-upd-overlay .oh-mh {
+  background: linear-gradient(to bottom, #2a2a2a, #111) !important;
+  border-bottom: 3px solid #159c92 !important;
+  padding: 14px 18px !important;
+  border-radius: 4px 4px 0 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+#oh-post-overlay .oh-mh-logo,
+#oh-upd-overlay .oh-mh-logo {
+  width: 32px !important; height: 32px !important;
+  background: #159c92 !important; border-radius: 3px !important;
+  display: flex !important; align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important; flex-shrink: 0 !important;
+}
+#oh-post-overlay .oh-mh-title,
+#oh-upd-overlay .oh-mh-title { font-size: 14px !important; font-weight: bold !important; color: #fff !important; }
+#oh-post-overlay .oh-mh-sub,
+#oh-upd-overlay .oh-mh-sub { font-size: 9px !important; color: #aaa !important; letter-spacing: 1.2px !important; text-transform: uppercase !important; margin-top: 1px !important; }
+#oh-post-overlay .oh-mh-close,
+#oh-upd-overlay .oh-mh-close {
+  margin-left: auto !important; background: none !important; border: none !important;
+  color: #aaa !important; font-size: 20px !important; cursor: pointer !important;
+  padding: 0 4px !important; line-height: 1 !important;
+}
+#oh-post-overlay .oh-mh-close:hover,
+#oh-upd-overlay .oh-mh-close:hover { color: #fff !important; }
+#oh-post-overlay .oh-mb,
+#oh-upd-overlay .oh-mb { padding: 18px !important; }
+#oh-post-overlay .oh-mf,
+#oh-upd-overlay .oh-mf {
+  padding: 12px 18px !important; background: #f8f8f8 !important;
+  border-top: 1px solid #eee !important;
+  display: flex !important; gap: 10px !important; align-items: center !important;
+  border-radius: 0 0 4px 4px !important;
+}
+#oh-post-overlay .oh-row,
+#oh-upd-overlay .oh-row { margin-bottom: 14px !important; }
+#oh-post-overlay .oh-grid2,
+#oh-upd-overlay .oh-grid2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0 14px !important; }
+#oh-post-overlay .oh-img-row,
+#oh-upd-overlay .oh-img-row { display: flex !important; gap: 6px !important; align-items: stretch !important; }
+#oh-post-overlay .oh-img-row input,
+#oh-upd-overlay .oh-img-row input { flex: 1 !important; }
+#oh-post-overlay .oh-mm-btn,
+#oh-upd-overlay .oh-mm-btn {
+  padding: 0 14px !important; flex-shrink: 0 !important;
+  background: #2a2a2a !important; border: 1px solid #555 !important;
+  border-radius: 2px !important; color: #ccc !important;
+  font-family: inherit !important; font-size: 10px !important;
+  font-weight: bold !important; cursor: pointer !important;
+  white-space: nowrap !important;
+}
+#oh-post-overlay .oh-hint,
+#oh-upd-overlay .oh-hint { font-size: 9px !important; color: #aaa !important; margin-top: 3px !important; font-style: italic !important; display: block !important; }
+#oh-post-overlay .oh-btn-primary,
+#oh-upd-overlay .oh-btn-primary {
+  padding: 8px 22px !important; background: #159c92 !important;
+  border: none !important; border-radius: 2px !important;
+  color: #fff !important; font-family: inherit !important;
+  font-size: 11px !important; font-weight: bold !important;
+  text-transform: uppercase !important; cursor: pointer !important;
+  letter-spacing: 0.5px !important;
+}
+#oh-post-overlay .oh-btn-cancel,
+#oh-upd-overlay .oh-btn-cancel {
+  padding: 8px 16px !important; background: #ccc !important;
+  border: 1px solid #bbb !important; border-radius: 2px !important;
+  color: #444 !important; font-family: inherit !important;
+  font-size: 11px !important; font-weight: bold !important;
+  text-transform: uppercase !important; cursor: pointer !important;
+}
+#oh-post-overlay .oh-fstatus,
+#oh-upd-overlay .oh-fstatus { font-size: 10px !important; margin-left: auto !important; }
+#oh-post-overlay .oh-fstatus.err,
+#oh-upd-overlay .oh-fstatus.err { color: #cc0000 !important; font-weight: bold !important; }
+#oh-post-overlay .oh-fstatus.ok,
+#oh-upd-overlay .oh-fstatus.ok { color: #39861f !important; font-weight: bold !important; }
+
+#aeglos-oh .oh-modal {
+  background: #fff; border-radius: 4px;
+  width: 100%; max-width: 640px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  flex-shrink: 0; margin: auto;
+}
+#aeglos-oh .oh-mh {
+  background: linear-gradient(to bottom, #2a2a2a, #111);
+  border-bottom: 3px solid var(--accent);
+  padding: 14px 18px; border-radius: 4px 4px 0 0;
+  display: flex; align-items: center; gap: 12px;
+}
+#aeglos-oh .oh-mh-logo {
+  width: 32px; height: 32px; background: var(--accent); border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+#aeglos-oh .oh-mh-title { font-size: 14px; font-weight: bold; color: #fff; }
+#aeglos-oh .oh-mh-sub   { font-size: 9px; color: #aaa; letter-spacing: 1.2px; text-transform: uppercase; margin-top: 1px; }
+#aeglos-oh .oh-mh-close {
+  margin-left: auto; background: none; border: none;
+  color: #aaa; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1;
+}
+#aeglos-oh .oh-mh-close:hover { color: #fff; }
+#aeglos-oh .oh-mb { padding: 18px; }
+#aeglos-oh .oh-mf {
+  padding: 12px 18px; background: #f8f8f8; border-top: 1px solid #eee;
+  display: flex; gap: 10px; align-items: center;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Provider search */
+
+/* Form elements */
+#aeglos-oh .oh-row { margin-bottom: 14px; }
+#aeglos-oh .oh-row label {
+  display: block; font-size: 10px; font-weight: bold;
+  text-transform: uppercase; letter-spacing: 0.8px; color: #666; margin-bottom: 4px;
+}
+#aeglos-oh .oh-row label span { font-weight: normal; color: #aaa; }
+#aeglos-oh .oh-row input,
+#aeglos-oh .oh-row select,
+#aeglos-oh .oh-row textarea {
+  width: 100%; padding: 8px 10px;
+  border: 1px solid #ccc; border-radius: 2px;
+  font-family: inherit; font-size: 12px; color: #333;
+  outline: none; background: #fff;
+  transition: border-color 0.12s;
+}
+#aeglos-oh .oh-row input:focus,
+#aeglos-oh .oh-row select:focus,
+#aeglos-oh .oh-row textarea:focus { border-color: var(--accent); }
+#aeglos-oh .oh-row textarea { resize: vertical; min-height: 80px; }
+#aeglos-oh .oh-row textarea.mono {
+  font-family: 'Courier New', monospace; font-size: 11px;
+  min-height: 120px; background: #f4f8ff; border-color: #4a90d9;
+}
+#aeglos-oh .oh-row textarea.mono:focus { border-color: #1a60a9; }
+#aeglos-oh .oh-hint { font-size: 9px; color: #aaa; margin-top: 3px; font-style: italic; }
+#aeglos-oh .oh-img-row {
+  display: flex; gap: 6px; align-items: stretch;
+}
+#aeglos-oh .oh-img-row input {
+  flex: 1;
+}
+#aeglos-oh .oh-mm-btn {
+  padding: 0 14px; flex-shrink: 0;
+  background: #2a2a2a; border: 1px solid #555; border-radius: 2px;
+  color: #ccc; font-family: inherit; font-size: 10px;
+  font-weight: bold; letter-spacing: 0.3px;
+  cursor: pointer; white-space: nowrap;
+  transition: background 0.1s;
+}
+#aeglos-oh .oh-mm-btn:hover { background: #3a3a3a; color: #fff; }
+#aeglos-oh .oh-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+
+/* Buttons */
+#aeglos-oh .oh-btn-primary {
+  padding: 8px 22px; background: var(--accent); border: none;
+  border-radius: 2px; color: #fff; font-family: inherit;
+  font-size: 11px; font-weight: bold; text-transform: uppercase;
+  letter-spacing: 0.5px; cursor: pointer;
+}
+#aeglos-oh .oh-btn-primary:hover { background: #0d6b64; }
+#aeglos-oh .oh-btn-cancel {
+  padding: 8px 16px; background: #ccc; border: 1px solid #bbb;
+  border-radius: 2px; color: #444; font-family: inherit;
+  font-size: 11px; font-weight: bold; text-transform: uppercase;
+  letter-spacing: 0.5px; cursor: pointer;
+}
+#aeglos-oh .oh-btn-cancel:hover { background: #bbb; }
+#aeglos-oh .oh-fstatus { font-size: 10px; margin-left: auto; }
+#aeglos-oh .oh-fstatus.err { color: #cc0000; font-weight: bold; }
+#aeglos-oh .oh-fstatus.ok  { color: #39861f; font-weight: bold; }
+</style>
+</head>
+<body>
+<div id="aeglos-oh">
+
+  <!-- Topbar -->
+  <div id="oh-topbar">
+    <div class="oh-logo"><svg viewBox="0 -34 200 238" width="20" height="24" style="display:inline-block;vertical-align:middle" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><polygon points="100,5 190,95 100,185 10,95"/><path d="M 60 105 A 40 40 0 0 1 140 105"/><polygon points="100,-25 118,40 108,55 108,185 100,195 92,185 92,55 82,40" fill="currentColor" stroke="none"/></svg></div>
+    <div>
+      <div class="oh-title">Aeglos</div>
+      <div class="oh-sub">Beacon</div>
+    </div>
+    <div class="oh-divider"></div>
+    <div class="oh-tb-right">
+      <span id="oh-badge" class="oh-badge clear">● All Clear</span>
+      <span id="oh-sync">○ Local only</span>
+      <button id="oh-post-btn" onclick="openPost()">⚡ Post Outage</button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div id="oh-main">
+    <div id="oh-empty">
+      <div class="oh-ei">✅</div>
+      <h2>All Clear</h2>
+      <p>No active outages on record. When a supervisor posts an outage it will appear here immediately.</p>
+    </div>
+    <div id="oh-active"></div>
+    <div id="oh-arch-toggle" style="display:none;" onclick="toggleArchive()">
+      <span id="oh-arch-arr">▶</span> Resolved Outages (<span id="oh-arch-n">0</span>)
+    </div>
+    <div id="oh-arch"></div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="oh-lb" onclick="closeLb()">
+    <img id="oh-lb-img" src="" alt="">
+  </div>
+
+  <!-- Spotlight hint -->
+</div>
+
+</div><!-- /#aeglos-oh -->
+
+  <!-- Post modal -->
+  <div id="oh-post-overlay" class="oh-overlay" onclick="overlayClickClose(event,'oh-post-overlay')">
+    <div class="oh-modal">
+      <div class="oh-mh">
+        <div class="oh-mh-logo"><svg viewBox="0 -34 200 238" width="20" height="24" style="display:inline-block;vertical-align:middle" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><polygon points="100,5 190,95 100,185 10,95"/><path d="M 60 105 A 40 40 0 0 1 140 105"/><polygon points="100,-25 118,40 108,55 108,185 100,195 92,185 92,55 82,40" fill="currentColor" stroke="none"/></svg></div>
+        <div>
+          <div class="oh-mh-title" id="oh-post-title">Post Outage</div>
+          <div class="oh-mh-sub">Aeglos Beacon</div>
+        </div>
+        <button class="oh-mh-close" onclick="closePost()">✕</button>
+      </div>
+      <div class="oh-mb">
+
+        <!-- Provider -->
+        <div class="oh-row">
+          <label>Provider *</label>
+          <input type="text" id="oh-prov-input" placeholder="Type provider name…"
+            list="oh-prov-list" autocomplete="off">
+          <datalist id="oh-prov-list"></datalist>
+        </div>
+
+        <div class="oh-grid2">
+          <div class="oh-row">
+            <label>Status *</label>
+            <select id="oh-f-status">
+              <option value="investigating">🔴 Investigating</option>
+              <option value="identified">🟠 Identified</option>
+              <option value="resolving">🟡 Resolving</option>
+              <option value="resolved">🟢 Resolved</option>
+            </select>
+          </div>
+          <div class="oh-row">
+            <label>Affected Services</label>
+            <input type="text" id="oh-f-svc" placeholder="e.g. Internet, VoIP">
+          </div>
+        </div>
+
+        <div class="oh-row">
+          <label>Scope / Customer Impact</label>
+          <input type="text" id="oh-f-scope" placeholder="e.g. ~50 subscribers, SE region">
+        </div>
+
+        <div class="oh-row">
+          <label>Notes / Details</label>
+          <textarea id="oh-f-notes" placeholder="What's happening? Provider comms? Steps taken?"></textarea>
+        </div>
+
+        <div class="oh-row">
+          <label>Impacted Customer List <span>(paste raw — any format)</span></label>
+          <textarea id="oh-f-cust" class="mono" placeholder="Paste account numbers, names, addresses, or any raw data here.&#10;Accepts any volume. Scrollable on the card."></textarea>
+        </div>
+
+        <div class="oh-row">
+          <label>Image <span>(optional)</span></label>
+          <input type="hidden" id="oh-f-img">
+          <div class="oh-drop" data-target="oh-f-img">
+            <input type="file" accept="image/*" hidden>
+            <span class="oh-drop-txt">Drag &amp; drop an image here, or <u>browse</u></span>
+            <img class="oh-drop-prev" alt="">
+          </div>
+        </div>
+
+        <div class="oh-row">
+          <label>Posted By</label>
+          <input type="text" id="oh-f-author" placeholder="Your name">
+        </div>
+      </div>
+      <div class="oh-mf">
+        <button class="oh-btn-primary" onclick="submitPost()">Post Outage</button>
+        <button class="oh-btn-cancel" onclick="closePost()">Cancel</button>
+        <span class="oh-fstatus" id="oh-post-st"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update modal -->
+  <div id="oh-upd-overlay" class="oh-overlay" onclick="overlayClickClose(event,'oh-upd-overlay')">
+    <div class="oh-modal">
+      <div class="oh-mh">
+        <div class="oh-mh-logo">✏</div>
+        <div>
+          <div class="oh-mh-title">Update Outage</div>
+          <div class="oh-mh-sub" id="oh-upd-sub"></div>
+        </div>
+        <button class="oh-mh-close" onclick="closeUpd()">✕</button>
+      </div>
+      <div class="oh-mb">
+        <div class="oh-grid2">
+          <div class="oh-row">
+            <label>Status</label>
+            <select id="oh-u-status">
+              <option value="investigating">🔴 Investigating</option>
+              <option value="identified">🟠 Identified</option>
+              <option value="resolving">🟡 Resolving</option>
+              <option value="resolved">🟢 Resolved</option>
+            </select>
+          </div>
+          <div class="oh-row">
+            <label>Scope / Impact <span>(optional update)</span></label>
+            <input type="text" id="oh-u-scope" placeholder="Leave blank to keep existing">
+          </div>
+        </div>
+        <div class="oh-row">
+          <label>Update Note *</label>
+          <textarea id="oh-u-note" placeholder="What changed? New provider info? Resolution steps?"></textarea>
+        </div>
+        <div class="oh-row">
+          <label>Replace Customer List <span>(optional — leave blank to keep existing)</span></label>
+          <textarea id="oh-u-cust" class="mono" placeholder="Paste updated list or leave blank."></textarea>
+        </div>
+        <div class="oh-row">
+          <label>Replace Image <span>(optional — leave blank to keep existing)</span></label>
+          <input type="hidden" id="oh-u-img">
+          <div class="oh-drop" data-target="oh-u-img">
+            <input type="file" accept="image/*" hidden>
+            <span class="oh-drop-txt">Drag &amp; drop an image here, or <u>browse</u></span>
+            <img class="oh-drop-prev" alt="">
+          </div>
+        </div>
+        <div class="oh-row">
+          <label>Updated By</label>
+          <input type="text" id="oh-u-author" placeholder="Your name">
+        </div>
+      </div>
+      <div class="oh-mf">
+        <button class="oh-btn-primary" onclick="submitUpd()">Post Update</button>
+        <button class="oh-btn-cancel" onclick="closeUpd()">Cancel</button>
+        <span class="oh-fstatus" id="oh-upd-st"></span>
+      </div>
+    </div>
+  </div>
+
+<script>
+// PROVIDER LIST
+var PROVIDER_LIST = [
+  {id:'northwind',name:'Northwind Fiber'},
+  {id:'meridian',name:'Meridian Broadband'},
+  {id:'copperline',name:'Copperline Networks'},
+  {id:'harbor',name:'Harbor Telecom'},
+  {id:'ridgeline',name:'Ridgeline Communications'},
+  {id:'summit',name:'Summit Fiber'},
+  {id:'delta',name:'Delta Connect'},
+  {id:'basin',name:'Basin Utilities'},
+  {id:'grove',name:'Grove Energy'},
+  {id:'pinewood',name:'Pinewood Co-op'},
+  {id:'cedar',name:'Cedar Valley Telecom'},
+  {id:'lakeshore',name:'Lakeshore Wireless'}
+];
+
+function populateDatalist() {
+  var dl = document.getElementById('oh-prov-list');
+  if (!dl) return;
+  PROVIDER_LIST.forEach(function(p) {
+    var opt = document.createElement('option');
+    opt.value = p.name;
+    dl.appendChild(opt);
+  });
+}
+
+function lookupProviderId(name) {
+  var n = name.trim();
+  for (var i = 0; i < PROVIDER_LIST.length; i++) {
+    if (PROVIDER_LIST[i].name === n) return PROVIDER_LIST[i].id;
+  }
+  var lower = n.toLowerCase();
+  for (var i = 0; i < PROVIDER_LIST.length; i++) {
+    if (PROVIDER_LIST[i].name.toLowerCase() === lower) return PROVIDER_LIST[i].id;
+  }
+  return n.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+
+var OUTAGES = [];
+var _editId = null;
+
+// ── Current user (ported from Disconnect Hub) ────────────────────────
+// Custom Knowledge Management System injects a global JSINFO on every page; on an authenticated custom knowledge management system it
+// carries the logged-in user. Field names vary by version/template, so probe
+// every shape we've seen. No network call needed for the fast path.
+var CURRENT_USER = null;
+
+function userFromJsinfo() {
+  try {
+    if (typeof JSINFO !== 'undefined' && JSINFO) {
+      var cand = JSINFO.user
+              || JSINFO.client
+              || JSINFO.loginname
+              || (JSINFO.userinfo && (JSINFO.userinfo.name || JSINFO.userinfo.user))
+              || (JSINFO.session && JSINFO.session.user)
+              || null;
+      if (cand && String(cand).trim() && String(cand).trim().toLowerCase() !== 'false')
+        return String(cand).trim();
+    }
+  } catch (e) {}
+  return null;
+}
+
+function userFromDom(d) {
+  d = d || document;
+  try {
+    var sel = [
+      '#dw__userinfo .iw_user',
+      '#dw__userinfo bdi',
+      '.userinfo .user',
+      '#dw__usertools .iw_user',
+      'li.user bdi'
+    ];
+    for (var i = 0; i < sel.length; i++) {
+      var el = d.querySelector(sel[i]);
+      if (el && el.textContent.trim()) return el.textContent.trim();
+    }
+    var body = d.body && d.body.textContent;
+    if (body) {
+      var m = body.match(/Logged in as[:\s]+([^\s|<\n]+)/i);
+      if (m) return m[1].trim();
+    }
+  } catch (e) {}
+  return null;
+}
+
+function resolveKmsUser() { return userFromJsinfo() || userFromDom() || null; }
+
+// Auto-fill + lock the author fields whenever we know the user.
+function applyUserToFields() {
+  return; // system is not login-gated
+  ['oh-f-author', 'oh-u-author'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.value = CURRENT_USER;
+    el.readOnly = true;
+    el.style.background = '#f0f0f0';
+    el.style.color = '#555';
+    el.style.cursor = 'not-allowed';
+    el.title = 'Auto-filled from your Custom Knowledge Management System login';
+  });
+}
+
+function refreshUserBar() {
+  var u = resolveKmsUser();
+  if (u) CURRENT_USER = u; // never overwrite a known user with null on re-probe
+  var bar = document.getElementById('oh-userbar');
+  var lbl = document.getElementById('oh-username-label');
+  if (CURRENT_USER) {
+    if (bar) bar.classList.remove('anon');
+    if (lbl) lbl.innerHTML = '' + esc(CURRENT_USER) + '</b>';
+    applyUserToFields();
+  } else {
+    if (bar) bar.classList.add('anon');
+    if (lbl) lbl.textContent = '';
+  }
+}
+
+// Value stamped onto records. Falls back to 'unknown' so the tag never renders
+// blank; the true source of who changed the custom knowledge management system page remains Custom Knowledge Management System history.
+function stampUser() { return CURRENT_USER || resolveKmsUser() || 'unknown'; }
+
+// JSINFO / user chrome can load AFTER an embedded script runs. Retry early so the
+// topbar resolves without waiting for the first modal.
+function retryUserResolve() {
+  var tries = 0;
+  var iv = setInterval(function () {
+    tries++;
+    if (!CURRENT_USER) refreshUserBar();
+    if (CURRENT_USER || tries >= 6) clearInterval(iv);
+  }, 500);
+}
+
+// Last-resort: fetch the current page once (same-origin) and scrape the user
+// chrome. Runs only if nothing else resolved.
+function fetchUserFromPage() {
+  if (CURRENT_USER) return;
+  try {
+    fetch(window.location.pathname + window.location.search, { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (html) {
+        if (!html || CURRENT_USER) return;
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var u = userFromDom(doc);
+        if (u) { CURRENT_USER = u; refreshUserBar(); }
+      })
+      .catch(function () {});
+  } catch (e) {}
+}
+
+var PAGE_ID     = 'callcenter:outageposting_data';
+var RAW_URL     = '/doku.php?id=' + encodeURIComponent(PAGE_ID) + '&do=export_raw';
+var HUB_PAGE_ID = 'callcenter:outageposting';
+
+// ── Persistence ───────────────────────────────────────────────
+function saveLocal() {
+  try { localStorage.setItem('aeglos_outage_hub', JSON.stringify(OUTAGES)); } catch(e) {}
+}
+function loadLocal() {
+  try {
+    var d = JSON.parse(localStorage.getItem('aeglos_outage_hub') || '[]');
+    return Array.isArray(d) ? d : [];
+  } catch(e) { return []; }
+}
+
+function setSyncStatus(s) {
+  var el = document.getElementById('oh-sync');
+  if (!el) return;
+  if (s === 'synced') { el.textContent = '● Custom Knowledge Management System synced'; el.style.color = '#39861f'; }
+  else if (s === 'err') { el.textContent = '⚠ Sync error'; el.style.color = '#cc6600'; }
+  else { el.textContent = '○ Local only'; el.style.color = '#555'; }
+}
+
+function parseKmsData(raw) {
+  var m = raw.match(/<OUTAGES>([\s\S]*?)<\/OUTAGES>/i);
+  if (!m) return null;
+  try { var d = JSON.parse(m[1].trim()); return Array.isArray(d) ? d : null; }
+  catch(e) { return null; }
+}
+
+function saveKms(cb) {
+  var kmstext = '~~NOCACHE~~\n<OUTAGES>\n' + JSON.stringify(OUTAGES, null, 2) + '\n</OUTAGES>';
+  var editURL  = '/doku.php?id=' + encodeURIComponent(PAGE_ID) + '&do=edit';
+  fetch(editURL, { credentials: 'same-origin' })
+    .then(function(r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(function(html) {
+      var m = html.match(/name="sectok"\s+value="([^"]+)"/);
+      if (!m) throw new Error('no sectok');
+      return fetch('/doku.php', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'id=' + encodeURIComponent(PAGE_ID) +
+              '&do=save&sectok=' + encodeURIComponent(m[1]) +
+              '&kmstext=' + encodeURIComponent(kmstext) +
+              '&summary=Outage+Hub+sync&minor=1'
+      });
+    })
+    .then(function(r) {
+      if (!r.ok) throw new Error(r.status);
+      setSyncStatus('synced');
+      if (cb) cb(null);
+    })
+    .catch(function(e) { setSyncStatus('err'); if (cb) cb(e); });
+}
+
+function loadKms() {
+  if (typeof fetch !== 'function') { setSyncStatus('local'); return; }
+  fetch(RAW_URL + '&bust=' + Date.now(), { credentials: 'same-origin' })
+    .then(function(r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(function(raw) {
+      var data = parseKmsData(raw);
+      if (!data) throw new Error('parse fail');
+      OUTAGES = data;
+      saveLocal(); setSyncStatus('synced'); render();
+    })
+    .catch(function() { setSyncStatus('local'); });
+}
+
+// ── UTILITIES ──
+var EM = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' };
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, function(c) { return EM[c]; });
+}
+
+function fmtTime(iso) {
+  if (!iso) return '—';
+  var d = new Date(iso);
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric' }) +
+    ' ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+}
+
+function durSince(iso) {
+  var ms = Date.now() - new Date(iso).getTime();
+  var m  = Math.floor(ms / 60000);
+  if (m < 1)  return 'just now';
+  if (m < 60) return m + 'm';
+  var h = Math.floor(m / 60), rm = m % 60;
+  if (h < 24) return h + 'h' + (rm ? ' ' + rm + 'm' : '');
+  return Math.floor(h / 24) + 'd ' + (h % 24) + 'h';
+}
+
+function statusLabel(s) {
+  return { investigating:'Investigating', identified:'Identified',
+           resolving:'Resolving', resolved:'Resolved' }[s] || s;
+}
+
+function dokuImgUrl(raw) {
+  if (!raw) return null;
+  var s = raw.trim();
+  var inner = s.match(/^\{\{([^|}]+)(?:\|[^}]*)?\}\}$/);
+  if (inner) s = inner[1].trim();
+  if (/^https?:\/\//.test(s)) return s;
+  return '/lib/exe/fetch.php?media=' + encodeURIComponent(s);
+}
+
+function openLb(src) {
+  var lb = document.getElementById('oh-lb');
+  var im = document.getElementById('oh-lb-img');
+  if (!lb || !im) return;
+  im.src = src;
+  lb.className = 'open';
+}
+function closeLb() {
+  var lb = document.getElementById('oh-lb');
+  if (lb) lb.className = '';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLb(); });
+
+// ── RENDER ──
+function render() {
+  var sOrder = { investigating:0, identified:1, resolving:2, resolved:3 };
+  var active = OUTAGES.filter(function(o) { return !o.archived && o.status !== 'resolved'; });
+  var done   = OUTAGES.filter(function(o) { return o.archived || o.status === 'resolved'; });
+
+  active.sort(function(a,b) {
+    var sd = (sOrder[a.status]||0) - (sOrder[b.status]||0);
+    return sd || (new Date(b.startTime) - new Date(a.startTime));
+  });
+  done.sort(function(a,b) { return new Date(b.startTime) - new Date(a.startTime); });
+
+  var badge = document.getElementById('oh-badge');
+  if (badge) {
+    if (active.length) {
+      badge.textContent = '⚠ ' + active.length + ' Active Outage' + (active.length !== 1 ? 's' : '');
+      badge.className = 'oh-badge active';
+    } else {
+      badge.textContent = '● All Clear';
+      badge.className = 'oh-badge clear';
+    }
+  }
+
+  var emEl = document.getElementById('oh-empty');
+  if (emEl) emEl.style.display = active.length ? 'none' : 'block';
+
+  var actEl = document.getElementById('oh-active');
+  if (actEl) {
+    actEl.innerHTML = '';
+    if (active.length) {
+      var lbl = document.createElement('div');
+      lbl.className = 'oh-section-label';
+      lbl.textContent = 'Active Outages';
+      actEl.appendChild(lbl);
+      active.forEach(function(o) { actEl.appendChild(buildCard(o, false)); });
+    }
+  }
+
+  var togEl = document.getElementById('oh-arch-toggle');
+  var cntEl = document.getElementById('oh-arch-n');
+  if (togEl) togEl.style.display = done.length ? 'flex' : 'none';
+  if (cntEl) cntEl.textContent = done.length;
+
+  var archEl = document.getElementById('oh-arch');
+  if (archEl) {
+    archEl.innerHTML = '';
+    var archLbl = document.createElement('div');
+    archLbl.className = 'oh-section-label';
+    archLbl.textContent = 'Resolved / Archived';
+    archEl.appendChild(archLbl);
+    done.forEach(function(o) { archEl.appendChild(buildCard(o, true)); });
+  }
+}
+
+function buildCard(o, isArch) {
+  var card = document.createElement('div');
+  var anchorId = o.providerId ? 'provider-' + o.providerId : 'provider-' + o.id;
+  var startCollapsed = isArch;
+  card.className = 'oh-card s-' + o.status + (startCollapsed ? ' collapsed' : '');
+  card.id = anchorId;
+
+  var head = document.createElement('div');
+  head.className = 'oh-ch';
+  head.setAttribute('onclick', 'toggleCard("' + anchorId + '")');
+
+  var pill = document.createElement('span');
+  pill.className = 'oh-pill ' + o.status;
+  pill.textContent = statusLabel(o.status);
+  head.appendChild(pill);
+
+  var name = document.createElement('div');
+  name.className = 'oh-provider';
+  name.textContent = o.provider;
+  head.appendChild(name);
+
+  if (o.services) {
+    var svc = document.createElement('span');
+    svc.className = 'oh-svc-tag';
+    svc.textContent = o.services;
+    head.appendChild(svc);
+  }
+
+  var arrow = document.createElement('span');
+  arrow.className = 'oh-toggle-arrow';
+  arrow.textContent = '▾';
+  head.appendChild(arrow);
+
+  var actions = document.createElement('div');
+  actions.className = 'oh-actions';
+  actions.setAttribute('onclick', 'event.stopPropagation()');
+
+  var linkBtn = document.createElement('button');
+  linkBtn.className = 'oh-btn';
+  linkBtn.title = 'Copy permanent link to this provider outage';
+  linkBtn.setAttribute('aria-label', 'Copy link');
+  linkBtn.textContent = '🔗';
+  linkBtn.setAttribute('onclick', 'copyProviderLink("' + esc(anchorId) + '", this)');
+  actions.appendChild(linkBtn);
+
+  if (!isArch) {
+    var updBtn = document.createElement('button');
+    updBtn.className = 'oh-btn';
+    updBtn.textContent = '✏ Update';
+    updBtn.setAttribute('onclick', 'openUpd("' + esc(o.id) + '")');
+    actions.appendChild(updBtn);
+
+    if (o.status !== 'resolved') {
+      var resBtn = document.createElement('button');
+      resBtn.className = 'oh-btn resolve';
+      resBtn.textContent = '✓ Resolve';
+      resBtn.setAttribute('onclick', 'quickResolve("' + esc(o.id) + '")');
+      actions.appendChild(resBtn);
+    }
+
+    var dimBtn = document.createElement('button');
+    dimBtn.className = 'oh-btn dismiss';
+    dimBtn.textContent = '✕ Dismiss';
+    dimBtn.setAttribute('onclick', 'archiveIt("' + esc(o.id) + '")');
+    actions.appendChild(dimBtn);
+  }
+  head.appendChild(actions);
+  card.appendChild(head);
+
+  var body = document.createElement('div');
+  body.className = 'oh-card-body' + (startCollapsed ? ' collapsed' : '');
+
+  var cb = document.createElement('div');
+  cb.className = 'oh-cb';
+
+  var tf = document.createElement('div');
+  tf.className = 'oh-f';
+  tf.innerHTML = '<div class="oh-fl">Started</div>' +
+    '<div class="oh-fv">' + esc(fmtTime(o.startTime)) +
+    ' <span class="oh-dur">(' + durSince(o.startTime) + ')</span></div>';
+  cb.appendChild(tf);
+
+  if (o.scope) {
+    var sf = document.createElement('div');
+    sf.className = 'oh-f';
+    sf.innerHTML = '<div class="oh-fl">Impact / Scope</div>' +
+      '<div class="oh-fv"><span class="oh-scope-chip">' + esc(o.scope) + '</span></div>';
+    cb.appendChild(sf);
+  }
+
+  var af = document.createElement('div');
+  af.className = 'oh-f';
+  var authorContent = '<div class="oh-fl">Posted By</div>' +
+    '<div class="oh-fv">' + esc(o.author || '—') + '</div>';
+  if (o.resolvedTime) {
+    authorContent += '<div class="oh-fl" style="margin-top:6px;">Resolved</div>' +
+      '<div class="oh-fv">' + esc(fmtTime(o.resolvedTime)) + '</div>';
+  }
+  af.innerHTML = authorContent;
+  cb.appendChild(af);
+
+  body.appendChild(cb);
+
+  if (o.notes) {
+    var nb = document.createElement('div');
+    nb.className = 'oh-notes-block';
+    nb.innerHTML = '<div class="oh-notes-label">Notes</div>' +
+      '<div class="oh-notes-text">' + esc(o.notes) + '</div>';
+    body.appendChild(nb);
+  }
+
+  if (o.customers && o.customers.trim()) {
+    var lines = o.customers.trim().split('\n').length;
+    var custEl = document.createElement('div');
+    custEl.className = 'oh-cust-block';
+    custEl.innerHTML = '<div class="oh-cust-label">Impacted Customers ' +
+      '<span class="oh-cust-count">' + lines + ' line' + (lines !== 1 ? 's' : '') + '</span></div>' +
+      '<div class="oh-cust-text">' + esc(o.customers.trim()) + '</div>';
+    body.appendChild(custEl);
+  }
+
+  if (o.image && o.image.trim()) {
+    var imgUrl = dokuImgUrl(o.image.trim());
+    if (imgUrl) {
+      var imgBlock = document.createElement('div');
+      imgBlock.className = 'oh-img-block';
+      var imgEl = document.createElement('img');
+      imgEl.src = imgUrl;
+      imgEl.alt = 'Outage screenshot';
+      imgEl.title = 'Click to enlarge';
+      imgEl.setAttribute('onclick', 'openLb("' + imgUrl.replace(/"/g, '&quot;') + '")');
+      var imgRef = document.createElement('div');
+      imgRef.className = 'oh-img-ref';
+      imgRef.textContent = o.image.trim();
+      imgBlock.appendChild(imgEl);
+      imgBlock.appendChild(imgRef);
+      body.appendChild(imgBlock);
+    }
+  }
+
+  if (o.updates && o.updates.length) {
+    var log = document.createElement('div');
+    log.className = 'oh-log';
+    var logTitle = document.createElement('div');
+    logTitle.className = 'oh-log-title';
+    logTitle.textContent = 'Update Log';
+    log.appendChild(logTitle);
+
+    var sorted = o.updates.slice().reverse();
+    sorted.forEach(function(u) {
+      var row = document.createElement('div');
+      row.className = 'oh-log-row';
+      var statusChange = u.status ? ' → <strong>' + esc(statusLabel(u.status)) + '</strong>' : '';
+      var authorTag = u.author ? ' <em style="color:#bbb;">— ' + esc(u.author) + '</em>' : '';
+      row.innerHTML =
+        '<span class="oh-log-time">' + esc(fmtTime(u.time)) + '</span>' +
+        '<span class="oh-log-text">' + esc(u.note) + statusChange + authorTag + '</span>';
+      log.appendChild(row);
+    });
+    body.appendChild(log);
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+// ── MODAL ACTIONS ──
+function openPost() {
+  document.getElementById('oh-prov-input').value = '';
+  document.getElementById('oh-f-status').value = 'investigating';
+  document.getElementById('oh-f-svc').value = '';
+  document.getElementById('oh-f-scope').value = '';
+  document.getElementById('oh-f-notes').value = '';
+  document.getElementById('oh-f-cust').value = '';
+  document.getElementById('oh-f-img').value = '';
+  document.getElementById('oh-f-author').value = CURRENT_USER || '';
+  refreshUserBar();
+  document.getElementById('oh-post-st').textContent = '';
+  document.getElementById('oh-post-st').className = 'oh-fstatus';
+  document.getElementById('oh-post-overlay').className = 'oh-overlay open';
+  setTimeout(function() { document.getElementById('oh-prov-input').focus(); }, 80);
+}
+
+function closePost() {
+  document.getElementById('oh-post-overlay').className = 'oh-overlay';
+}
+
+function submitPost() {
+  var provName = document.getElementById('oh-prov-input').value.trim();
+  var stEl     = document.getElementById('oh-post-st');
+
+  if (!provName) {
+    stEl.className = 'oh-fstatus err';
+    stEl.textContent = '⚠ Provider name required.';
+    document.getElementById('oh-prov-input').focus();
+    return;
+  }
+
+  var name     = provName;
+  var provId   = lookupProviderId(provName);
+
+  var status = document.getElementById('oh-f-status').value;
+  var outage = {
+    id:           'out-' + Date.now(),
+    providerId:   provId,
+    provider:     name,
+    status:       status,
+    services:     document.getElementById('oh-f-svc').value.trim(),
+    scope:        document.getElementById('oh-f-scope').value.trim(),
+    notes:        document.getElementById('oh-f-notes').value.trim(),
+    customers:    document.getElementById('oh-f-cust').value,
+    image:        document.getElementById('oh-f-img').value.trim(),
+    author:       document.getElementById('oh-f-author').value.trim() || stampUser(),
+    postedBy:     stampUser(),
+    startTime:    new Date().toISOString(),
+    resolvedTime: status === 'resolved' ? new Date().toISOString() : null,
+    archived:     false,
+    updates:      []
+  };
+
+  OUTAGES.unshift(outage);
+  saveLocal();
+  render();
+  closePost();
+  saveKms(null);
+}
+
+function openUpd(id) {
+  var o = null;
+  for (var i = 0; i < OUTAGES.length; i++) { if (OUTAGES[i].id === id) { o = OUTAGES[i]; break; } }
+  if (!o) return;
+  _editId = id;
+  document.getElementById('oh-upd-sub').textContent = o.provider;
+  document.getElementById('oh-u-status').value = o.status;
+  document.getElementById('oh-u-scope').value = o.scope || '';
+  document.getElementById('oh-u-note').value = '';
+  document.getElementById('oh-u-cust').value = '';
+  document.getElementById('oh-u-img').value = '';
+  document.getElementById('oh-u-author').value = CURRENT_USER || '';
+  refreshUserBar();
+  document.getElementById('oh-upd-st').textContent = '';
+  document.getElementById('oh-upd-st').className = 'oh-fstatus';
+  document.getElementById('oh-upd-overlay').className = 'oh-overlay open';
+  setTimeout(function() { document.getElementById('oh-u-note').focus(); }, 80);
+}
+
+function closeUpd() {
+  document.getElementById('oh-upd-overlay').className = 'oh-overlay';
+  _editId = null;
+}
+
+function submitUpd() {
+  var o = null;
+  for (var i = 0; i < OUTAGES.length; i++) { if (OUTAGES[i].id === _editId) { o = OUTAGES[i]; break; } }
+  if (!o) return;
+
+  var note = document.getElementById('oh-u-note').value.trim();
+  var stEl = document.getElementById('oh-upd-st');
+  if (!note) {
+    stEl.className = 'oh-fstatus err';
+    stEl.textContent = '⚠ Update note required.';
+    document.getElementById('oh-u-note').focus();
+    return;
+  }
+
+  var newStatus = document.getElementById('oh-u-status').value;
+  var newScope  = document.getElementById('oh-u-scope').value.trim();
+  var newCust   = document.getElementById('oh-u-cust').value;
+  var newImg    = document.getElementById('oh-u-img').value.trim();
+  var author    = document.getElementById('oh-u-author').value.trim();
+
+  if (!o.updates) o.updates = [];
+  o.updates.push({
+    time:   new Date().toISOString(),
+    status: newStatus !== o.status ? newStatus : null,
+    note:   note,
+    author: author || stampUser()
+  });
+
+  o.status = newStatus;
+  if (newScope)       o.scope     = newScope;
+  if (newCust.trim()) o.customers = newCust;
+  if (newImg)         o.image     = newImg;
+  if (newStatus === 'resolved' && !o.resolvedTime) {
+    o.resolvedTime = new Date().toISOString();
+  }
+
+  saveLocal();
+  render();
+  closeUpd();
+  saveKms(null);
+}
+
+function quickResolve(id) {
+  var o = null;
+  for (var i = 0; i < OUTAGES.length; i++) { if (OUTAGES[i].id === id) { o = OUTAGES[i]; break; } }
+  if (!o || !confirm('Mark ' + o.provider + ' as Resolved?')) return;
+  if (!o.updates) o.updates = [];
+  o.updates.push({ time: new Date().toISOString(), status: 'resolved', note: 'Marked resolved.', author: '' });
+  o.status = 'resolved';
+  o.resolvedTime = new Date().toISOString();
+  saveLocal(); render(); saveKms(null);
+}
+
+function archiveIt(id) {
+  var o = null;
+  for (var i = 0; i < OUTAGES.length; i++) { if (OUTAGES[i].id === id) { o = OUTAGES[i]; break; } }
+  if (!o || !confirm('Dismiss and archive the ' + o.provider + ' outage?')) return;
+  o.archived = true;
+  if (o.status !== 'resolved') {
+    o.status = 'resolved';
+    o.resolvedTime = new Date().toISOString();
+    if (!o.updates) o.updates = [];
+    o.updates.push({ time: new Date().toISOString(), status: 'resolved', note: 'Dismissed and archived.', author: '' });
+  }
+  saveLocal(); render(); saveKms(null);
+}
+
+function toggleArchive() {
+  var el  = document.getElementById('oh-arch');
+  var arr = document.getElementById('oh-arch-arr');
+  if (!el) return;
+  var open = el.className === 'open';
+  el.className = open ? '' : 'open';
+  if (arr) arr.textContent = open ? '▶' : '▼';
+}
+
+function overlayClickClose(e, id) {
+  if (e.target.id === id) {
+    document.getElementById(id).className = 'oh-overlay';
+    if (id === 'oh-upd-overlay') _editId = null;
+  }
+}
+
+// ── Custom Knowledge Management System Media Manager launcher ──
+var MEDIA_NS = 'callcenter:outageposting';
+var _mmTargetField = null;
+var _mmPopup = null;
+
+function _mmHandleInsert(val, source) {
+  if (!val) return;
+  var formatted = String(val).trim();
+  formatted = formatted.replace(/\{\{([^|}]+)(?:\|[^}]*)?\}\}/, '{{$1}}');
+  if (formatted.indexOf('{{') !== 0) {
+    formatted = '{{' + formatted + '}}';
+  }
+  var fieldId = _mmTargetField;
+  if (!fieldId) return;
+  var field = document.getElementById(fieldId);
+  if (!field) return;
+  field.value = formatted;
+  field.style.borderColor = '#39861f';
+  setTimeout(function() { field.style.borderColor = ''; }, 2000);
+  _mmTargetField = null;
+  if (_mmPopup && !_mmPopup.closed) { _mmPopup.close(); }
+}
+
+function callback(edid, id, opts, align, keepopen) {
+  _mmHandleInsert(id || edid, 'callback');
+}
+window.callback = callback;
+
+function insertAtCursor(field, val) {
+  _mmHandleInsert(val || field, 'insertAtCursor');
+}
+function ns_browser_callback(val) {
+  _mmHandleInsert(val, 'ns_browser_callback');
+}
+window.insertAtCursor = insertAtCursor;
+window.ns_browser_callback = ns_browser_callback;
+
+try {
+  if (window.parent && window.parent !== window) {
+    window.parent.callback = callback;
+    window.parent.insertAtCursor = insertAtCursor;
+    window.parent.ns_browser_callback = ns_browser_callback;
+    }
+} catch(e) {}
+try {
+  if (window.top && window.top !== window) {
+    window.top.callback = callback;
+    window.top.insertAtCursor = insertAtCursor;
+    window.top.ns_browser_callback = ns_browser_callback;
+    }
+} catch(e) {}
+
+window.addEventListener('message', function(e) {
+  if (!e.data) return;
+  var d = e.data;
+  var val = null;
+  if (typeof d === 'string') {
+    val = d;
+  } else if (typeof d === 'object') {
+    val = d.selection || d.id || d.media || d.val || d.value || d.text || null;
+    }
+  if (val) {
+    _mmHandleInsert(val, 'postMessage');
+  } else {
+    }
+});
+
+function openMediaManager(targetFieldId) {
+  _mmTargetField = targetFieldId;
+
+  var url = '/lib/exe/mediamanager.php?ns=' + encodeURIComponent(MEDIA_NS) +
+            '&edok=1&onselect=callback&target=field';
+
+  _mmPopup = window.open(url, 'KmsMediaManager',
+    'width=900,height=660,scrollbars=yes,resizable=yes');
+
+  if (!_mmPopup) {
+        alert('Popup blocked — please allow popups for this site.');
+    _mmTargetField = null;
+    return;
+  }
+
+  var pollCount = 0;
+  var lastHref = '';
+  var checkInterval = setInterval(function() {
+    if (!_mmPopup || _mmPopup.closed) {
+      clearInterval(checkInterval);
+              if (_mmTargetField) {
+                    var field = document.getElementById(_mmTargetField);
+        if (field) field.focus();
+        _mmTargetField = null;
+      }
+      return;
+    }
+    try {
+      var href = _mmPopup.location.href;
+      if (href && href !== lastHref) {
+        lastHref = href;
+        var imgMatch = href.match(/[?&](?:img|media|id)=([^&]+)/);
+        if (imgMatch && imgMatch[1] && href !== url) {
+          var mediaId = decodeURIComponent(imgMatch[1]);
+                  _mmHandleInsert(mediaId, 'URL poll');
+          clearInterval(checkInterval);
+        }
+      }
+    } catch(e) {
+      if (e.name !== 'SecurityError') {
+            }
+    }
+    pollCount++;
+
+  }, 500);
+}
+
+function copyProviderLink(anchorId, btn) {
+  var base = window.location.origin + '/doku.php?id=' + encodeURIComponent(HUB_PAGE_ID);
+  var url  = base + '#' + anchorId;
+  var orig = btn.textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function() {
+      btn.textContent = '✓';
+      btn.style.color = '#5ad68e';
+      setTimeout(function() { btn.textContent = orig; btn.style.color = ''; }, 1800);
+    }).catch(function() { prompt('Copy this link:', url); });
+  } else {
+    prompt('Copy this link:', url);
+  }
+}
+
+function toggleCard(anchorId) {
+  var card = document.getElementById(anchorId);
+  if (!card) return;
+  var body = card.querySelector('.oh-card-body');
+  if (!body) return;
+  var isCollapsed = body.classList.contains('collapsed');
+  body.className = 'oh-card-body' + (isCollapsed ? '' : ' collapsed');
+  if (isCollapsed) { card.classList.remove('collapsed'); }
+  else             { card.classList.add('collapsed'); }
+}
+
+function expandCard(anchorId) {
+  var card = document.getElementById(anchorId);
+  if (!card) return;
+  var body = card.querySelector('.oh-card-body');
+  if (body) body.className = 'oh-card-body';
+  card.classList.remove('collapsed');
+}
+
+function collapseCard(anchorId) {
+  var card = document.getElementById(anchorId);
+  if (!card) return;
+  var body = card.querySelector('.oh-card-body');
+  if (body) body.className = 'oh-card-body collapsed';
+  card.classList.add('collapsed');
+}
+
+function resolveDeepLink() {
+  var hash = window.location.hash;
+  if (!hash || hash.indexOf('#provider-') !== 0) return;
+  var targetId = hash.slice(1);
+  var el = document.getElementById(targetId);
+  if (!el) return;
+
+  var arch = document.getElementById('oh-arch');
+  if (arch && arch.contains(el) && arch.className !== 'open') {
+    arch.className = 'open';
+    var arr = document.getElementById('oh-arch-arr');
+    if (arr) arr.textContent = '▼';
+  }
+
+  var allCards = document.querySelectorAll('#aeglos-oh .oh-card');
+  allCards.forEach(function(c) {
+    if (c.id === targetId) { expandCard(c.id); }
+    else                   { collapseCard(c.id); }
+  });
+
+  setTimeout(function() {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ── INIT ──
+OUTAGES = loadLocal();
+populateDatalist();
+refreshUserBar();
+retryUserResolve();
+fetchUserFromPage();
+render();
+resolveDeepLink();
+if (typeof fetch === 'function') {
+  loadKms();
+  setTimeout(resolveDeepLink, 1500);
+  setInterval(loadKms, 60000);
+} else {
+  setSyncStatus('local');
+}
+console.log('[OutageHub] Initialized.');
+</script>
+<style>
+.oh-drop{border:2px dashed var(--border,#c9c9c2);border-radius:6px;padding:20px 16px;text-align:center;cursor:pointer;color:#6b6b6b;font-size:12px;transition:border-color .15s,background .15s;background:#fafafa}
+.oh-drop:hover,.oh-drop.drag{border-color:var(--accent,#159c92);background:#fff}
+.oh-drop u{color:var(--accent,#159c92)}
+.oh-drop-prev{display:none;max-width:100%;max-height:130px;margin:12px auto 0;border-radius:4px}
+</style>
+<script>
+(function(){
+  function wire(z){
+    var file=z.querySelector('input[type=file]'), prev=z.querySelector('.oh-drop-prev'),
+        txt=z.querySelector('.oh-drop-txt'), target=document.getElementById(z.dataset.target);
+    function load(f){ if(!f||!/^image\//.test(f.type))return; var r=new FileReader();
+      r.onload=function(){ if(target)target.value=r.result; prev.src=r.result; prev.style.display='block'; txt.innerHTML='Image attached — click to replace'; };
+      r.readAsDataURL(f); }
+    z.addEventListener('click',function(){file.click();});
+    file.addEventListener('change',function(){load(file.files[0]);});
+    ['dragover','dragenter'].forEach(function(e){z.addEventListener(e,function(ev){ev.preventDefault();z.classList.add('drag');});});
+    ['dragleave'].forEach(function(e){z.addEventListener(e,function(ev){ev.preventDefault();z.classList.remove('drag');});});
+    z.addEventListener('drop',function(ev){ev.preventDefault();z.classList.remove('drag');load(ev.dataTransfer.files[0]);});
+  }
+  document.querySelectorAll('.oh-drop').forEach(wire);
+})();
+</script>
+<div class="aeglos-wm" aria-hidden="true"><svg viewBox="0 -34 200 238" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><polygon points="100,5 190,95 100,185 10,95"/><path d="M 60 105 A 40 40 0 0 1 140 105"/><line x1="26" y1="112" x2="90" y2="112"/><line x1="30" y1="122" x2="90" y2="122" stroke-width="3.5"/><line x1="110" y1="112" x2="174" y2="112"/><line x1="110" y1="122" x2="170" y2="122" stroke-width="3.5"/><polygon points="100,-25 118,40 108,55 108,185 100,195 92,185 92,55 82,40" fill="currentColor" stroke="none"/></svg></div>
+<style>
+.aeglos-wm{position:fixed;top:66px;right:28px;width:min(360px,32vw);pointer-events:none;z-index:0;color:#159c92;opacity:.05}
+.aeglos-wm svg{width:100%;height:auto;display:block}
+</style>
+</body>
+</html>

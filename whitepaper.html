@@ -136,7 +136,7 @@
     <p class="tagline">A single, well-architected foundation — carried into industries that normally share nothing in common.</p>
     <div class="meta">
       <span>Author · <b>Brent Dempsey</b></span>
-      <span>Scope · <b>7 products</b></span>
+      <span>Scope · <b>9 products</b></span>
       <span>Status · <b>Live demos included</b></span>
     </div>
     <p class="abstract">Most software is built for one job. <em>Aeglos</em> is built to prove the opposite: that a
@@ -155,10 +155,12 @@
         <li><a href="#analytics"><span class="n">02</span> Analytics Pro</a></li>
         <li><a href="#ebike"><span class="n">03</span> eBike Intelligence</a></li>
         <li><a href="#crm"><span class="n">04</span> Sales &amp; Concierge</a></li>
-        <li><a href="#carflip"><span class="n">05</span> Car-Flipping Guide</a></li>
-        <li><a href="#altimit"><span class="n">06</span> Altimit OS</a></li>
-        <li><a href="#vtuber"><span class="n">07</span> Open-LLM VTuber</a></li>
-        <li><a href="#contact"><span class="n">08</span> Contact</a></li>
+        <li><a href="#assurance"><span class="n">05</span> Aeglos Assurance</a></li>
+        <li><a href="#docsanctum"><span class="n">06</span> DocSanctum</a></li>
+        <li><a href="#carflip"><span class="n">07</span> Car-Flipping Guide</a></li>
+        <li><a href="#altimit"><span class="n">08</span> Altimit OS</a></li>
+        <li><a href="#vtuber"><span class="n">09</span> Open-LLM VTuber</a></li>
+        <li><a href="#contact"><span class="n">10</span> Contact</a></li>
       </ol>
     </nav>
 
@@ -171,7 +173,7 @@
           Aeglos treats that plumbing as a <b>shared engine</b> and puts the product-specific work on top of it.
           The result is that one builder can ship a defense-grade intelligence console and a public consumer
           marketplace from the same foundation, in the same quarter.</p>
-        <p>This paper covers seven products spanning intelligence, micromobility, B2B commerce, automotive data,
+        <p>This paper covers nine products spanning intelligence, micromobility, B2B commerce, automotive data,
           operating systems, and on-device AI. They look unrelated. They aren't: each is the same engine,
           pointed at a different industry's unsolved problem.</p>
       </section>
@@ -286,8 +288,74 @@
         <div class="s-actions"><a href="demos/crm/index.html" target="_blank" rel="noopener">Launch CRM demo ↗</a></div>
       </section>
 
+      <section id="assurance">
+        <div class="s-head"><span class="s-num">05</span><div><div class="s-eyebrow">Systems · Service continuity</div><h2>Aeglos Assurance</h2></div></div>
+        <p class="lead">Two modules for the two ways a service fails — going down, and getting cut off.</p>
+        <h3>The industry</h3>
+        <p>Any business that delivers an ongoing service — broadband, utilities, energy, SaaS, managed
+          services — lives with two operational realities: the service can suffer an <b>outage</b>, and
+          customers can be <b>disconnected or terminated</b>. Most teams track these in a scatter of
+          spreadsheets, chat threads, and email, with no shared, current picture.</p>
+        <h3>What it does</h3>
+        <p>Assurance is a two-module suite. <b>Beacon</b> is a live status and incident board — post an
+          outage, its scope and affected customers, attach evidence, and every operator sees it instantly.
+          <b>Register</b> is a filterable record of disconnects and terminations with lookup and XLSX export.
+          Both ingest from <b>generic sources</b> — HubSpot, SQL, CSV/XLSX — so the same tooling drops into
+          any vertical without a rebuild.</p>
+        <h3>Why it matters</h3>
+        <p>It unifies the two failure modes into one operational picture, and it's source-agnostic by design
+          — the difference between a telecom tool and a utility tool becomes a data connector, not a new
+          product.</p>
+        <h3>Under the hood</h3>
+        <p>In production, Beacon and Register are being rewritten to back onto a <b>server-managed SQLite
+          datastore</b> — a single, durable source of truth shared across the whole team rather than
+          per-browser storage. Incidents, disconnects, and attached evidence live server-side and reconcile
+          to every operator in real time, with source data ingested from HubSpot, SQL, or flat exports. The
+          interactive demos here run entirely client-side as a standalone preview of the same interface.</p>
+        <h3>Best suited for</h3>
+        <ul class="fit">
+          <li><b>Broadband &amp; telecom</b> support ops</li>
+          <li><b>Utilities &amp; energy</b> providers</li>
+          <li><b>SaaS &amp; MSP</b> operations teams</li>
+          <li><b>Subscription</b> businesses tracking churn</li>
+        </ul>
+        <div class="stack"><span>JavaScript</span><span>SQLite (server)</span><span>HubSpot</span><span>SQL</span><span>XLSX</span></div>
+        <div class="s-actions">
+          <a href="demos/beacon/index.html" target="_blank" rel="noopener">Launch Beacon ↗</a>
+          <a href="demos/register/index.html" target="_blank" rel="noopener">Launch Register ↗</a>
+        </div>
+      </section>
+
+      <section id="docsanctum">
+        <div class="s-head"><span class="s-num">06</span><div><div class="s-eyebrow">Systems · Data distribution</div><h2>DocSanctum</h2></div></div>
+        <p class="lead">One canonical record, published top-down to every system that needs it.</p>
+        <h3>The industry</h3>
+        <p>Organizations that run on many systems — a knowledge base, a HubSpot, a custom knowledge management system, per-partner
+          portals — maintain the same information in all of them. Every update means editing the same thing
+          in several places, which guarantees drift, stale copies, and half-finished changes that users see.</p>
+        <h3>What it does</h3>
+        <p>DocSanctum makes one <b>canonical record</b> the single source of truth. Author or ingest it once
+          — from email, meetings, or a form — and the console transforms it into the format each downstream
+          system expects and <b>fans it out in a single signed publish</b>. Failed targets queue for retry
+          with backoff; every change is logged by <b>who, when, and why</b>; and tenants are isolated by
+          namespace.</p>
+        <h3>Why it matters</h3>
+        <p>It removes duplicate maintenance and the drift that comes with it. One change updates everywhere,
+          atomically — end users never catch a half-published state — and the full audit trail makes it safe
+          for regulated and partner-facing content.</p>
+        <h3>Best suited for</h3>
+        <ul class="fit">
+          <li><b>Knowledge &amp; support</b> organizations</li>
+          <li><b>Franchise / multi-location</b> operations</li>
+          <li><b>Compliance &amp; policy</b> distribution</li>
+          <li><b>White-label / reseller</b> content</li>
+        </ul>
+        <div class="stack"><span>JavaScript</span><span>multi-tenant</span><span>payload adapters</span><span>audit log</span></div>
+        <div class="s-actions"><a href="demos/docsanctum/index.html" target="_blank" rel="noopener">Launch DocSanctum ↗</a></div>
+      </section>
+
       <section id="carflip">
-        <div class="s-head"><span class="s-num">05</span><div><div class="s-eyebrow">Automotive · Data &amp; knowledge products</div><h2>Car-Flipping Guide</h2></div></div>
+        <div class="s-head"><span class="s-num">07</span><div><div class="s-eyebrow">Automotive · Data &amp; knowledge products</div><h2>Car-Flipping Guide</h2></div></div>
         <p class="lead">Tribal resale knowledge, turned into a structured per-vehicle report.</p>
         <h3>The industry</h3>
         <p>Used-car arbitrage runs on scattered, tribal knowledge — which model years hide expensive faults,
@@ -313,7 +381,7 @@
       </section>
 
       <section id="altimit">
-        <div class="s-head"><span class="s-num">06</span><div><div class="s-eyebrow">Systems · Kiosk &amp; appliance computing</div><h2>Altimit OS</h2></div></div>
+        <div class="s-head"><span class="s-num">08</span><div><div class="s-eyebrow">Systems · Kiosk &amp; appliance computing</div><h2>Altimit OS</h2></div></div>
         <p class="lead">A web interface that is the operating system — bootable to real hardware.</p>
         <h3>The industry</h3>
         <p>Kiosks, digital signage, appliances, and single-purpose devices are usually built one of two painful
@@ -340,7 +408,7 @@
       </section>
 
       <section id="vtuber">
-        <div class="s-head"><span class="s-num">07</span><div><div class="s-eyebrow">R&amp;D · On-device AI</div><h2>Open-LLM VTuber</h2></div></div>
+        <div class="s-head"><span class="s-num">09</span><div><div class="s-eyebrow">R&amp;D · On-device AI</div><h2>Open-LLM VTuber</h2></div></div>
         <p class="lead">A conversational AI avatar that runs entirely on the device — no cloud.</p>
         <h3>The industry</h3>
         <p>Most conversational AI is a round trip to someone else's servers: cost per token, network latency,
@@ -365,7 +433,7 @@
       </section>
 
       <section id="contact">
-        <div class="s-head"><span class="s-num">08</span><div><div class="s-eyebrow">Contact</div><h2>Build with the person who built all of this</h2></div></div>
+        <div class="s-head"><span class="s-num">10</span><div><div class="s-eyebrow">Contact</div><h2>Build with the person who built all of this</h2></div></div>
         <p>Every product in this paper — the engine, the intelligence console, the mobility platform, the CRM,
           the data backends, the operating system — was designed, built, and deployed by one person, end to end.
           If you need someone who can own a system from architecture to production, that's the whole point.</p>

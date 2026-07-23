@@ -88,6 +88,33 @@
   .statline span{color:var(--dim);font-size:10px;letter-spacing:.14em;text-transform:uppercase} .statline b{color:var(--head);font-weight:600;font-variant-numeric:tabular-nums}
   .statline b em{color:var(--signal);font-style:normal}
 
+  /* hero footer: build stack + credentials */
+  .hero-foot{margin-top:34px;padding-top:22px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:18px}
+  .stack-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .stack-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+  .stack-label b{color:var(--signal);font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chips span{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink);border:1px solid var(--line-strong);
+    background:color-mix(in srgb,var(--signal) 6%,transparent);padding:5px 11px;border-radius:3px}
+  .creds{width:100%}
+  .creds summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:10px;width:fit-content;
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);
+    border:1px solid color-mix(in srgb,var(--signal) 45%,transparent);background:color-mix(in srgb,var(--signal) 8%,transparent);
+    padding:10px 15px;border-radius:3px;transition:background .16s}
+  .creds summary::-webkit-details-marker{display:none}
+  .creds summary::after{content:"▾";transition:transform .2s;font-size:9px}
+  .creds[open] summary::after{transform:rotate(180deg)}
+  .creds summary:hover{background:color-mix(in srgb,var(--signal) 16%,transparent)}
+  .creds-body{margin-top:14px;border:1px solid var(--line);border-radius:4px;background:var(--surface2);padding:20px 22px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px 28px}
+  .creds-group h4{font-family:var(--mono);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);
+    margin-bottom:9px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+  .creds-group ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .creds-group li{font-size:12.5px;color:var(--ink);line-height:1.4;padding-left:16px;position:relative}
+  .creds-group li::before{content:"▸";position:absolute;left:0;color:var(--signal);font-size:10px;top:3px}
+  .creds-group li b{font-family:var(--mono);color:var(--signal);font-weight:600;font-size:11px;letter-spacing:.02em}
+  .creds-note{grid-column:1/-1;font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--faint);border-top:1px dashed var(--line);padding-top:12px;margin-top:2px}
+
   /* section head */
   .sec{margin:64px 0 20px;display:flex;align-items:baseline;gap:16px}
   .sec h2{font-family:var(--mono);font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--head);font-weight:600}
@@ -143,7 +170,7 @@
   }
 
   /* ---- launch-demo button on each panel ---- */
-  .demo-btn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;cursor:pointer;
+  .demo-btn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;margin-right:9px;cursor:pointer;
     font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
     color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent);
     border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);border-radius:3px;padding:9px 15px;
@@ -230,9 +257,78 @@
       <div class="heroright reveal">
         <div class="statline"><span>Scope</span><b>concept → <em>deploy</em></b></div>
         <div class="statline"><span>Markets</span><b><em>4</em> + systems</b></div>
-        <div class="statline"><span>Live demos</span><b><em>6</em></b></div>
+        <div class="statline"><span>Live demos</span><b><em>9</em></b></div>
         <div class="statline"><span>Built</span><b>solo</b></div>
       </div>
+    </div>
+
+    <div class="hero-foot reveal">
+      <div class="stack-row">
+        <div class="stack-label">AI-assisted build stack · <b>US-built &amp; backed</b></div>
+        <div class="chips"><span>Claude</span><span>Claude Code CLI</span><span>Gemini</span><span>GPT-5+</span><span>Antigravity</span><span>Docker</span></div>
+      </div>
+      <details class="creds">
+        <summary>Credentials in the field</summary>
+        <div class="creds-body">
+          <div class="creds-group">
+            <h4>United Nations · Dept. of Safety &amp; Security</h4>
+            <ul>
+              <li>Information Security Awareness — Foundational, Advanced &amp; Additional</li>
+              <li>Preparing and Responding to Active Shooter Incidents</li>
+              <li>Advanced Security in the Field</li>
+              <li>Basic Security in the Field II</li>
+            </ul>
+          </div>
+          <div class="creds-group">
+            <h4>Emergency Management &amp; Security · FEMA / NDEMU</h4>
+            <ul>
+              <li><b>IS-37.25</b> — Managerial Safety and Health Program (NDEMU)</li>
+              <li><b>IS-00060.b</b> — The Homeland Security Geospatial Concept-of-Operations (GeoCONOPS) for Planners and Decision Makers</li>
+              <li><b>IS-00061.b</b> — The Homeland Security Geospatial Concept-of-Operations (GeoCONOPS) In Depth</li>
+              <li><b>IS-00075</b> — Military Resources in Emergency Management</li>
+              <li><b>IS-00100.b</b> — Introduction to the Incident Command System (ICS-100)</li>
+              <li><b>IS-00144</b> — Telecommunicators Emergency Response Taskforce (TERT) Basic Course</li>
+              <li><b>IS-00200.b</b> — ICS for Single Resources and Initial Action Incidents (ICS-200)</li>
+              <li><b>IS-00230.d</b> — Fundamentals of Emergency Management</li>
+              <li><b>IS-00240.b</b> — Leadership and Influence</li>
+              <li><b>IS-00872.a</b> — Dams Sector: Protective Measures</li>
+              <li><b>IS-00906</b> — Basic Workplace Security Awareness</li>
+              <li><b>IS-00907</b> — Active Shooter: What You Can Do</li>
+              <li><b>IS-00914</b> — Surveillance Awareness: What You Can Do</li>
+              <li><b>IS-00915</b> — Protecting Critical Infrastructure Against Insider Threats</li>
+              <li><b>IS-00916</b> — Critical Infrastructure Security: Theft and Diversion – What You Can Do</li>
+            </ul>
+          </div>
+          <div class="creds-group">
+            <h4>AI, MLOps &amp; Data · DataCamp</h4>
+            <ul>
+              <li>AI Fundamentals — <b>Certification</b></li>
+              <li>Data Literacy — <b>Certification</b></li>
+              <li>AI Ethics <b>(CPE)</b></li>
+              <li>Generative AI for Business</li>
+              <li>Understanding ChatGPT · Intermediate ChatGPT</li>
+              <li>Understanding Prompt Engineering</li>
+              <li>MLOps Concepts</li>
+              <li>Developing ML Models for Production</li>
+              <li>MLOps Deployment &amp; Life Cycling</li>
+              <li>Fully Automated MLOps</li>
+              <li>Introduction to SQL</li>
+              <li>Understanding Cloud Computing</li>
+            </ul>
+          </div>
+          <div class="creds-group">
+            <h4>Data, Technical &amp; Professional</h4>
+            <ul>
+              <li>KNIME — Entry Level Certification</li>
+              <li>Alteryx — Basic Certification</li>
+              <li>Data Analytics Certification</li>
+              <li>Calix Certified Partner Certification</li>
+              <li>Communications Security Certification</li>
+            </ul>
+          </div>
+          <div class="creds-note">FEMA/NDEMU credentials held via emergency-management affiliations (Missouri Task Force 1 · Atlas International).</div>
+        </div>
+      </details>
     </div>
   </header>
 
@@ -256,7 +352,7 @@
         <li><b>Mobility</b> — aeglos.systems eBike platform</li>
         <li><b>Commerce</b> — multi-tenant sales &amp; CRM</li>
         <li><b>Gaming</b> — VOLT QUEST on the roster</li>
-        <li><b>Systems</b> — a bootable operating system</li>
+        <li><b>Continuity</b> — Assurance + DocSanctum</li>
       </ul>
       <div class="foot">
         <div class="tags"><span>Python</span><span>JavaScript</span><span>Postgres</span><span>ML</span><span>Node</span><span>deploy pipeline</span></div>
@@ -373,6 +469,66 @@
     </div>
   </section>
 
+  <!-- SYSTEMS -->
+  <div class="sec reveal"><span class="idx">02</span><h2>Systems &amp; Data</h2><div class="rule"></div></div>
+
+  <section class="build panel reveal" data-demo="beacon,register" style="--acc:#3fd6b2">
+    <div class="b-vis"><canvas data-viz="pulse"></canvas><div class="stamp">AEGLOS // ASSURANCE</div></div>
+    <div class="b-body">
+      <div class="tick"><span class="dot"></span>Two modules · source-agnostic</div>
+      <div class="code">SYSTEMS // SERVICE CONTINUITY</div>
+      <h3>Aeglos Assurance</h3>
+      <div class="sub">Service-continuity operations suite</div>
+      <a class="wp-link" href="whitepaper.html#assurance">Read in whitepaper ↗</a>
+      <p>A service-continuity suite for any provider→customer operation that can go <em>down</em> or get
+        <em>cut off</em> — telecom, utilities, energy, SaaS. <b>Beacon</b> is a live status &amp; incident
+        board; <b>Register</b> is a filterable disconnect/termination record with export. Both ingest from
+        generic sources — HubSpot, SQL, CSV/XLSX — so the same tooling drops into any vertical.</p>
+      <ul class="caps">
+        <li><b>Beacon</b> — live status &amp; incidents</li>
+        <li><b>Register</b> — disconnect/termination log</li>
+        <li>Drag-drop evidence + raw paste</li>
+        <li>Filter, lookup &amp; XLSX export</li>
+        <li>Source-agnostic (HubSpot / SQL / CSV)</li>
+        <li>Server-managed SQLite backend</li>
+      </ul>
+      <div class="foot">
+        <div class="tags"><span>JavaScript</span><span>SQLite</span><span>HubSpot</span><span>SQL</span><span>XLSX</span></div>
+        <div class="loc">Solo build · 2 modules</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="build panel reveal" data-demo="docsanctum" style="--acc:#C9A84C">
+    <div class="b-vis"><canvas data-viz="cascade"></canvas><div class="stamp">SYSTEMS // PUBLISHING</div></div>
+    <div class="b-body">
+      <div class="tick"><span class="dot amber"></span>POC · single source of truth</div>
+      <div class="code">SYSTEMS // DATA DISTRIBUTION</div>
+      <h3>DocSanctum</h3>
+      <div class="sub">Single-source → multi-destination publishing</div>
+      <a class="wp-link" href="whitepaper.html#docsanctum">Read in whitepaper ↗</a>
+      <p>A top-down publishing infrastructure: author or ingest a canonical record <em>once</em>, and it
+        propagates down-chain to every destination system — knowledge base, HubSpot, custom knowledge management system — in a single
+        signed publish. Multi-tenant, with every update logged by <b>who, when, and why</b>. One change
+        updates everywhere; end users never see a half-published state.</p>
+      <ul class="caps">
+        <li>Single source of truth</li>
+        <li>Top-down fan-out publish</li>
+        <li>Per-destination payload adapters</li>
+        <li>Retry queue with backoff</li>
+        <li>Full audit trail (who / when / why)</li>
+        <li>Multi-tenant namespaces</li>
+      </ul>
+      <div class="foot">
+        <div class="tags"><span>JavaScript</span><span>multi-tenant</span><span>adapters</span><span>audit log</span></div>
+        <div class="loc">Solo build · POC console</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONCEPT PROJECTS -->
+  <div class="sec reveal"><span class="idx">03</span><h2>Concept Projects</h2><div class="rule"></div></div>
+
   <section class="build panel reveal" style="--acc:#ffb24d">
     <div class="b-vis"><canvas data-viz="chart"></canvas><div class="stamp">AEGLOS // DATA</div></div>
     <div class="b-body">
@@ -399,9 +555,6 @@
       </div>
     </div>
   </section>
-
-  <!-- SYSTEMS -->
-  <div class="sec reveal"><span class="idx">02</span><h2>Systems &amp; R&amp;D</h2><div class="rule"></div></div>
 
   <section class="build panel reveal" data-demo="altimit" style="--acc:#a98bff">
     <div class="b-vis"><canvas data-viz="spiral"></canvas><div class="stamp">[ ALTIMIT ] // OS</div></div>
@@ -553,6 +706,20 @@
       for(k=1;k<4;k++){var f=k/4,yy=ty+(by-ty)*f,ww=topW+(botW-topW)*f;c.globalAlpha=.26;c.beginPath();c.moveTo(cxf-ww/2,yy);c.lineTo(cxf+ww/2,yy);c.stroke();c.globalAlpha=.6;c.beginPath();c.arc(cxf,yy,1.7*d,0,7);c.fill();}
       c.globalAlpha=1;c.beginPath();c.moveTo(cxf,by);c.lineTo(cxf,by+h*.13);c.stroke();
       c.shadowColor=acc;c.shadowBlur=10*d;c.beginPath();c.arc(cxf,by+h*.13,4*d,0,7);c.fill();
+    } else if(type==='pulse'){
+      var midY=h*.52; c.lineWidth=2*d; c.strokeStyle=acc; c.shadowColor=acc; c.shadowBlur=7*d;
+      var pts=[[0,midY],[w*.32,midY],[w*.38,midY-h*.06],[w*.44,midY+h*.30],[w*.51,midY-h*.34],[w*.57,midY+h*.09],[w*.63,midY],[w,midY]];
+      c.beginPath(); pts.forEach(function(pp,i){i?c.lineTo(pp[0],pp[1]):c.moveTo(pp[0],pp[1]);}); c.stroke(); c.shadowBlur=0;
+      c.fillStyle=acc; c.shadowColor=acc; c.shadowBlur=10*d; c.beginPath(); c.arc(w*.85,midY,3.2*d,0,7); c.fill();
+    } else if(type==='cascade'){
+      var topX=w*.46, topY=h*.2, botY=h*.78, bx=[];
+      for(var ci=0;ci<4;ci++)bx.push(w*(.16+.6*ci/3));
+      c.globalAlpha=.5; c.lineWidth=1.3*d; c.strokeStyle=acc;
+      bx.forEach(function(x){c.beginPath();c.moveTo(topX,topY);c.lineTo(x,botY);c.stroke();});
+      c.globalAlpha=1; c.shadowColor=acc; c.shadowBlur=9*d; c.fillStyle=acc;
+      c.beginPath(); c.arc(topX,topY,4.6*d,0,7); c.fill();
+      bx.forEach(function(x){c.beginPath();c.arc(x,botY,3*d,0,7);c.fill();});
+      c.shadowBlur=0;
     } else if(type==='wave'){
       c.shadowColor=acc;c.shadowBlur=8*d;c.beginPath();
       for(var X2=w*.08;X2<=w*.92;X2+=2*d){var env=Math.sin((X2-w*.08)/(w*.84)*Math.PI);var Y2=cyp+Math.sin(X2*.06/d)*h*.24*env*(.6+.4*Math.sin(X2*.013/d));X2>w*.08?c.lineTo(X2,Y2):c.moveTo(X2,Y2);}c.stroke();
@@ -580,6 +747,9 @@
     ebike:{title:'Aeglos <b>eBike Intelligence</b>', sub:'real catalog + law map', type:'iframe', src:'demos/ebike/index.html'},
     sales:{title:'Aeglos <b>CRM &amp; Concierge</b>', sub:'client console · sample data', type:'iframe', src:'demos/crm/index.html'},
     altimit:{title:'[ <b>ALTIMIT</b> ] OS', sub:'the real web desktop', type:'iframe', src:'demos/altimit/index.html'},
+    beacon:{title:'Aeglos <b>Beacon</b>', sub:'service status · live', type:'iframe', src:'demos/beacon/index.html', btn:'Launch Beacon'},
+    register:{title:'Aeglos <b>Register</b>', sub:'disconnect / termination log', type:'iframe', src:'demos/register/index.html', btn:'Launch Register'},
+    docsanctum:{title:'<b>DocSanctum</b>', sub:'single-source publishing', type:'iframe', src:'demos/docsanctum/index.html'},
     volt:{title:'<b>VOLT QUEST</b>', sub:'iOS pixel RPG · real screenshots', type:'gallery', shots:[
       ['demos/volt/20_title_final.png','Title screen'],
       ['demos/volt/02_charselect.png','Character select — the Aeglos roster'],
@@ -592,12 +762,17 @@
     ]}
   };
   document.querySelectorAll('.build[data-demo]').forEach(function(sec){
-    var key=sec.dataset.demo; if(!DEMOS[key])return;
-    var anchor=sec.querySelector('.b-body .sub'), b=document.createElement('button');
-    b.className='demo-btn'; b.type='button';
-    b.innerHTML='<span class="pl"></span> '+(DEMOS[key].type==='gallery'?'View screenshots':'Launch live demo');
-    (anchor||sec.querySelector('.b-body')).insertAdjacentElement(anchor?'afterend':'beforeend', b);
-    b.addEventListener('click', function(){ openDemo(key, sec); });
+    var keys=sec.dataset.demo.split(',').map(function(k){return k.trim();}).filter(function(k){return DEMOS[k];});
+    if(!keys.length)return;
+    var after=sec.querySelector('.b-body .sub')||null, body=sec.querySelector('.b-body');
+    keys.forEach(function(key){
+      var b=document.createElement('button'); b.className='demo-btn'; b.type='button';
+      var label=DEMOS[key].btn||(DEMOS[key].type==='gallery'?'View screenshots':'Launch live demo');
+      b.innerHTML='<span class="pl"></span> '+label;
+      if(after){ after.insertAdjacentElement('afterend', b); } else { body.appendChild(b); }
+      after=b;
+      b.addEventListener('click', function(){ openDemo(key, sec); });
+    });
   });
   function openDemo(key, sec){
     var def=DEMOS[key]; if(!def)return;

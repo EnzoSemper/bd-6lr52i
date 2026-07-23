@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DocSanctum — Unified Publishing Console (POC v0.3)</title>
+<style>
+/* ============================================================
+   Aeglos house style — embedded for portability (no CDN deps)
+   Brand: #159c92 primary on dark gradient headers, 11/12px base
+   ============================================================ */
+:root {
+  --aeglos-red: #159c92;
+  --aeglos-red-dark: #0d6b64;
+  --aeglos-orange: #F26229;
+  --aeglos-green: #006600;
+  --aeglos-green-bright: #08a64f;
+  --aeglos-warn: #ff670f;
+  --aeglos-warn-soft: #f0c714;
+  --aeglos-error: #ec3b37;
+  --aeglos-info: #19b2d6;
+  --aeglos-info-soft: #6DC9E2;
+  --aeglos-bg: #FCFCFC;
+  --aeglos-panel: #ffffff;
+  --aeglos-border: #c9c9c2;
+  --aeglos-text: #222;
+  --aeglos-muted: #6b6b6b;
+  --aeglos-grad-dark: linear-gradient(180deg, #5E5E5E 0%, #262626 100%);
+  --aeglos-grad-darker: linear-gradient(180deg, #3a3a3a 0%, #111 100%);
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--aeglos-bg);
+  color: var(--aeglos-text);
+  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- top bar ---- */
+.topbar {
+  background: var(--aeglos-grad-darker);
+  color: #fff;
+  padding: 10px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 3px solid var(--aeglos-red);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: bold; letter-spacing: 0.5px; }
+.topbar .brand .logo-mark {
+  width: 28px; height: 28px; border-radius: 4px;
+  background: var(--aeglos-red);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 14px;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.3);
+}
+.topbar .brand small { font-weight: normal; opacity: 0.7; margin-left: 6px; letter-spacing: 0; }
+.topbar .session { display: flex; align-items: center; gap: 12px; font-size: 11px; }
+.session .pill {
+  padding: 3px 10px; border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+.session .pill.role-admin  { background: rgba(204,51,0,0.25); border-color: var(--aeglos-red); }
+.session .pill.role-editor { background: rgba(25,178,214,0.20); border-color: var(--aeglos-info); }
+.session .pill.role-viewer { background: rgba(255,255,255,0.06); }
+
+/* ---- layout ---- */
+.shell { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 52px); }
+.sidebar { background: #f1f1ed; border-right: 1px solid var(--aeglos-border); padding: 12px 0; }
+.sidebar .navgroup {
+  padding: 4px 14px; text-transform: uppercase; font-size: 10px;
+  letter-spacing: 0.6px; color: #888; margin-top: 10px;
+}
+.sidebar a.navitem {
+  display: block; padding: 7px 14px 7px 18px;
+  color: #333; text-decoration: none;
+  border-left: 3px solid transparent; font-size: 12px;
+}
+.sidebar a.navitem:hover { background: #e6e6e0; color: var(--aeglos-red-dark); }
+.sidebar a.navitem.active {
+  background: #fff; border-left-color: var(--aeglos-red);
+  color: var(--aeglos-red-dark); font-weight: bold;
+}
+.sidebar .navitem .count {
+  float: right; background: #ddd; color: #333;
+  font-size: 10px; padding: 1px 7px; border-radius: 10px;
+}
+.sidebar .navitem .count.warn { background: var(--aeglos-warn); color: #fff; }
+
+.main { padding: 18px 22px 60px 22px; overflow-x: auto; }
+
+.page-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  border-bottom: 1px solid var(--aeglos-border);
+  padding-bottom: 8px; margin-bottom: 16px;
+}
+.page-header h1 { margin: 0; font-size: 18px; color: #222; letter-spacing: 0.3px; }
+.page-header .crumbs { font-size: 10px; color: var(--aeglos-muted); margin-bottom: 4px; letter-spacing: 0.3px; }
+.page-header .actions { display: flex; gap: 8px; }
+
+/* ---- buttons ---- */
+.btn {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid #c0bfb8;
+  background: #cccbc3;
+  color: #333;
+  font-weight: bold; text-transform: uppercase;
+  font-size: 10px; letter-spacing: 0.6px;
+  border-radius: 2px; cursor: pointer; text-decoration: none;
+}
+.btn:hover { background: #d4d3cb; border-color: #999; }
+.btn:disabled, .btn.disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.primary { background: var(--aeglos-red); border-color: var(--aeglos-red-dark); color: #fff; }
+.btn.primary:hover { background: var(--aeglos-red-dark); }
+.btn.danger  { background: #fff; border-color: var(--aeglos-error); color: var(--aeglos-error); }
+.btn.danger:hover { background: var(--aeglos-error); color: #fff; }
+.btn.ghost   { background: transparent; border-color: #999; color: #555; }
+.btn.small   { padding: 3px 8px; font-size: 9px; }
+
+/* ---- panels ---- */
+.panel {
+  background: var(--aeglos-panel);
+  border: 1px solid var(--aeglos-border);
+  border-radius: 3px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+}
+.panel-head {
+  background: var(--aeglos-grad-dark);
+  color: #fff; padding: 7px 12px;
+  font-weight: bold; font-size: 11px;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.panel-head .sub { font-weight: normal; opacity: 0.7; text-transform: none; letter-spacing: 0; font-size: 10px; }
+.panel-body { padding: 14px; }
+.panel.flush .panel-body { padding: 0; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+/* ---- forms ---- */
+label.fld { display: block; margin-bottom: 12px; }
+label.fld > span {
+  display: block; font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.5px; color: #555; margin-bottom: 3px;
+}
+label.fld > .hint {
+  display: block; font-size: 10px; color: var(--aeglos-muted);
+  margin-top: 3px; text-transform: none; letter-spacing: 0;
+}
+input[type="text"], input[type="email"], input[type="password"], input[type="url"],
+select, textarea {
+  width: 100%; padding: 6px 8px;
+  border: 1px solid #ccc; background: #fff;
+  font-size: 12px; font-family: inherit;
+  border-radius: 2px;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--aeglos-red);
+  box-shadow: 0 0 0 2px rgba(204,51,0,0.12);
+}
+textarea { resize: vertical; min-height: 80px; font-family: var(--mono); font-size: 12px; line-height: 1.5; }
+textarea.editor { min-height: 320px; }
+
+/* ---- chips ---- */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 9px; border-radius: 12px;
+  border: 1px solid #ccc; background: #f6f6f4;
+  font-size: 11px; cursor: pointer; user-select: none;
+}
+.chip.on { background: var(--aeglos-red); color: #fff; border-color: var(--aeglos-red-dark); }
+
+/* ---- target rows ---- */
+.target-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 110px 90px;
+  align-items: center;
+  padding: 10px 12px;
+  border-top: 1px solid #eee;
+  gap: 10px;
+}
+.target-row:first-child { border-top: none; }
+.target-row .target-name { font-weight: bold; font-size: 12px; }
+.target-row .target-detail { font-family: var(--mono); font-size: 10px; color: var(--aeglos-muted); }
+.target-row .target-state { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; }
+
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dot.ok      { background: var(--aeglos-green-bright); box-shadow: 0 0 0 2px rgba(8,166,79,0.18); }
+.dot.warn    { background: var(--aeglos-warn); }
+.dot.err     { background: var(--aeglos-error); }
+.dot.idle    { background: #bbb; }
+.dot.pending { background: var(--aeglos-info); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ---- toggle switch ---- */
+.switch { position: relative; display: inline-block; width: 36px; height: 18px; vertical-align: middle; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .slider {
+  position: absolute; cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #bbb; border-radius: 18px; transition: 0.18s;
+}
+.switch .slider::before {
+  content: ""; position: absolute; left: 2px; bottom: 2px;
+  width: 14px; height: 14px; background: #fff; border-radius: 50%; transition: 0.18s;
+}
+.switch input:checked + .slider { background: var(--aeglos-green-bright); }
+.switch input:checked + .slider::before { transform: translateX(18px); }
+
+/* ---- tables ---- */
+table.tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+table.tbl th {
+  background: var(--aeglos-grad-dark); color: #fff;
+  text-align: left; padding: 6px 10px;
+  font-size: 10px; letter-spacing: 0.5px;
+  text-transform: uppercase; font-weight: bold;
+}
+table.tbl td { padding: 7px 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
+table.tbl tr:nth-child(odd) td { background: #fafafa; }
+table.tbl tr:hover td { background: #fff8e1; }
+table.tbl td.mono { font-family: var(--mono); font-size: 10px; }
+table.tbl td.actions { text-align: right; white-space: nowrap; }
+
+/* ---- code / preview ---- */
+.codeblock {
+  font-family: var(--mono); font-size: 11px;
+  background: #1d1f21; color: #e6e6e6;
+  padding: 12px 14px; border-radius: 3px;
+  overflow-x: auto; line-height: 1.55; white-space: pre-wrap;
+}
+.codeblock .key { color: #6dc9e2; }
+.codeblock .str { color: #c8f5d8; }
+.codeblock .num { color: #f0c714; }
+.codeblock .com { color: #888; font-style: italic; }
+.preview-box {
+  border: 1px solid var(--aeglos-border); border-radius: 3px;
+  padding: 14px 16px; background: #fdfdfa; min-height: 200px;
+}
+.preview-box h1, .preview-box h2, .preview-box h3 { color: var(--aeglos-red-dark); margin-top: 0.6em; }
+.preview-box code { background: #f0eee6; padding: 1px 4px; border-radius: 2px; font-family: var(--mono); font-size: 11px; }
+.preview-box pre { background: #2b2b2b; color: #f6f6f6; padding: 10px; border-radius: 3px; overflow-x: auto; }
+.preview-box ul, .preview-box ol { padding-left: 22px; }
+
+/* ---- alerts ---- */
+.alert {
+  padding: 10px 12px; border-radius: 3px;
+  font-size: 11px; border-left: 4px solid #999;
+  margin-bottom: 12px; background: #f6f6f4;
+}
+.alert.info  { border-color: var(--aeglos-info); background: #e8f7fb; }
+.alert.warn  { border-color: var(--aeglos-warn); background: #fff3e0; }
+.alert.err   { border-color: var(--aeglos-error); background: #fdeaea; }
+.alert.ok    { border-color: var(--aeglos-green-bright); background: #e8f7ee; }
+.alert b { display: block; margin-bottom: 3px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ---- log stream ---- */
+.logstream {
+  background: #14171a; color: #d4d4d4;
+  font-family: var(--mono); font-size: 11px;
+  padding: 10px 12px; border-radius: 3px;
+  height: 220px; overflow-y: auto; line-height: 1.6;
+}
+.logstream .ts   { color: #6b7280; }
+.logstream .lvl  { display: inline-block; width: 50px; font-weight: bold; }
+.logstream .lvl.info  { color: #6dc9e2; }
+.logstream .lvl.ok    { color: #08a64f; }
+.logstream .lvl.warn  { color: #f0c714; }
+.logstream .lvl.err   { color: #ec3b37; }
+.logstream .lvl.audit { color: #d97aff; }
+.logstream .src  { color: #ffa05a; }
+
+/* ---- tabs ---- */
+.tabs { display: flex; border-bottom: 2px solid var(--aeglos-red); margin-bottom: 14px; }
+.tabs .tab {
+  padding: 7px 16px; cursor: pointer; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: #555; border: 1px solid transparent;
+  border-bottom: none; margin-right: 2px; margin-bottom: -2px;
+}
+.tabs .tab:hover { color: var(--aeglos-red); }
+.tabs .tab.active {
+  background: var(--aeglos-red); color: #fff;
+  border-color: var(--aeglos-red-dark); font-weight: bold;
+}
+
+/* ---- modal ---- */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none; align-items: center; justify-content: center; z-index: 100;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: #fff; border-radius: 3px;
+  width: 760px; max-width: 92vw; max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+.modal-head {
+  background: var(--aeglos-grad-darker); color: #fff;
+  padding: 10px 14px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-body { padding: 16px 18px; }
+
+/* ---- helpers ---- */
+.view { display: none; }
+.view.active { display: block; }
+.row-flex { display: flex; gap: 14px; align-items: center; }
+.muted { color: var(--aeglos-muted); }
+.tiny { font-size: 10px; }
+.mono { font-family: var(--mono); }
+.kbd {
+  font-family: var(--mono); background: #f0eee6;
+  border: 1px solid #d0cec5; border-bottom-width: 2px;
+  padding: 1px 5px; border-radius: 3px; font-size: 10px;
+}
+hr.div { border: none; border-top: 1px solid #e0e0d8; margin: 14px 0; }
+.kpi { text-align: center; padding: 14px 8px; }
+.kpi .num { font-size: 26px; font-weight: bold; color: var(--aeglos-red-dark); line-height: 1; }
+.kpi .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--aeglos-muted); margin-top: 4px; }
+
+.banner-poc {
+  background: repeating-linear-gradient(45deg, #fff8e1, #fff8e1 10px, #fff3c4 10px, #fff3c4 20px);
+  border: 1px solid #e6c97a;
+  padding: 8px 14px; font-size: 10px; color: #6b5400;
+  text-align: center; letter-spacing: 0.4px;
+}
+
+/* ---- diagram ---- */
+.diagram {
+  background: #fafaf6; border: 1px solid var(--aeglos-border);
+  border-radius: 4px; padding: 18px; overflow-x: auto;
+}
+.diagram svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+
+/* ---- adapter card ---- */
+.adapter-card {
+  border: 1px solid var(--aeglos-border); border-radius: 4px;
+  padding: 12px 14px; background: #fff; margin-bottom: 12px;
+}
+.adapter-card h4 {
+  margin: 0 0 4px 0; font-size: 12px; color: var(--aeglos-red-dark);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.adapter-card .meta { font-size: 10px; color: var(--aeglos-muted); margin-bottom: 8px; }
+.adapter-card ul { margin: 4px 0 0 0; padding-left: 18px; font-size: 11px; }
+.adapter-card li { margin-bottom: 3px; }
+</style>
+</head>
+<body>
+
+<div class="banner-poc">
+  PROOF OF CONCEPT — front-end shell only. All API calls in this file are mocked. Production deployment requires the publishing gateway service described in <a href="#" data-go="architecture">Architecture</a> and <a href="#" data-go="security">Security Model</a>.
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo-mark"><svg viewBox="0 -34 200 238" width="20" height="24" style="display:inline-block;vertical-align:middle" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><polygon points="100,5 190,95 100,185 10,95"/><path d="M 60 105 A 40 40 0 0 1 140 105"/><polygon points="100,-25 118,40 108,55 108,185 100,195 92,185 92,55 82,40" fill="currentColor" stroke="none"/></svg></div>
+    <span>DocSanctum</span>
+    <small>Unified Publishing Console · v0.3-poc</small>
+  </div>
+  <div class="session">
+    <span class="muted">signed in as</span>
+    <span><b id="userName">j.rivera</b> @ Aeglos</span>
+    <span id="rolePill" class="pill role-admin">Admin</span>
+    <span class="pill" id="mfaPill">MFA ✓</span>
+    <a href="#" class="btn small ghost" id="logoutBtn">Lock</a>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="navgroup">Authoring</div>
+    <a href="#" class="navitem active" data-go="compose">New Submission</a>
+    <a href="#" class="navitem" data-go="drafts">Drafts <span class="count" id="draftsBadge">3</span></a>
+    <a href="#" class="navitem" data-go="library">Library</a>
+
+    <div class="navgroup">Publishing</div>
+    <a href="#" class="navitem" data-go="queue">Publish Queue <span class="count warn" id="queueBadge">2</span></a>
+    <a href="#" class="navitem" data-go="history">History</a>
+
+    <div class="navgroup">Operations</div>
+    <a href="#" class="navitem" data-go="targets">Targets &amp; Routing</a>
+    <a href="#" class="navitem" data-go="audit">Audit Log</a>
+    <a href="#" class="navitem" data-go="health">System Health</a>
+
+    <div class="navgroup">Reference</div>
+    <a href="#" class="navitem" data-go="architecture">Architecture</a>
+    <a href="#" class="navitem" data-go="security">Security Model</a>
+    <a href="#" class="navitem" data-go="adapters">Adapter Contract</a>
+  </aside>
+
+  <main class="main">
+
+    <!-- ============ COMPOSE ============ -->
+    <section id="view-compose" class="view active">
+      <div class="page-header">
+        <div>
+          <div class="crumbs">Authoring › New Submission</div>
+          <h1>Single-Source Submission</h1>
+        </div>
+        <div class="actions">
+          <button class="btn ghost" id="loadSampleBtn">Load Sample</button>
+          <button class="btn ghost" id="saveDraftBtn">Save Draft</button>
+          <button class="btn primary" id="reviewBtn">Review &amp; Publish →</button>
+        </div>
+      </div>
+
+      <div class="alert info">
+        <b>How this works</b>
+        Author the canonical knowledge object once. The console transforms it into the format each downstream system requires (Knowledge Base record schema, HubSpot Provider Alert / Note payload, Custom Knowledge Management System page) and submits everything in a single signed publish operation. Targets that fail are queued for retry with exponential backoff. End users never see a half-published state.
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="panel">
+            <div class="panel-head">Canonical Document <span class="sub">authoritative source</span></div>
+            <div class="panel-body">
+              <label class="fld">
+                <span>Title</span>
+                <input type="text" id="docTitle" placeholder="e.g. Summit Fiber — Premier Reconnect Policy">
+              </label>
+
+              <div class="grid-2">
+                <label class="fld">
+                  <span>Document Type</span>
+                  <select id="docType">
+                    <option value="documentnote">Document Note (KB article)</option>
+                    <option value="workinstruction">Work Instruction (steps)</option>
+                    <option value="hub">Hub (link collection)</option>
+                    <option value="compass">Compass (decision tree)</option>
+                    <option value="announcement">Announcement</option>
+                  </select>
+                  <span class="hint">Maps to Knowledge Base record type. HubSpot receives a flattened summary regardless of type.</span>
+                </label>
+
+                <label class="fld">
+                  <span>Permalink slug</span>
+                  <input type="text" id="docSlug" placeholder="auto-generated from title">
+                  <span class="hint">Used for Knowledge Base permalink and HubSpot Alert deep-link. Unique within partner namespace.</span>
+                </label>
+              </div>
+
+              <label class="fld">
+                <span>Partner / Namespace</span>
+                <select id="docPartner">
+                  <option value="">— Internal only (Aeglos ops) —</option>
+                  <option value="delta">Delta Connect</option>
+                  <option value="northwind">Northwind Fiber</option>
+                  <option value="summit">Summit Fiber</option>
+                  <option value="harbor">Harbor Telecom</option>
+                  <option value="meridian">Meridian Broadband</option>
+                  <option value="copperline">Copperline Networks</option>
+                  <option value="basin">Basin Utilities</option>
+                  <option value="ridgeline">Ridgeline Communications</option>
+                  <option value="cedar">Cedar Valley Telecom</option>
+                </select>
+                <span class="hint">Drives routing rules. Internal-only documents never leave the gateway boundary.</span>
+              </label>
+
+              <label class="fld">
+                <span>Tags</span>
+                <div class="chips" id="tagChips"></div>
+                <span class="hint">Tags drive HubSpot category mapping (Add Provider Alert: support_category) and Knowledge Base related-link suggestions.</span>
+              </label>
+
+              <label class="fld">
+                <span>Body (Markdown)</span>
+                <textarea id="docBody" class="editor" placeholder="# Your article&#10;&#10;Markdown is converted to clean HTML before being sent to Knowledge Base and to HubSpot's Add Provider Alert payload."></textarea>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="panel-head">Publish Targets <span class="sub">where this document goes</span></div>
+            <div class="panel-body" style="padding:0;">
+              <div id="targetList"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">Live Preview <span class="sub">rendered from canonical</span></div>
+            <div class="panel-body">
+              <div class="tabs" id="previewTabs">
+                <div class="tab active" data-tab="rendered">Rendered</div>
+                <div class="tab" data-tab="kb">Knowledge Base Payload</div>
+                <div class="tab" data-tab="hubspot">HubSpot Payload</div>
+                <div class="tab" data-tab="Custom Knowledge Management System">Custom Knowledge Management System Payload</div>
+              </div>
+              <div id="previewRendered" class="preview-box"></div>
+              <pre id="previewKnowledgeBase" class="codeblock" style="display:none;"></pre>
+              <pre id="previewHubSpot" class="codeblock" style="display:none;"></pre>
+              <pre id="previewKms" class="codeblock" style="display:none;"></pre>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">Submission Metadata</div>
+            <div class="panel-body">
+              <div class="grid-2">
+                <div><div class="tiny muted">Document ID</div><div class="mono" id="metaId">— not yet assigned —</div></div>
+                <div><div class="tiny muted">Author</div><div id="metaAuthor">j.rivera</div></div>
+                <div><div class="tiny muted">Last saved</div><div id="metaSaved" class="muted">never</div></div>
+                <div><div class="tiny muted">Version</div><div id="metaVersion">draft</div></div>
+              </div>
+              <hr class="div">
+              <label class="fld">
+                <span>Change note (required at publish)</span>
+                <input type="text" id="changeNote" placeholder="What changed and why? Stored in the audit log.">
+              </label>
+              <div class="row-flex">
+                <label class="switch"><input type="checkbox" id="requireApproval"><span class="slider"></span></label>
+                <span class="tiny">Require second-pair-of-eyes approval before publish (recommended for partner-facing changes)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PUBLISH MODAL ============ -->
+    <div class="modal-backdrop" id="publishModal">
+      <div class="modal">
+        <div class="modal-head">
+          <span><b>Confirm publish</b></span>
+          <a href="#" class="btn small ghost" id="closePublishBtn">Close</a>
+        </div>
+        <div class="modal-body">
+          <div class="alert warn">
+            <b>You are about to fan out to multiple systems</b>
+            Each enabled target will receive its transformed copy. The submission is signed with your session key and recorded in the audit log <em>before</em> any external API call is made.
+          </div>
+
+          <table class="tbl" id="publishSummary">
+            <thead><tr><th></th><th>Target</th><th>Operation</th><th>Estimated Impact</th></tr></thead>
+            <tbody></tbody>
+          </table>
+
+          <hr class="div">
+
+          <label class="fld">
+            <span>Re-enter your password (step-up auth)</span>
+            <input type="password" id="stepupPwd" placeholder="confirms it's still you">
+            <span class="hint">All publish operations require step-up auth. Session token alone is not sufficient. Try anything for the POC.</span>
+          </label>
+
+          <div style="text-align:right;">
+            <button class="btn ghost" id="cancelPublishBtn">Cancel</button>
+            <button class="btn primary" id="confirmPublishBtn">Sign &amp; Publish</button>
+          </div>
+
+          <hr class="div">
+          <div class="tiny muted">Live submission log:</div>
+          <div class="logstream" id="publishLog"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ DRAFTS ============ -->
+    <section id="view-drafts" class="view">
+      <div class="page-header">
+        <div><div class="crumbs">Authoring › Drafts</div><h1>Saved Drafts</h1></div>
+        <div class="actions"><button class="btn primary" data-go="compose">+ New Submission</button></div>
+      </div>
+      <div class="panel flush">
+        <table class="tbl" id="draftsTable">
+          <thead><tr><th>Title</th><th>Type</th><th>Partner</th><th>Last edited</th><th>Targets</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ LIBRARY ============ -->
+    <section id="view-library" class="view">
+      <div class="page-header">
+        <div><div class="crumbs">Authoring › Library</div><h1>Published Knowledge Objects</h1></div>
+        <div class="actions"><input type="text" id="libSearch" placeholder="Search title or slug..." style="width:240px;"></div>
+      </div>
+      <div class="panel flush">
+        <table class="tbl" id="libraryTable">
+          <thead><tr><th>Title</th><th>Type</th><th>Partner</th><th>Knowledge Base ID</th><th>HubSpot Alert</th><th>Updated</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ QUEUE ============ -->
+    <section id="view-queue" class="view">
+      <div class="page-header">
+        <div><div class="crumbs">Publishing › Queue</div><h1>Publish Queue &amp; Retries</h1></div>
+        <div class="actions"><button class="btn ghost" id="retryAllBtn">Retry All Failed</button></div>
+      </div>
+      <div class="alert warn">
+        <b>2 jobs awaiting attention</b>
+        Failed publishes remain queued indefinitely until manually cleared. They do not block other submissions. Each retry uses exponential backoff (30s, 2m, 8m, 30m, 2h, 6h) capped at 6 attempts before requiring manual intervention.
+      </div>
+      <div class="panel flush">
+        <table class="tbl" id="queueTable">
+          <thead><tr><th>Submission</th><th>Target</th><th>State</th><th>Attempts</th><th>Last Error</th><th>Next Retry</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ HISTORY ============ -->
+    <section id="view-history" class="view">
+      <div class="page-header"><div><div class="crumbs">Publishing › History</div><h1>Publish History</h1></div></div>
+      <div class="panel flush">
+        <table class="tbl" id="historyTable">
+          <thead><tr><th>When</th><th>Document</th><th>Author</th><th>Targets</th><th>Result</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ TARGETS ============ -->
+    <section id="view-targets" class="view">
+      <div class="page-header"><div><div class="crumbs">Operations › Targets</div><h1>Targets &amp; Routing Rules</h1></div></div>
+
+      <div class="grid-3">
+        <div class="panel"><div class="panel-head">Configured Targets</div><div class="panel-body"><div class="kpi"><div class="num">4</div><div class="lbl">active</div></div></div></div>
+        <div class="panel"><div class="panel-head">Healthy Now</div><div class="panel-body"><div class="kpi"><div class="num" style="color:var(--aeglos-green-bright);">3</div><div class="lbl">passing health check</div></div></div></div>
+        <div class="panel"><div class="panel-head">Routing Rules</div><div class="panel-body"><div class="kpi"><div class="num">5</div><div class="lbl">defined</div></div></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Endpoint Configuration</div>
+        <div class="panel-body">
+          <table class="tbl">
+            <thead><tr><th>Target</th><th>Adapter</th><th>Base URL</th><th>Auth Method</th><th>Last Health Check</th><th>State</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>Knowledge Base</b><div class="tiny muted">canonical KB</div></td>
+                <td class="mono">kb@2.7</td>
+                <td class="mono">#/kb-api</td>
+                <td>API key (HEADER <span class="kbd">x-api-key</span>) — vault</td>
+                <td class="mono">2026-04-27 13:42:08</td>
+                <td><span class="dot ok"></span> healthy</td>
+              </tr>
+              <tr>
+                <td><b>HubSpot Provider Alert</b><div class="tiny muted">tech broadcast</div></td>
+                <td class="mono">aeglos-hd@4.1.6</td>
+                <td class="mono">#/api/alert/add</td>
+                <td>API key per-function — vault</td>
+                <td class="mono">2026-04-27 13:42:09</td>
+                <td><span class="dot ok"></span> healthy</td>
+              </tr>
+              <tr>
+                <td><b>HubSpot Add Note</b><div class="tiny muted">account-scoped reference</div></td>
+                <td class="mono">aeglos-hd@4.1.6</td>
+                <td class="mono">#/api/note/add</td>
+                <td>API key per-function — vault</td>
+                <td class="mono">2026-04-27 13:42:09</td>
+                <td><span class="dot ok"></span> healthy</td>
+              </tr>
+              <tr>
+                <td><b>Custom Knowledge Management System Mirror</b><div class="tiny muted">read-only archive</div></td>
+                <td class="mono">Custom Knowledge Management System@xmlrpc</td>
+                <td class="mono">#/lib/exe/xmlrpc.php</td>
+                <td>HTTP Basic over mTLS</td>
+                <td class="mono">2026-04-27 13:31:14</td>
+                <td><span class="dot warn"></span> degraded (slow)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Routing Rules <span class="sub">applied in order, first match wins</span></div>
+        <div class="panel-body">
+          <table class="tbl">
+            <thead><tr><th>#</th><th>If</th><th>Then publish to</th><th>Owner</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Type = Announcement AND Partner = *</td><td>Knowledge Base (announcement) + HubSpot Provider Alert</td><td>j.rivera</td></tr>
+              <tr><td>2</td><td>Tag contains <span class="kbd">internal-only</span></td><td>Custom Knowledge Management System Mirror only</td><td>j.rivera</td></tr>
+              <tr><td>3</td><td>Partner ∈ partner-list AND Type = Document Note</td><td>Knowledge Base + HubSpot Provider Alert + Custom Knowledge Management System</td><td>j.rivera</td></tr>
+              <tr><td>4</td><td>Partner ∈ partner-list AND Type = Compass</td><td>Knowledge Base only (decision-tree not supported in HD payload)</td><td>j.rivera</td></tr>
+              <tr><td>5</td><td><i>default</i></td><td>Knowledge Base + Custom Knowledge Management System Mirror</td><td>j.rivera</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ AUDIT ============ -->
+    <section id="view-audit" class="view">
+      <div class="page-header">
+        <div><div class="crumbs">Operations › Audit</div><h1>Audit Log</h1></div>
+        <div class="actions"><button class="btn ghost">Export CSV</button></div>
+      </div>
+      <div class="alert info">
+        <b>Audit log is append-only and immutable</b>
+        Entries are hash-chained on the gateway and forwarded to the SIEM in near real-time. A successful gateway compromise cannot retroactively erase history without breaking the chain at the SIEM forwarder, which is monitored.
+      </div>
+      <div class="panel flush">
+        <table class="tbl" id="auditTable">
+          <thead><tr><th>Timestamp</th><th>Actor</th><th>Action</th><th>Resource</th><th>Result</th><th>Source IP</th><th>Hash</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ HEALTH ============ -->
+    <section id="view-health" class="view">
+      <div class="page-header">
+        <div><div class="crumbs">Operations › Health</div><h1>System Health</h1></div>
+        <div class="actions"><button class="btn ghost" id="recheckBtn">Re-check Now</button></div>
+      </div>
+
+      <div class="grid-3">
+        <div class="panel">
+          <div class="panel-head">Gateway</div>
+          <div class="panel-body">
+            <div class="row-flex"><span class="dot ok"></span><b>Up</b><span class="muted tiny">99.94% / 30d</span></div>
+            <hr class="div">
+            <div class="tiny muted">p50 / p95 latency</div>
+            <div><span class="mono">42ms / 138ms</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">Worker Pool</div>
+          <div class="panel-body">
+            <div class="row-flex"><span class="dot ok"></span><b>4/4 healthy</b></div>
+            <hr class="div">
+            <div class="tiny muted">Queue depth</div>
+            <div><span class="mono">2 jobs</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">Vault (secrets)</div>
+          <div class="panel-body">
+            <div class="row-flex"><span class="dot ok"></span><b>Sealed &amp; reachable</b></div>
+            <hr class="div">
+            <div class="tiny muted">Last token rotation</div>
+            <div><span class="mono">2026-04-22 03:00 UTC</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Recent Health Events</div>
+        <div class="panel-body"><div class="logstream" id="healthLog"></div></div>
+      </div>
+    </section>
+
+    <!-- ============ ARCHITECTURE ============ -->
+    <section id="view-architecture" class="view">
+      <div class="page-header"><div><div class="crumbs">Reference › Architecture</div><h1>System Architecture</h1></div></div>
+
+      <div class="panel">
+        <div class="panel-head">Three-tier topology</div>
+        <div class="panel-body">
+          <p>The console deliberately separates trust boundaries. The browser never holds a credential to a downstream system. All outbound API traffic originates from the gateway, which lives entirely on the internal network and is operated by Engineering.</p>
+
+          <div class="diagram">
+            <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#444"/>
+                </marker>
+                <linearGradient id="darkGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#5e5e5e"/>
+                  <stop offset="100%" stop-color="#262626"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Trust zone backgrounds -->
+              <rect x="10" y="10" width="200" height="340" fill="#fff8e1" stroke="#e6c97a" stroke-dasharray="4 3" rx="6"/>
+              <text x="110" y="30" text-anchor="middle" font-size="10" fill="#6b5400" font-family="Lucida Grande,Helvetica,sans-serif" font-weight="bold">USER ZONE</text>
+
+              <rect x="230" y="10" width="380" height="340" fill="#e8f7fb" stroke="#19b2d6" stroke-dasharray="4 3" rx="6"/>
+              <text x="420" y="30" text-anchor="middle" font-size="10" fill="#0a6a85" font-family="Lucida Grande,Helvetica,sans-serif" font-weight="bold">INTERNAL TRUSTED ZONE (engineering-managed)</text>
+
+              <rect x="630" y="10" width="240" height="340" fill="#fdeaea" stroke="#ec3b37" stroke-dasharray="4 3" rx="6"/>
+              <text x="750" y="30" text-anchor="middle" font-size="10" fill="#8a1c1a" font-family="Lucida Grande,Helvetica,sans-serif" font-weight="bold">EXTERNAL/3RD-PARTY APIs</text>
+
+              <!-- Browser -->
+              <rect x="40" y="60" width="140" height="60" rx="4" fill="url(#darkGrad)"/>
+              <text x="110" y="85" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold" font-family="Lucida Grande,Helvetica,sans-serif">Browser Client</text>
+              <text x="110" y="102" text-anchor="middle" fill="#ccc" font-size="9" font-family="ui-monospace,monospace">DocSanctum SPA</text>
+
+              <text x="110" y="150" text-anchor="middle" font-size="9" fill="#555" font-family="Lucida Grande,Helvetica,sans-serif">no API keys here</text>
+              <text x="110" y="162" text-anchor="middle" font-size="9" fill="#555" font-family="Lucida Grande,Helvetica,sans-serif">session cookie + CSRF only</text>
+
+              <!-- Gateway -->
+              <rect x="260" y="60" width="160" height="80" rx="4" fill="#159c92"/>
+              <text x="340" y="85" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold" font-family="Lucida Grande,Helvetica,sans-serif">Publishing Gateway</text>
+              <text x="340" y="100" text-anchor="middle" fill="#fff" font-size="9" font-family="ui-monospace,monospace">FastAPI / mTLS internal</text>
+              <text x="340" y="116" text-anchor="middle" fill="#fff" font-size="9" font-family="Lucida Grande,Helvetica,sans-serif">authn · authz · audit · transform</text>
+              <text x="340" y="130" text-anchor="middle" fill="#fff" font-size="9" font-family="Lucida Grande,Helvetica,sans-serif">step-up auth · CSRF · rate-limit</text>
+
+              <!-- Workers -->
+              <rect x="260" y="170" width="160" height="60" rx="4" fill="#5e5e5e"/>
+              <text x="340" y="195" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold" font-family="Lucida Grande,Helvetica,sans-serif">Worker Pool</text>
+              <text x="340" y="212" text-anchor="middle" fill="#ccc" font-size="9" font-family="Lucida Grande,Helvetica,sans-serif">retries · backoff · DLQ</text>
+
+              <!-- Vault -->
+              <rect x="450" y="60" width="130" height="60" rx="4" fill="#262626"/>
+              <text x="515" y="84" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold" font-family="Lucida Grande,Helvetica,sans-serif">Secrets Vault</text>
+              <text x="515" y="100" text-anchor="middle" fill="#ccc" font-size="9" font-family="ui-monospace,monospace">HashiCorp / similar</text>
+              <text x="515" y="113" text-anchor="middle" fill="#ccc" font-size="9" font-family="Lucida Grande,Helvetica,sans-serif">sealed at rest</text>
+
+              <!-- Audit log + DB -->
+              <rect x="450" y="170" width="130" height="60" rx="4" fill="#3a3a3a"/>
+              <text x="515" y="194" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold" font-family="Lucida Grande,Helvetica,sans-serif">Postgres + Audit</text>
+              <text x="515" y="210" text-anchor="middle" fill="#ccc" font-size="9" font-family="Lucida Grande,Helvetica,sans-serif">drafts, history</text>
+              <text x="515" y="222" text-anchor="middle" fill="#ccc" font-size="9" font-family="Lucida Grande,Helvetica,sans-serif">hash-chained log → SIEM</text>
+
+              <!-- Targets -->
+              <rect x="660" y="50" width="180" height="44" rx="4" fill="#fff" stroke="#ec3b37" stroke-width="2"/>
+              <text x="750" y="68" text-anchor="middle" fill="#0d6b64" font-size="11" font-weight="bold" font-family="Lucida Grande,Helvetica,sans-serif">Knowledge Base</text>
+              <text x="750" y="83" text-anchor="middle" fill="#555" font-size="9" font-family="ui-monospace,monospace">x-api-key header</text>
+
+              <rect x="660" y="110" width="180" height="44" rx="4" fill="#fff" stroke="#ec3b37" stroke-width="2"/>
+              <text x="750" y="128" text-anchor="middle" fill="#0d6b64" font-size="11" font-weight="bold" font-family="Lucida Grande,Helvetica,sans-serif">HubSpot (BSS)</text>
+              <text x="750" y="143" text-anchor="middle" fill="#555" font-size="9" font-family="ui-monospace,monospace">per-function API key</text>
+
+              <rect x="660" y="170" width="180" height="44" rx="4" fill="#fff" stroke="#ec3b37" stroke-width="2"/>
+              <text x="750" y="188" text-anchor="middle" fill="#0d6b64" font-size="11" font-weight="bold" font-family="Lucida Grande,Helvetica,sans-serif">Custom Knowledge Management System</text>
+              <text x="750" y="203" text-anchor="middle" fill="#555" font-size="9" font-family="ui-monospace,monospace">basic auth + mTLS</text>
+
+              <!-- Engineering label -->
+              <rect x="260" y="270" width="320" height="60" rx="4" fill="#fff" stroke="#999" stroke-dasharray="3 3"/>
+              <text x="420" y="290" text-anchor="middle" fill="#444" font-size="10" font-weight="bold" font-family="Lucida Grande,Helvetica,sans-serif">DEPLOYMENT TARGET</text>
+              <text x="420" y="305" text-anchor="middle" fill="#555" font-size="10" font-family="Lucida Grande,Helvetica,sans-serif">Engineering-managed internal host or container.</text>
+              <text x="420" y="318" text-anchor="middle" fill="#555" font-size="10" font-family="Lucida Grande,Helvetica,sans-serif">No public ingress. SSO via existing IdP. Reverse proxy + WAF.</text>
+
+              <!-- Arrows -->
+              <line x1="180" y1="90" x2="260" y2="90" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+              <text x="220" y="80" text-anchor="middle" font-size="9" fill="#444" font-family="ui-monospace,monospace">HTTPS</text>
+
+              <line x1="420" y1="90" x2="450" y2="90" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+              <line x1="420" y1="200" x2="450" y2="200" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+              <line x1="340" y1="140" x2="340" y2="170" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+
+              <line x1="420" y1="195" x2="660" y2="75" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <line x1="420" y1="200" x2="660" y2="132" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <line x1="420" y1="205" x2="660" y2="190" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Component responsibilities</div>
+        <div class="panel-body">
+          <table class="tbl">
+            <thead><tr><th>Component</th><th>Owns</th><th>Does NOT</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>Browser SPA</b></td>
+                <td>UI, markdown editing, client-side validation, draft autosave to gateway</td>
+                <td>Hold any 3rd-party API key. Talk directly to Knowledge Base/HubSpot/Custom Knowledge Management System.</td>
+              </tr>
+              <tr>
+                <td><b>Publishing Gateway</b></td>
+                <td>SSO+MFA verification, RBAC, request signing, transform pipeline, audit emission, CSRF, rate-limit, content scrubbing</td>
+                <td>Persist secrets. Hold long-lived bearer tokens in memory.</td>
+              </tr>
+              <tr>
+                <td><b>Worker Pool</b></td>
+                <td>Outbound API calls to targets, retry with backoff, dead-letter queue, per-target circuit breakers</td>
+                <td>Accept submissions directly from anything but the gateway.</td>
+              </tr>
+              <tr>
+                <td><b>Secrets Vault</b></td>
+                <td>Stores Knowledge Base API key, HubSpot per-function keys, Custom Knowledge Management System credential. Auto-rotation hooks.</td>
+                <td>Be reachable from the user zone. Be queryable without a sealed-vault unseal.</td>
+              </tr>
+              <tr>
+                <td><b>Postgres</b></td>
+                <td>Drafts, document versions, publish history, queue state</td>
+                <td>Hold the audit log alone — that is hash-chained and forwarded to SIEM.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Local deployment notes</div>
+        <div class="panel-body">
+          <p style="font-size:11px;">Per the original requirement, the entire stack runs on internal infrastructure managed by Engineering. There is no SaaS dependency. The reference deployment is a single Docker Compose file:</p>
+          <pre class="codeblock"><span class="com"># docker-compose.yml — reference layout, owned by Engineering</span>
+services:
+  gateway:        <span class="com"># FastAPI; behind nginx + WAF</span>
+    image: aeglos/docsanctum-gateway:0.3
+    env_file: /etc/docsanctum/gateway.env
+    networks: [internal]
+  worker:         <span class="com"># N replicas; pulls jobs from Postgres LISTEN/NOTIFY</span>
+    image: aeglos/docsanctum-worker:0.3
+    deploy: { replicas: 4 }
+    networks: [internal, egress-allowed]
+  postgres:
+    image: postgres:16
+    volumes: [pgdata:/var/lib/postgresql/data]
+    networks: [internal]
+  vault:          <span class="com"># sealed; unseal keys held by 2 of 3 engineers</span>
+    image: hashicorp/vault:1.16
+    networks: [internal]
+  proxy:
+    image: nginx:1.27
+    ports: ["443:443"]
+    networks: [internal, edge]
+
+networks:
+  edge:           { driver: bridge }
+  internal:       { internal: true }
+  egress-allowed: { driver: bridge }   <span class="com"># only worker network reaches the internet</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECURITY ============ -->
+    <section id="view-security" class="view">
+      <div class="page-header"><div><div class="crumbs">Reference › Security</div><h1>Security Model</h1></div></div>
+
+      <div class="alert err">
+        <b>Threat model summary</b>
+        The console multiplies blast radius. A single compromised author can corrupt knowledge across Knowledge Base, HubSpot Provider Alerts, and Custom Knowledge Management System simultaneously. The controls below exist specifically to keep that worst case from being silent.
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head">Authentication &amp; Session</div>
+          <div class="panel-body">
+            <ul style="font-size:11px; margin: 0; padding-left: 18px;">
+              <li><b>SSO via existing IdP</b> (SAML/OIDC) — no local password store. Inherits Aeglos MFA policy.</li>
+              <li><b>Step-up auth</b> required at publish — re-prompt for password or TOTP. Session cookie alone is insufficient.</li>
+              <li>Session cookies: <span class="kbd">HttpOnly</span> · <span class="kbd">Secure</span> · <span class="kbd">SameSite=Strict</span> · 8 hour absolute expiry, 30 minute idle.</li>
+              <li>Per-request CSRF token bound to session, rotated on privilege change.</li>
+              <li>No JWTs in localStorage. Ever.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">Authorization (RBAC)</div>
+          <div class="panel-body">
+            <table class="tbl">
+              <thead><tr><th>Role</th><th>Can do</th></tr></thead>
+              <tbody>
+                <tr><td><b>Viewer</b></td><td>Read drafts, library, history, audit (own actions only)</td></tr>
+                <tr><td><b>Editor</b></td><td>+ Create/edit drafts, save, request review</td></tr>
+                <tr><td><b>Publisher</b></td><td>+ Publish to non-partner targets (Custom Knowledge Management System, internal)</td></tr>
+                <tr><td><b>Partner Publisher</b></td><td>+ Publish to specific partner namespaces only</td></tr>
+                <tr><td><b>Admin</b></td><td>+ Manage targets, routing rules, RBAC, view full audit</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Secrets handling</div>
+        <div class="panel-body">
+          <ul style="font-size:11px;">
+            <li>All downstream credentials (Knowledge Base API key, HubSpot per-function keys, Custom Knowledge Management System basic auth) live exclusively in the Vault. They are <em>never</em> in env files, container images, source, or browser storage.</li>
+            <li>Workers pull short-lived leases at job time. A leaked lease expires within minutes.</li>
+            <li>Vault is sealed; unseal requires 2-of-3 keys held by separate engineers.</li>
+            <li>Every secret read is logged to the audit chain.</li>
+            <li>API keys rotated at minimum quarterly; rotation is automated where the downstream supports it.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Input handling &amp; transform safety</div>
+        <div class="panel-body">
+          <ul style="font-size:11px;">
+            <li>Markdown is parsed server-side (in the gateway, not the browser) using a hardened parser with HTML disabled. Raw HTML in author input is <em>stripped</em>, not sanitized — sanitization is a known historical XSS source.</li>
+            <li>Slugs are validated against <span class="kbd">^[a-z0-9-]{3,80}$</span> before any URL construction.</li>
+            <li>All payloads to Knowledge Base / HubSpot are constructed from a typed schema, never string-templated. Injection attacks against downstream systems are eliminated by construction.</li>
+            <li>The gateway enforces a per-request size limit (256KB) and a per-author daily publish quota.</li>
+            <li>Outbound traffic is restricted at the network level — only the worker network can reach the internet, only on 443, only to allowlisted hostnames (kb.com.au, hubspot.example.com, kms.example.com).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Audit &amp; non-repudiation</div>
+        <div class="panel-body">
+          <ul style="font-size:11px;">
+            <li>Every authenticated action is appended to a hash-chained log in Postgres before any external API call.</li>
+            <li>Each entry includes: timestamp (UTC, monotonic), actor, action, resource, request hash, prior-entry hash, source IP, user agent.</li>
+            <li>The chain is forwarded to the SIEM in near real-time. A successful gateway-only compromise cannot rewrite history without breaking the chain at the SIEM endpoint.</li>
+            <li>Audit log is read-only from the application. Direct DB writes from outside the gateway role are denied at the Postgres role level.</li>
+            <li>Author identity is preserved in the downstream payload (Knowledge Base feedback content, HubSpot Add Note text) so the BSS-side audit can be cross-referenced.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Failure-mode honesty</div>
+        <div class="panel-body">
+          <p style="font-size:11px;">The console is explicit about partial-failure states because hiding them caused most of the duplicate-posting problem this is meant to solve.</p>
+          <table class="tbl">
+            <thead><tr><th>Scenario</th><th>What happens</th></tr></thead>
+            <tbody>
+              <tr><td>Knowledge Base down, HubSpot OK</td><td>HubSpot Provider Alert publishes immediately. Knowledge Base job enters retry queue. Author is notified. Library shows partial-published state.</td></tr>
+              <tr><td>HubSpot down, Knowledge Base OK</td><td>Knowledge Base publishes. HubSpot job enters retry queue. Author can manually post the alert via fallback link if urgent.</td></tr>
+              <tr><td>Gateway crashes mid-fan-out</td><td>Audit entry exists, individual target jobs are atomic — on restart, jobs without success records are re-queued. Idempotency key on each target prevents duplicate posts.</td></tr>
+              <tr><td>Vault sealed</td><td>Workers cannot get credentials, jobs queue. Gateway returns 503 on publish attempts with a clear message. No silent failure.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ADAPTERS ============ -->
+    <section id="view-adapters" class="view">
+      <div class="page-header"><div><div class="crumbs">Reference › Adapter Contract</div><h1>Adapter Contract</h1></div></div>
+
+      <div class="alert info">
+        <b>Why adapters?</b>
+        Each downstream system speaks a different dialect. Knowledge Base has rich record types but no native "broadcast." HubSpot has Provider Alerts and account-scoped Notes but no article schema. Custom Knowledge Management System is plain custom knowledge management system text. The adapter pattern keeps transform logic isolated, swappable, and individually testable. Adding a fifth target later doesn't require touching the others.
+      </div>
+
+      <div class="adapter-card">
+        <h4>Knowledge Base Adapter <span class="tiny mono muted">kb@2.7</span></h4>
+        <div class="meta">Source: <span class="mono">kb Search API Reference v2.7 (15 July 2022)</span></div>
+        <p style="font-size:11px; margin: 6px 0;">Canonical document → Knowledge Base record. Maps document type 1:1 to Knowledge Base's native types. Authentication via <span class="kbd">x-api-key</span> header.</p>
+        <ul>
+          <li><b>Document Note</b> → POST equivalent endpoint with <span class="mono">{ title, permalink, content (HTML), related_links[] }</span></li>
+          <li><b>Work Instruction</b> → record with <span class="mono">content.steps[]</span> and <span class="mono">content.links[]</span> for branching flows</li>
+          <li><b>Hub</b> → record with <span class="mono">content.start_content</span>, <span class="mono">content.hub_links[]</span>, <span class="mono">content.end_content</span></li>
+          <li><b>Compass</b> → record with <span class="mono">content.questions[]</span>, <span class="mono">content.outcome_map[]</span>, <span class="mono">content.outcomes[]</span></li>
+          <li><b>Announcement</b> → posted via the announcements endpoint (<span class="mono">/kb-api/announcements</span>)</li>
+          <li><b>Idempotency:</b> permalink slug serves as natural key; existing record with the same slug is updated, not duplicated.</li>
+          <li><b>Retry-safe:</b> all operations use deterministic slugs; double-execution produces no duplicate.</li>
+        </ul>
+      </div>
+
+      <div class="adapter-card">
+        <h4>HubSpot Adapter <span class="tiny mono muted">aeglos-hd@4.1.6</span></h4>
+        <div class="meta">Source: <span class="mono">Aeglos HubSpot API Development Guide v4.1.6</span> · Per-function keys</div>
+        <p style="font-size:11px; margin: 6px 0;">HubSpot is a BSS API (customer/service provisioning), <em>not</em> a knowledge base. The adapter routes a single canonical submission to the appropriate HubSpot surface based on type and routing rules. The most common operation for KB-style content is <b>Add Provider Alert</b> — the broadcast surface used by support staff.</p>
+        <ul>
+          <li><b>Add Provider Alert</b> (default for Document Note, Announcement, Work Instruction): builds a short alert payload with title, summary, deep-link to the Knowledge Base permalink, and severity inferred from tags (<span class="kbd">urgent</span> → high).</li>
+          <li><b>Add Note</b> (when document is account-scoped): attaches the document title + summary + Knowledge Base link as a customer/account note. Triggered when <span class="kbd">account-scoped</span> tag is present and a customer ID is provided.</li>
+          <li><b>Add Ticket</b> (manual override only): not used for ordinary KB publishing — available as an explicit author choice when documenting an active incident.</li>
+          <li><b>Hub / Compass:</b> not published to HubSpot — the surface cannot represent them. The author is informed during preview.</li>
+          <li><b>Idempotency:</b> client-side request ID echoed in the alert subject; the worker checks for an existing alert with the same ID before posting.</li>
+          <li><b>Footprint:</b> deep-link points back to the Knowledge Base record so the alert never duplicates the body — it points to the canonical source.</li>
+        </ul>
+      </div>
+
+      <div class="adapter-card">
+        <h4>Custom Knowledge Management System Adapter <span class="tiny mono muted">Custom Knowledge Management System@xmlrpc</span></h4>
+        <div class="meta">XML-RPC <span class="mono">custom knowledge management system.putPage</span> · namespaced by partner</div>
+        <p style="font-size:11px; margin: 6px 0;">Read-only mirror for archival and on-prem search. Markdown is converted to Custom Knowledge Management System syntax via a deterministic transformer. Page namespace is derived from <span class="mono">partner</span> field.</p>
+        <ul>
+          <li><b>Path:</b> <span class="mono">{partner_or_internal}:kb:{slug}</span></li>
+          <li><b>Idempotency:</b> putPage is naturally idempotent on the namespace path.</li>
+          <li><b>Transform:</b> Markdown → Custom Knowledge Management System via a pure function with golden-file tests (no external dependencies).</li>
+          <li><b>Failure handling:</b> Custom Knowledge Management System failures never block other targets. The custom knowledge management system is treated as eventually-consistent.</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Adapter interface (gateway-side, Python sketch)</div>
+        <div class="panel-body">
+<pre class="codeblock"><span class="com"># adapters/base.py</span>
+<span class="key">from</span> abc <span class="key">import</span> ABC, abstractmethod
+<span class="key">from</span> dataclasses <span class="key">import</span> dataclass
+
+<span class="key">@dataclass</span>
+<span class="key">class</span> CanonicalDoc:
+    id: str
+    title: str
+    slug: str
+    type: str            <span class="com"># documentnote | workinstruction | hub | compass | announcement</span>
+    partner: str | None
+    body_markdown: str
+    tags: list[str]
+    author: str
+    change_note: str
+
+<span class="key">@dataclass</span>
+<span class="key">class</span> PublishResult:
+    target: str
+    ok: bool
+    external_id: str | None
+    error: str | None
+    request_hash: str    <span class="com"># for audit chain</span>
+    duration_ms: int
+
+<span class="key">class</span> Adapter(ABC):
+    name: str
+    version: str
+
+    <span class="key">@abstractmethod</span>
+    <span class="key">def</span> can_publish(self, doc: CanonicalDoc) -> bool: ...
+
+    <span class="key">@abstractmethod</span>
+    <span class="key">def</span> transform(self, doc: CanonicalDoc) -> dict: ...
+
+    <span class="key">@abstractmethod</span>
+    <span class="key">def</span> publish(self, doc: CanonicalDoc, secret_lease) -> PublishResult: ...
+
+    <span class="key">@abstractmethod</span>
+    <span class="key">def</span> health_check(self) -> bool: ...
+</pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   POC behavior — all data is in-memory, all API calls mocked
+   ============================================================ */
+
+const PARTNERS = {
+  northwind: "Northwind Fiber",
+  meridian:  "Meridian Broadband",
+  copperline:"Copperline Networks",
+  harbor:    "Harbor Telecom",
+  ridgeline: "Ridgeline Communications",
+  summit:    "Summit Fiber",
+  delta:     "Delta Connect",
+  basin:     "Basin Utilities"
+};
+
+const TAGS = ["policy", "procedure", "escalation", "outage", "billing", "provisioning", "urgent", "internal-only", "account-scoped", "training"];
+
+const TARGETS = [
+  { id: "kb",    name: "Knowledge Base",                  detail: "aeglos.kb.com.au",  state: "ok",   defaultOn: true,  supports: ["documentnote","workinstruction","hub","compass","announcement"] },
+  { id: "hd_alert",   name: "HubSpot Provider Alert",  detail: "/api/alert/add",        state: "ok",   defaultOn: true,  supports: ["documentnote","workinstruction","announcement"] },
+  { id: "hd_note",    name: "HubSpot Add Note",        detail: "/api/note/add",         state: "ok",   defaultOn: false, supports: ["documentnote","announcement"] },
+  { id: "Custom Knowledge Management System",   name: "Custom Knowledge Management System Mirror",          detail: "kms.example.com",         state: "warn", defaultOn: true,  supports: ["documentnote","workinstruction","hub","compass","announcement"] }
+];
+
+const SAMPLE_DOC = {
+  title: "Summit Fiber — Premier Reconnect Policy",
+  slug: "summit-premier-reconnect-policy",
+  type: "documentnote",
+  partner: "summit",
+  tags: ["policy", "procedure", "billing"],
+  body: `# Premier Reconnect Policy
+
+When a Summit Fiber subscriber on the Premier plan is disconnected for non-payment, technicians should follow this temp-reconnect procedure.
+
+## Eligibility
+
+- Account in good standing for prior 90 days
+- No more than 2 prior reconnects in the trailing 12 months
+- Customer commits to payment within the temp-reconnect window
+
+## Procedure
+
+1. Verify identity via account PIN or last 4 of payment method
+2. Apply temporary reconnect for **4 days** from time of authorization (per Jesse DuPont guidance, written confirmation on file)
+3. Document the reconnect in HubSpot under the customer's notes
+4. Set follow-up flag for the day before the temp-reconnect expires
+
+## Escalation
+
+If the customer disputes the disconnect cause or claims billing error, escalate per the standard Summit Fiber escalation flow rather than extending the reconnect.`,
+  changeNote: "Initial publish — codifying the 4-day window per Jesse's email of 2026-02-14"
+};
+
+const DRAFTS = [
+  { id: "d-091", title: "Northwind — L3 Triage Quick Reference", type: "workinstruction", partner: "northwind", saved: "2026-04-26 16:42", targets: ["kb","Custom Knowledge Management System"] },
+  { id: "d-090", title: "Meridian Streaming TV Knowledge Gap Resolution", type: "documentnote", partner: "meridian", saved: "2026-04-25 11:18", targets: ["kb","hd_alert","Custom Knowledge Management System"] },
+  { id: "d-089", title: "Copperline — Routing Revision", type: "documentnote", partner: "copperline", saved: "2026-04-22 09:03", targets: ["kb","Custom Knowledge Management System"] }
+];
+
+const LIBRARY = [
+  { id: "kb-1042", title: "Summit Fiber — Caller ID Routing Fix", type: "documentnote", partner: "summit", kb: "210", hd_alert: "PA-77821", updated: "2026-04-21" },
+  { id: "kb-1041", title: "Harbor Telecom Knowledge Base Streaming TV Guide", type: "documentnote", partner: "harbor", kb: "208", hd_alert: "PA-77803", updated: "2026-04-19" },
+  { id: "kb-1040", title: "Ridgeline — NXX Routing Tool Use", type: "workinstruction", partner: "ridgeline", kb: "207", hd_alert: "—", updated: "2026-04-15" },
+  { id: "kb-1039", title: "Aeglos Admin Tools Reference", type: "hub", partner: "", kb: "201", hd_alert: "—", updated: "2026-04-12" },
+  { id: "kb-1038", title: "Delta Connect — Dispatch Compass", type: "compass", partner: "delta", kb: "199", hd_alert: "—", updated: "2026-04-08" }
+];
+
+const QUEUE = [
+  { sub: "kb-1042", target: "Custom Knowledge Management System Mirror", state: "retrying", attempts: 3, error: "504 Gateway Timeout from xmlrpc", next: "in 8m" },
+  { sub: "d-090-pre", target: "HubSpot Provider Alert", state: "failed", attempts: 6, error: "401 Unauthorized — API key rotation in progress", next: "manual intervention required" }
+];
+
+const HISTORY = [
+  { when: "2026-04-27 11:42", doc: "Summit Fiber — Caller ID Routing Fix", author: "j.rivera", targets: "Knowledge Base · HD Alert · Custom Knowledge Management System", result: "ok" },
+  { when: "2026-04-27 09:15", doc: "Northwind — Support Alignment Update", author: "s.patel", targets: "Knowledge Base · HD Alert", result: "ok" },
+  { when: "2026-04-26 17:03", doc: "Copperline — Escalation Dispute Resolution", author: "j.rivera", targets: "Knowledge Base · Custom Knowledge Management System", result: "partial" },
+  { when: "2026-04-26 14:50", doc: "Meridian 12-month Performance Summary", author: "j.rivera", targets: "Custom Knowledge Management System", result: "ok" },
+  { when: "2026-04-25 16:18", doc: "Harbor — Onboarding Intelligence", author: "s.patel", targets: "Knowledge Base · Custom Knowledge Management System", result: "ok" }
+];
+
+const AUDIT = [
+  { ts: "2026-04-27 11:42:08.221", actor: "j.rivera", action: "publish.fan_out", res: "doc:kb-1042", result: "ok", ip: "10.0.0.18", hash: "a1b9...c4e2" },
+  { ts: "2026-04-27 11:42:07.998", actor: "j.rivera", action: "stepup.verify", res: "session:s_88f1", result: "ok", ip: "10.0.0.18", hash: "fa12...09b1" },
+  { ts: "2026-04-27 11:41:33.502", actor: "j.rivera", action: "draft.save", res: "doc:kb-1042", result: "ok", ip: "10.0.0.18", hash: "5e0c...1d4f" },
+  { ts: "2026-04-27 09:15:44.110", actor: "s.patel", action: "publish.fan_out", res: "doc:d-088", result: "ok", ip: "10.0.0.94", hash: "b774...88a0" },
+  { ts: "2026-04-27 08:50:01.770", actor: "system", action: "secret.rotation_check", res: "vault:kb_key", result: "ok", ip: "127.0.0.1", hash: "0aa1...77fc" },
+  { ts: "2026-04-26 17:03:55.883", actor: "j.rivera", action: "publish.fan_out", res: "doc:kb-1041", result: "partial", ip: "10.0.0.18", hash: "cc91...4422" },
+  { ts: "2026-04-26 17:03:56.012", actor: "system", action: "queue.enqueue_retry", res: "job:hd_alert/kb-1041", result: "ok", ip: "127.0.0.1", hash: "f30b...aa01" }
+];
+
+const HEALTH_EVENTS = [
+  { ts: "2026-04-27 13:42:09", lvl: "ok",   src: "health", msg: "All targets responded under 200ms p95" },
+  { ts: "2026-04-27 13:31:14", lvl: "warn", src: "Custom Knowledge Management System", msg: "p95 latency 2.1s — degraded" },
+  { ts: "2026-04-27 13:00:01", lvl: "info", src: "worker", msg: "Worker pool scaled to 4 replicas (was 3)" },
+  { ts: "2026-04-27 09:00:08", lvl: "ok",   src: "vault", msg: "Sealed-status check OK" },
+  { ts: "2026-04-26 22:00:00", lvl: "audit", src: "siem", msg: "Audit chain verified up to seq 8842" }
+];
+
+/* ---------- state ---------- */
+const state = {
+  view: "compose",
+  targets: TARGETS.map(t => ({ ...t, on: t.defaultOn })),
+  doc: { title:"", slug:"", type:"documentnote", partner:"", tags:[], body:"", changeNote:"" },
+  metaSaved: null
+};
+
+/* ---------- nav ---------- */
+function go(view) {
+  state.view = view;
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  const target = document.getElementById("view-" + view);
+  if (target) target.classList.add("active");
+  document.querySelectorAll(".sidebar a.navitem").forEach(a => {
+    a.classList.toggle("active", a.dataset.go === view);
+  });
+  if (view === "drafts")    renderDrafts();
+  if (view === "library")   renderLibrary();
+  if (view === "queue")     renderQueue();
+  if (view === "history")   renderHistory();
+  if (view === "audit")     renderAudit();
+  if (view === "health")    renderHealth();
+  window.scrollTo(0, 0);
+}
+document.body.addEventListener("click", e => {
+  const a = e.target.closest("[data-go]");
+  if (a) { e.preventDefault(); go(a.dataset.go); }
+});
+
+/* ---------- compose: tag chips ---------- */
+function renderTagChips() {
+  const wrap = document.getElementById("tagChips");
+  wrap.innerHTML = "";
+  TAGS.forEach(tag => {
+    const c = document.createElement("span");
+    c.className = "chip" + (state.doc.tags.includes(tag) ? " on" : "");
+    c.textContent = tag;
+    c.onclick = () => {
+      if (state.doc.tags.includes(tag)) state.doc.tags = state.doc.tags.filter(t => t !== tag);
+      else state.doc.tags.push(tag);
+      renderTagChips();
+      renderTargets();
+      renderPreview();
+    };
+    wrap.appendChild(c);
+  });
+}
+
+/* ---------- compose: targets ---------- */
+function applyRouting() {
+  // mirror the routing rule table
+  const t = state.doc.type;
+  const tags = state.doc.tags;
+  const partner = state.doc.partner;
+
+  const enabled = new Set();
+
+  if (tags.includes("internal-only")) {
+    enabled.add("Custom Knowledge Management System");
+  } else if (t === "announcement") {
+    enabled.add("kb");
+    enabled.add("hd_alert");
+    enabled.add("Custom Knowledge Management System");
+  } else if (partner && t === "documentnote") {
+    enabled.add("kb");
+    enabled.add("hd_alert");
+    enabled.add("Custom Knowledge Management System");
+  } else if (partner && t === "compass") {
+    enabled.add("kb");
+  } else if (t === "workinstruction") {
+    enabled.add("kb");
+    enabled.add("hd_alert");
+    enabled.add("Custom Knowledge Management System");
+  } else if (t === "hub") {
+    enabled.add("kb");
+    enabled.add("Custom Knowledge Management System");
+  } else {
+    enabled.add("kb");
+    enabled.add("Custom Knowledge Management System");
+  }
+
+  if (tags.includes("account-scoped")) enabled.add("hd_note");
+
+  state.targets.forEach(tg => {
+    tg.on = enabled.has(tg.id) && tg.supports.includes(t);
+  });
+}
+
+function renderTargets() {
+  applyRouting();
+  const list = document.getElementById("targetList");
+  list.innerHTML = "";
+  state.targets.forEach((t, idx) => {
+    const supported = t.supports.includes(state.doc.type);
+    const row = document.createElement("div");
+    row.className = "target-row";
+    row.innerHTML = `
+      <div><span class="dot ${t.state}"></span></div>
+      <div>
+        <div class="target-name">${t.name}</div>
+        <div class="target-detail">${t.detail}</div>
+        ${!supported ? '<div class="tiny" style="color:var(--aeglos-error);">Not supported for this document type</div>' : ''}
+      </div>
+      <div class="target-state">${t.state === "ok" ? "ready" : t.state === "warn" ? "degraded" : "error"}</div>
+      <div>
+        <label class="switch">
+          <input type="checkbox" ${t.on ? "checked" : ""} ${!supported ? "disabled" : ""} data-target="${t.id}">
+          <span class="slider"></span>
+        </label>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+  list.querySelectorAll("input[type=checkbox]").forEach(cb => {
+    cb.onchange = () => {
+      const tg = state.targets.find(x => x.id === cb.dataset.target);
+      if (tg) tg.on = cb.checked;
+    };
+  });
+}
+
+/* ---------- compose: preview ---------- */
+function escapeHtml(s) { return (s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function mdToHtml(md) {
+  // tiny safe renderer — POC only; real impl is server-side hardened
+  if (!md) return '<div class="muted tiny">Body is empty.</div>';
+  let html = escapeHtml(md);
+  html = html.replace(/^### (.*)$/gm, "<h3>$1</h3>");
+  html = html.replace(/^## (.*)$/gm,  "<h2>$1</h2>");
+  html = html.replace(/^# (.*)$/gm,   "<h1>$1</h1>");
+  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+  // ordered list blocks
+  html = html.replace(/(?:^\d+\. .*(?:\n|$))+/gm, block => {
+    const items = block.trim().split(/\n/).map(l => l.replace(/^\d+\.\s*/, "")).map(t => "<li>" + t + "</li>").join("");
+    return "<ol>" + items + "</ol>";
+  });
+  // unordered list blocks
+  html = html.replace(/(?:^- .*(?:\n|$))+/gm, block => {
+    const items = block.trim().split(/\n/).map(l => l.replace(/^-\s*/, "")).map(t => "<li>" + t + "</li>").join("");
+    return "<ul>" + items + "</ul>";
+  });
+  // paragraphs (anything left between blank lines that's not already tagged)
+  html = html.split(/\n{2,}/).map(p => {
+    if (/^<(h\d|ul|ol|pre)/.test(p.trim())) return p;
+    return "<p>" + p.replace(/\n/g, "<br>") + "</p>";
+  }).join("\n");
+  return html;
+}
+
+function jsonHl(obj) {
+  const s = JSON.stringify(obj, null, 2);
+  return escapeHtml(s)
+    .replace(/(&quot;[^&]+?&quot;)(\s*:)/g, '<span class="key">$1</span>$2')
+    .replace(/:\s*(&quot;.*?&quot;)/g, ': <span class="str">$1</span>')
+    .replace(/:\s*(true|false|null)/g, ': <span class="num">$1</span>')
+    .replace(/:\s*(-?\d+(\.\d+)?)/g, ': <span class="num">$1</span>');
+}
+
+function buildKnowledgeBasePayload() {
+  const d = state.doc;
+  const baseHtml = mdToHtml(d.body);
+  const base = {
+    operation: "upsert",
+    apikey: "<vault:kb_api_key>",
+    record: {
+      type: d.type,
+      title: d.title || "(untitled)",
+      permalink: d.slug || "(auto)",
+    }
+  };
+  if (d.type === "documentnote" || d.type === "announcement") {
+    base.record.content = baseHtml;
+  } else if (d.type === "workinstruction") {
+    base.record.content = { steps: [{ id: "1", title: "Step 1", content: "<p>...</p>" }], links: [] };
+  } else if (d.type === "hub") {
+    base.record.content = { start_content: "<p>...</p>", hub_links: [], end_content: "" };
+  } else if (d.type === "compass") {
+    base.record.content = { start_content: "<p>...</p>", questions: [], outcome_map: [], outcomes: [] };
+  }
+  base.record.related_links = [];
+  base.idempotency_key = "ds-" + (d.slug || "draft") + "-v1";
+  return base;
+}
+
+function buildHubSpotPayload() {
+  const d = state.doc;
+  const partnerName = PARTNERS[d.partner] || "Internal";
+  const sev = d.tags.includes("urgent") ? "high" : "normal";
+  const summary = (d.body || "").split("\n").filter(l => l.trim() && !l.startsWith("#")).slice(0,2).join(" ").slice(0,280);
+  return {
+    function: "AddProviderAlert",
+    apikey: "<vault:hd_alert_api_key>",
+    payload: {
+      title: "[" + partnerName + "] " + (d.title || "(untitled)"),
+      severity: sev,
+      summary: summary || "(no summary derived from body)",
+      deep_link: "#/" + (d.slug || "{permalink}"),
+      support_categories: d.tags.filter(t => !["internal-only","account-scoped","urgent"].includes(t)),
+      author: "j.rivera",
+      idempotency_key: "ds-alert-" + (d.slug || "draft") + "-v1"
+    }
+  };
+}
+
+function buildKmsPayload() {
+  const d = state.doc;
+  const ns = d.partner ? d.partner : "internal";
+  return {
+    method: "custom knowledge management system.putPage",
+    page: ns + ":kb:" + (d.slug || "draft"),
+    content_format: "Custom Knowledge Management System",
+    summary: d.changeNote || "(no change note)",
+    minor: false,
+    auth: "<vault:Custom Knowledge Management System_basic>"
+  };
+}
+
+function renderPreview() {
+  document.getElementById("previewRendered").innerHTML =
+    `<h2>${escapeHtml(state.doc.title || "(untitled)")}</h2>
+     <div class="tiny muted">${escapeHtml(PARTNERS[state.doc.partner] || "Internal")} · ${escapeHtml(state.doc.type)} · /${escapeHtml(state.doc.slug || "(slug)")}</div>
+     <hr class="div">
+     ${mdToHtml(state.doc.body)}`;
+  document.getElementById("previewKnowledgeBase").innerHTML  = jsonHl(buildKnowledgeBasePayload());
+  document.getElementById("previewHubSpot").innerHTML = jsonHl(buildHubSpotPayload());
+  document.getElementById("previewKms").innerHTML = jsonHl(buildKmsPayload());
+}
+
+document.querySelectorAll("#previewTabs .tab").forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll("#previewTabs .tab").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    ["rendered","kb","hubspot","Custom Knowledge Management System"].forEach(name => {
+      document.getElementById("preview" + name.charAt(0).toUpperCase() + name.slice(1)).style.display = "none";
+    });
+    document.getElementById("preview" + t.dataset.tab.charAt(0).toUpperCase() + t.dataset.tab.slice(1)).style.display = "";
+  };
+});
+
+/* ---------- compose: form bindings ---------- */
+function slugify(s) {
+  return (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80);
+}
+function bindInput(id, key, after) {
+  const el = document.getElementById(id);
+  el.addEventListener("input", () => {
+    state.doc[key] = el.value;
+    if (key === "title" && !state.doc._slugTouched) {
+      state.doc.slug = slugify(el.value);
+      document.getElementById("docSlug").value = state.doc.slug;
+    }
+    renderPreview();
+    renderTargets();
+    if (after) after();
+  });
+}
+bindInput("docTitle", "title");
+document.getElementById("docSlug").addEventListener("input", e => { state.doc.slug = e.target.value; state.doc._slugTouched = true; renderPreview(); });
+document.getElementById("docType").addEventListener("change", e => { state.doc.type = e.target.value; renderPreview(); renderTargets(); });
+document.getElementById("docPartner").addEventListener("change", e => { state.doc.partner = e.target.value; renderPreview(); renderTargets(); });
+bindInput("docBody", "body");
+bindInput("changeNote", "changeNote");
+
+document.getElementById("loadSampleBtn").addEventListener("click", () => {
+  state.doc = { ...SAMPLE_DOC, _slugTouched: true };
+  document.getElementById("docTitle").value = SAMPLE_DOC.title;
+  document.getElementById("docSlug").value = SAMPLE_DOC.slug;
+  document.getElementById("docType").value = SAMPLE_DOC.type;
+  document.getElementById("docPartner").value = SAMPLE_DOC.partner;
+  document.getElementById("docBody").value = SAMPLE_DOC.body;
+  document.getElementById("changeNote").value = SAMPLE_DOC.changeNote;
+  renderTagChips();
+  renderTargets();
+  renderPreview();
+});
+
+document.getElementById("saveDraftBtn").addEventListener("click", () => {
+  state.metaSaved = new Date().toLocaleString();
+  document.getElementById("metaSaved").textContent = state.metaSaved;
+  document.getElementById("metaId").textContent = "draft-" + Math.random().toString(16).slice(2,10);
+});
+
+/* ---------- publish modal ---------- */
+function openPublishModal() {
+  if (!state.doc.title) { alert("Title is required."); return; }
+  if (!state.doc.changeNote) { alert("Change note is required at publish."); return; }
+  const enabled = state.targets.filter(t => t.on);
+  if (!enabled.length) { alert("No targets enabled."); return; }
+
+  const tbody = document.querySelector("#publishSummary tbody");
+  tbody.innerHTML = "";
+  enabled.forEach(t => {
+    const op = t.id.startsWith("hd_") ? "POST · "+t.detail : t.id === "kb" ? "Upsert record" : "Put page";
+    const impact = t.id === "hd_alert" ? "Broadcasts to all on-shift techs" :
+                   t.id === "kb" ? "Updates KB record (idempotent on slug)" :
+                   t.id === "Custom Knowledge Management System" ? "Mirrors to namespace " + (state.doc.partner || "internal") + ":kb" :
+                   "Attaches note to account";
+    tbody.innerHTML += `<tr><td><span class="dot idle"></span></td><td><b>${t.name}</b><div class="tiny muted">${t.detail}</div></td><td class="mono">${op}</td><td class="tiny">${impact}</td></tr>`;
+  });
+  document.getElementById("publishLog").innerHTML = "";
+  document.getElementById("publishModal").classList.add("open");
+}
+
+document.getElementById("reviewBtn").addEventListener("click", openPublishModal);
+document.getElementById("cancelPublishBtn").addEventListener("click", () => document.getElementById("publishModal").classList.remove("open"));
+document.getElementById("closePublishBtn").addEventListener("click", e => { e.preventDefault(); document.getElementById("publishModal").classList.remove("open"); });
+
+document.getElementById("confirmPublishBtn").addEventListener("click", async () => {
+  const pwd = document.getElementById("stepupPwd").value;
+  if (!pwd) { alert("Step-up auth required."); return; }
+  const log = document.getElementById("publishLog");
+  const rows = document.querySelectorAll("#publishSummary tbody tr");
+  const enabled = state.targets.filter(t => t.on);
+
+  function push(lvl, src, msg) {
+    const ts = new Date().toISOString().slice(11,19);
+    log.innerHTML += `<div><span class="ts">${ts}</span> <span class="lvl ${lvl}">${lvl.toUpperCase()}</span> <span class="src">[${src}]</span> ${msg}</div>`;
+    log.scrollTop = log.scrollHeight;
+  }
+
+  push("audit", "gateway", "publish.fan_out initiated by j.rivera — request hash 7f9e...4a21");
+  push("info", "gateway", "step-up auth verified · session s_88f1");
+  push("info", "vault", "secret leases issued for: " + enabled.map(e=>e.id).join(", "));
+
+  for (let i = 0; i < enabled.length; i++) {
+    const t = enabled[i];
+    rows[i].querySelector(".dot").className = "dot pending";
+    push("info", t.id, "POST → " + t.detail);
+    await new Promise(r => setTimeout(r, 600 + Math.random()*900));
+
+    // simulate Custom Knowledge Management System sometimes warning, others ok
+    const fail = t.id === "Custom Knowledge Management System" && Math.random() < 0.25;
+    if (fail) {
+      rows[i].querySelector(".dot").className = "dot err";
+      push("err", t.id, "504 Gateway Timeout — enqueued for retry (next attempt in 30s, attempt 1/6)");
+    } else {
+      rows[i].querySelector(".dot").className = "dot ok";
+      const extId = t.id === "kb" ? "211" : t.id === "hd_alert" ? "PA-77840" : t.id === "hd_note" ? "N-44129" : "p:" + (state.doc.partner||"internal") + ":kb:" + state.doc.slug;
+      push("ok", t.id, "200 OK — external_id=" + extId);
+    }
+  }
+
+  push("audit", "gateway", "audit chain entry sealed · seq 8843 · hash a1b9...c4e2");
+  push("ok", "gateway", "publish.fan_out complete");
+});
+
+/* ---------- table renderers ---------- */
+function renderDrafts() {
+  document.querySelector("#draftsTable tbody").innerHTML = DRAFTS.map(d => `
+    <tr>
+      <td><b>${escapeHtml(d.title)}</b><div class="tiny muted">${d.id}</div></td>
+      <td>${d.type}</td>
+      <td>${escapeHtml(PARTNERS[d.partner] || "—")}</td>
+      <td class="mono">${d.saved}</td>
+      <td>${d.targets.map(t => `<span class="kbd">${t}</span>`).join(" ")}</td>
+      <td class="actions"><a href="#" class="btn small" data-go="compose">Open</a></td>
+    </tr>
+  `).join("");
+}
+function renderLibrary() {
+  document.querySelector("#libraryTable tbody").innerHTML = LIBRARY.map(d => `
+    <tr>
+      <td><b>${escapeHtml(d.title)}</b><div class="tiny muted">${d.id}</div></td>
+      <td>${d.type}</td>
+      <td>${escapeHtml(PARTNERS[d.partner] || "—")}</td>
+      <td class="mono">${d.kb}</td>
+      <td class="mono">${d.hd_alert}</td>
+      <td class="mono">${d.updated}</td>
+      <td class="actions"><a href="#" class="btn small">View</a></td>
+    </tr>
+  `).join("");
+}
+function renderQueue() {
+  document.querySelector("#queueTable tbody").innerHTML = QUEUE.map(q => `
+    <tr>
+      <td class="mono">${q.sub}</td>
+      <td>${q.target}</td>
+      <td><span class="dot ${q.state==='failed'?'err':'pending'}"></span> ${q.state}</td>
+      <td class="mono">${q.attempts}/6</td>
+      <td class="tiny">${escapeHtml(q.error)}</td>
+      <td class="mono">${q.next}</td>
+      <td class="actions"><a href="#" class="btn small">Retry</a> <a href="#" class="btn small danger">Cancel</a></td>
+    </tr>
+  `).join("");
+}
+function renderHistory() {
+  document.querySelector("#historyTable tbody").innerHTML = HISTORY.map(h => `
+    <tr>
+      <td class="mono">${h.when}</td>
+      <td><b>${escapeHtml(h.doc)}</b></td>
+      <td>${h.author}</td>
+      <td class="tiny">${h.targets}</td>
+      <td>${h.result === 'ok' ? '<span class="dot ok"></span> ok' : '<span class="dot warn"></span> partial'}</td>
+      <td class="actions"><a href="#" class="btn small">Detail</a></td>
+    </tr>
+  `).join("");
+}
+function renderAudit() {
+  document.querySelector("#auditTable tbody").innerHTML = AUDIT.map(a => `
+    <tr>
+      <td class="mono">${a.ts}</td>
+      <td>${a.actor}</td>
+      <td class="mono">${a.action}</td>
+      <td class="mono">${a.res}</td>
+      <td>${a.result === 'ok' ? '<span class="dot ok"></span>' : '<span class="dot warn"></span>'} ${a.result}</td>
+      <td class="mono">${a.ip}</td>
+      <td class="mono">${a.hash}</td>
+    </tr>
+  `).join("");
+}
+function renderHealth() {
+  const log = document.getElementById("healthLog");
+  log.innerHTML = HEALTH_EVENTS.map(e =>
+    `<div><span class="ts">${e.ts}</span> <span class="lvl ${e.lvl}">${e.lvl.toUpperCase()}</span> <span class="src">[${e.src}]</span> ${escapeHtml(e.msg)}</div>`
+  ).join("");
+}
+
+/* ---------- init ---------- */
+renderTagChips();
+renderTargets();
+renderPreview();
+</script>
+</body>
+</html>

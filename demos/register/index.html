@@ -1,0 +1,1122 @@
+<html>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+.dh-wrap {
+  --fz: 12px;
+  --accent: #159c92;
+  --accent-dark: #0d6b64;
+  --accent-hover: #1cb3a7;
+  --active-bg: #2e1a12;
+  --active-text: #FF7744;
+  font-family: 'Lucida Grande', Helvetica, Arial, sans-serif;
+  font-size: var(--fz);
+  background: #1a1a1a;
+  color: #333;
+  min-height: 600px;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.dh-wrap *, .dh-wrap *::before, .dh-wrap *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.dh-wrap .dh-shell { display: flex; flex-direction: column; height: 85vh; max-height: 900px; min-height: 600px; overflow: hidden; }
+
+/* TOPBAR — height bumped 52px -> 60px, line-heights added to title/sub */
+.dh-wrap .dh-topbar {
+  background: linear-gradient(to bottom, #2a2a2a 0%, #111 100%);
+  border-bottom: 3px solid var(--accent);
+  padding: 0 18px; height: 60px;
+  display: flex; align-items: center; gap: 14px; flex-shrink: 0;
+}
+.dh-wrap .dh-topbar .tb-logo { width: 36px; height: 36px; background: transparent; display: block; flex-shrink: 0; }
+.dh-wrap .dh-topbar .tb-title { font-size: 16px; font-weight: bold; color: #fff; line-height: 1.2; }
+.dh-wrap .dh-topbar .tb-sub { font-size: 9px; color: #aaa; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; line-height: 1.3; }
+.dh-wrap .dh-topbar .tb-div { width: 1px; height: 28px; background: #444; margin: 0 6px; }
+.dh-wrap .dh-topbar .tb-clock-wrap { margin-left: auto; display: flex; align-items: center; gap: 20px; }
+.dh-wrap .dh-topbar .tb-clock { font-size: 11px; color: #ccc; letter-spacing: 0.5px; font-variant-numeric: tabular-nums; }
+.dh-wrap .dh-topbar .tb-clock span { color: #FF7744; font-weight: bold; }
+.dh-wrap .dh-topbar .tb-user { font-size: 10px; color: #888; letter-spacing: 0.3px; display: flex; align-items: center; gap: 5px; }
+.dh-wrap .dh-topbar .tb-user .tb-user-dot { width: 6px; height: 6px; border-radius: 50%; background: #39861f; box-shadow: 0 0 4px #39861f88; }
+.dh-wrap .dh-topbar .tb-user.anon .tb-user-dot { background: #777; box-shadow: none; }
+.dh-wrap .dh-topbar .tb-user b { color: #ccc; }
+
+.dh-wrap .dh-main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+.dh-wrap .dh-sidebar { width: 250px; flex-shrink: 0; background: #222; border-right: 1px solid #333; display: flex; flex-direction: column; overflow: hidden; }
+.dh-wrap .dh-sidebar-search-wrap { padding: 10px 10px 0; }
+.dh-wrap .dh-sidebar-search { width: 100%; padding: 6px 10px; background: #333; border: 1px solid #444; border-radius: 2px; color: #eee; font-family: inherit; font-size: 11px; outline: none; }
+.dh-wrap .dh-sidebar-search:focus { border-color: var(--accent); }
+.dh-wrap .dh-sidebar-search::placeholder { color: #888; }
+.dh-wrap .dh-sidebar-count { font-size: 9px; color: #666; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px 4px; }
+.dh-wrap .dh-sidebar-list { flex: 1; overflow-y: auto; padding: 4px 0 16px; }
+.dh-wrap .dh-sidebar-list::-webkit-scrollbar { width: 4px; }
+.dh-wrap .dh-sidebar-list::-webkit-scrollbar-track { background: #1a1a1a; }
+.dh-wrap .dh-sidebar-list::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+.dh-wrap .sb-provider { padding: 7px 14px; cursor: pointer; font-size: 11px; color: #bbb; border-left: 3px solid transparent; transition: all 0.1s; line-height: 1.4; display: flex; align-items: center; gap: 6px; }
+.dh-wrap .sb-provider:hover { background: #2e2e2e; color: #eee; border-left-color: #555; }
+.dh-wrap .sb-provider.sel { background: var(--active-bg); color: var(--active-text); border-left-color: var(--accent); font-weight: bold; }
+.dh-wrap .sb-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dh-wrap .sb-dot.is-active { background: #cc0c0c; box-shadow: 0 0 4px #cc0c0c88; }
+.dh-wrap .sb-dot.is-scheduled { background: #f67a09; }
+.dh-wrap .sb-dot.is-expired { background: #555; }
+.dh-wrap .sb-provider .sb-meta { margin-left: auto; flex-shrink: 0; }
+.dh-wrap .sb-tag { font-size: 8px; padding: 1px 5px; border-radius: 8px; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; }
+.dh-wrap .sb-tag.is-active { background: #3a0000; color: #ff6666; border: 1px solid #660000; }
+.dh-wrap .sb-tag.is-scheduled { background: #3a2a00; color: #ffaa44; border: 1px solid #664400; }
+.dh-wrap .sb-tag.is-expired { background: #222; color: #666; border: 1px solid #333; }
+.dh-wrap .sb-no-results { padding: 14px; font-size: 11px; color: #555; font-style: italic; }
+.dh-wrap .sb-empty-state { padding: 20px 14px; text-align: center; }
+.dh-wrap .sb-empty-state .se-icon { font-size: 28px; margin-bottom: 10px; opacity: 0.4; }
+.dh-wrap .sb-empty-state .se-title { font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.dh-wrap .sb-empty-state .se-sub { font-size: 10px; color: #555; line-height: 1.5; }
+.dh-wrap .dh-content { flex: 1; overflow-y: auto; background: #f0eeeb; padding: 18px; }
+.dh-wrap .dh-content::-webkit-scrollbar { width: 6px; }
+.dh-wrap .dh-content::-webkit-scrollbar-track { background: #e8e6e3; }
+.dh-wrap .dh-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+.dh-wrap .dh-welcome { max-width: 600px; margin: 60px auto; text-align: center; }
+.dh-wrap .dh-welcome .wlc-icon { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 20px; box-shadow: 0 4px 20px rgba(204,51,0,0.3); }
+.dh-wrap .dh-welcome h2 { font-size: 22px; color: #222; margin-bottom: 8px; }
+.dh-wrap .dh-welcome p { font-size: 12px; color: #888; line-height: 1.7; max-width: 420px; margin: 0 auto; }
+.dh-wrap .dh-welcome .wlc-hint { margin-top: 24px; display: inline-flex; align-items: center; gap: 8px; font-size: 10px; color: #aaa; letter-spacing: 1px; text-transform: uppercase; }
+.dh-wrap .dh-panel { max-width: 900px; }
+.dh-wrap .pv-header { background: linear-gradient(to bottom, #2a2a2a 0%, #111 100%); border-bottom: 3px solid var(--accent); padding: 14px 20px; border-radius: 4px 4px 0 0; display: flex; align-items: center; gap: 14px; }
+.dh-wrap .pv-logo { width: 42px; height: 42px; border-radius: 4px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; color: #fff; letter-spacing: -0.5px; flex-shrink: 0; }
+.dh-wrap .pv-header-text .pv-name { font-size: 18px; font-weight: bold; color: #fff; line-height: 1.2; }
+.dh-wrap .pv-header-text .pv-subline { display: flex; align-items: center; gap: 8px; margin-top: 2px; flex-wrap: wrap; }
+.dh-wrap .pv-header-text .pv-sub { font-size: 9px; color: #aaa; letter-spacing: 1.5px; text-transform: uppercase; }
+.dh-wrap .pv-uploaded-by { font-size: 9px; color: #FF7744; letter-spacing: 0.5px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 4px; padding-left: 8px; border-left: 1px solid #444; }
+.dh-wrap .pv-uploaded-by b { color: #ffb088; font-weight: bold; }
+.dh-wrap .pv-timeframe { font-size: 9px; color: #FF7744; letter-spacing: 0.5px; margin-top: 3px; font-variant-numeric: tabular-nums; }
+.dh-wrap .pv-header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.dh-wrap .pv-badge { padding: 5px 14px; border-radius: 2px; font-size: 10px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; }
+.dh-wrap .pv-badge.is-active { background: #3a0000; color: #ff6666; border: 1px solid #660000; }
+.dh-wrap .pv-badge.is-scheduled { background: #3a2a00; color: #ffaa44; border: 1px solid #664400; }
+.dh-wrap .pv-badge.is-expired { background: #1a1a1a; color: #666; border: 1px solid #333; }
+.dh-wrap .pv-body { background: #fff; border: 1px solid #ddd; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+.dh-wrap .pv-alert { padding: 10px 18px; font-size: 11px; font-weight: bold; letter-spacing: 0.3px; display: flex; align-items: center; gap: 8px; }
+.dh-wrap .pv-alert.is-active { background: #fdf0f0; color: #8a1a1a; border-bottom: 1px solid #f0c0c0; }
+.dh-wrap .pv-alert.is-scheduled { background: #fff8e8; color: #7a4a00; border-bottom: 1px solid #f0d890; }
+.dh-wrap .pv-alert.is-expired { background: #f5f5f5; color: #888; border-bottom: 1px solid #e0e0e0; }
+.dh-wrap .pv-section { border-bottom: 1px solid #eee; }
+.dh-wrap .pv-section:last-child { border-bottom: none; }
+.dh-wrap .pv-section-head { background: linear-gradient(to bottom, #5E5E5E 0%, #262626 100%); color: #fff; padding: 7px 16px; font-size: 10px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 1px 0 #111; display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+.dh-wrap .pv-section-head .sh-toggle { margin-left: auto; font-size: 12px; transition: transform 0.15s; }
+.dh-wrap .pv-section-head.collapsed .sh-toggle { transform: rotate(-90deg); }
+.dh-wrap .pv-section-body { padding: 14px 16px; }
+.dh-wrap .pv-section-body.hidden { display: none; }
+.dh-wrap .dc-table-wrap { overflow-x: auto; }
+.dh-wrap .dc-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.dh-wrap .dc-table thead tr { background: linear-gradient(to bottom, #5E5E5E, #262626); }
+.dh-wrap .dc-table th { padding: 7px 10px; text-align: left; font-size: 9px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; color: #fff; text-shadow: 0 1px 0 #111; white-space: nowrap; }
+.dh-wrap .dc-table tbody tr { border-bottom: 1px solid #eee; }
+.dh-wrap .dc-table tbody tr:nth-child(even) { background: #f8f8f8; }
+.dh-wrap .dc-table tbody tr:hover { background: #fff3f0; }
+.dh-wrap .dc-table td { padding: 6px 10px; color: #333; vertical-align: middle; }
+.dh-wrap .dc-num { color: #aaa; font-size: 10px; width: 32px; text-align: center; }
+.dh-wrap .dc-name { font-weight: bold; white-space: nowrap; }
+.dh-wrap .dc-address { color: #555; }
+.dh-wrap .dc-phone { white-space: nowrap; color: #555; }
+.dh-wrap .dc-count { font-size: 9px; color: #aaa; text-align: right; padding: 6px 4px 2px; text-transform: uppercase; letter-spacing: 1px; }
+.dh-wrap .dc-plaintext-view { background: #fafafa; border: 1px solid #e0e0e0; border-radius: 2px; overflow: auto; }
+.dh-wrap .dc-plaintext-pre { margin: 0; padding: 14px 16px; font-family: 'Courier New', Consolas, monospace; font-size: 11px; color: #333; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+.dh-wrap .pv-note { background: linear-gradient(135deg, #ffff88 81%, #ffffc6 100%); border-top: 8px solid #fdfd86; box-shadow: 0 2px 4px rgba(0,0,0,.2); padding: 10px 14px; border-radius: 0 0 3px 3px; font-size: 11px; color: #444; line-height: 1.6; }
+.dh-wrap .pv-note strong { color: var(--accent); }
+.dh-wrap .no-entries-panel { text-align: center; padding: 40px 20px; }
+.dh-wrap .no-entries-panel .nop-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.3; }
+.dh-wrap .no-entries-panel .nop-title { font-size: 14px; font-weight: bold; color: #888; margin-bottom: 6px; }
+.dh-wrap .no-entries-panel .nop-sub { font-size: 11px; color: #aaa; }
+.dh-wrap .dh-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); z-index: 10000; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 24px; }
+.dh-wrap .dh-overlay.open { display: flex; }
+.dh-wrap .dh-modal { background: #fff; border-radius: 4px; width: 100%; max-width: 740px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); flex-shrink: 0; margin: auto; animation: dh-fadeIn 0.2s ease; }
+.dh-wrap .em-header { background: linear-gradient(to bottom, #2a2a2a 0%, #111 100%); border-bottom: 3px solid var(--accent); padding: 14px 20px; border-radius: 4px 4px 0 0; display: flex; align-items: center; gap: 12px; }
+.dh-wrap .em-header-logo { width: 34px; height: 34px; background: var(--accent); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.dh-wrap .em-header-title { font-size: 15px; font-weight: bold; color: #fff; }
+.dh-wrap .em-header-sub { font-size: 9px; color: #aaa; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
+.dh-wrap .em-close { margin-left: auto; background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
+.dh-wrap .em-close:hover { color: #fff; }
+.dh-wrap .em-body { padding: 20px; }
+.dh-wrap .em-section-title { background: linear-gradient(to bottom, #5E5E5E, #262626); color: #fff; padding: 6px 12px; font-size: 10px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 1px 0 #111; border-radius: 2px; margin: 14px 0 10px; }
+.dh-wrap .em-section-title:first-child { margin-top: 0; }
+.dh-wrap .em-row { display: flex; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.dh-wrap .em-field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 160px; }
+.dh-wrap .em-field label { font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.8px; color: #666; }
+.dh-wrap .em-field label .req { color: var(--accent); }
+.dh-wrap .em-field input, .dh-wrap .em-field select { padding: 6px 10px; border: 1px solid #ccc; border-radius: 2px; font-family: inherit; font-size: 11px; color: #333; background: #fff; outline: none; }
+.dh-wrap .em-field input:focus, .dh-wrap .em-field select:focus { border-color: var(--accent); }
+.dh-wrap .em-field .em-field-hint { font-size: 8px; color: #aaa; letter-spacing: 0.3px; }
+.dh-wrap .em-upload-zone { border: 2px dashed #ccc; border-radius: 4px; background: #fafafa; transition: border-color 0.15s, background 0.15s; cursor: pointer; }
+.dh-wrap .em-upload-zone:hover { border-color: var(--accent); background: #fff8f6; }
+.dh-wrap .em-upload-zone.dragover { border-color: var(--accent); background: #fff0ec; }
+.dh-wrap .em-upload-inner { padding: 14px; text-align: center; }
+.dh-wrap .em-upload-icon { font-size: 22px; margin-bottom: 5px; }
+.dh-wrap .em-upload-label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 2px; }
+.dh-wrap .em-upload-types { font-size: 9px; color: #aaa; letter-spacing: 0.5px; text-transform: uppercase; }
+.dh-wrap .em-upload-status { font-size: 10px; padding: 0 14px 8px; color: #39861f; font-weight: bold; min-height: 16px; }
+.dh-wrap .em-upload-status.err { color: #cc0000; }
+.dh-wrap .em-tabs { display: flex; gap: 0; margin: 12px 0 0; border-bottom: 2px solid #e0e0e0; }
+.dh-wrap .em-tab { padding: 6px 16px; border: none; background: #f0f0f0; font-family: inherit; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #888; cursor: pointer; border-radius: 3px 3px 0 0; border: 1px solid #e0e0e0; border-bottom: none; margin-right: 3px; transition: all 0.1s; }
+.dh-wrap .em-tab.sel { background: #fff; color: var(--accent); position: relative; top: 2px; }
+.dh-wrap .em-tab:hover:not(.sel) { background: #e8e8e8; color: #555; }
+.dh-wrap .em-grid-wrap { overflow-x: auto; margin-top: 2px; }
+.dh-wrap .em-grid { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 6px; }
+.dh-wrap .em-grid thead tr { background: linear-gradient(to bottom, #5E5E5E, #262626); }
+.dh-wrap .em-grid th { padding: 6px 8px; text-align: left; font-size: 9px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; color: #fff; text-shadow: 0 1px 0 #111; white-space: nowrap; }
+.dh-wrap .em-grid tbody tr { border-bottom: 1px solid #eee; }
+.dh-wrap .em-grid tbody tr:nth-child(even) { background: #f8f8f8; }
+.dh-wrap .em-grid tbody tr:hover { background: #fff3f0; }
+.dh-wrap .em-grid td { padding: 2px 3px; vertical-align: middle; }
+.dh-wrap .em-grid td input { width: 100%; padding: 4px 6px; border: 1px solid transparent; border-radius: 2px; font-family: inherit; font-size: 11px; color: #333; background: transparent; outline: none; transition: border-color 0.1s, background 0.1s; }
+.dh-wrap .em-grid td input:focus { border-color: var(--accent); background: #fff; }
+.dh-wrap .em-grid td input::placeholder { color: #ccc; }
+.dh-wrap .em-grid .row-rm { background: none; border: none; color: #ddd; font-size: 13px; cursor: pointer; padding: 0 4px; display: block; margin: 0 auto; }
+.dh-wrap .em-grid .row-rm:hover { color: var(--accent); }
+.dh-wrap .em-plaintext-box { width: 100%; height: 260px; padding: 10px 12px; border: 1px solid #ccc; border-radius: 2px; font-family: 'Courier New', Consolas, monospace; font-size: 11px; color: #333; background: #fafafa; resize: vertical; outline: none; line-height: 1.6; margin-top: 4px; }
+.dh-wrap .em-plaintext-box:focus { border-color: var(--accent); background: #fff; }
+.dh-wrap .em-add-btn { padding: 6px 14px; background: #f0f0f0; border: 1px dashed #ccc; border-radius: 2px; font-family: inherit; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; color: #666; width: 100%; }
+.dh-wrap .em-add-btn:hover { background: #e8e8e8; border-color: #aaa; }
+.dh-wrap .em-footer { padding: 14px 20px; background: #f8f8f8; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center; border-radius: 0 0 4px 4px; }
+.dh-wrap .em-save-btn { padding: 8px 24px; background: var(--accent); border: none; border-radius: 2px; color: #fff; font-family: inherit; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
+.dh-wrap .em-save-btn:hover { background: var(--accent-dark); }
+.dh-wrap .em-cancel-btn { padding: 8px 18px; background: #ccc; border: 1px solid #bbb; border-radius: 2px; color: #444; font-family: inherit; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
+.dh-wrap .em-cancel-btn:hover { background: #bbb; }
+.dh-wrap .em-status { font-size: 10px; color: #888; margin-left: auto; }
+.dh-wrap .em-status.ok { color: #39861f; font-weight: bold; }
+.dh-wrap .em-status.err { color: #cc0000; font-weight: bold; }
+.dh-wrap .dh-sidebar-footer { padding: 10px; border-top: 1px solid #333; flex-shrink: 0; }
+.dh-wrap .sb-btn { width: 100%; padding: 8px 0; border: none; border-radius: 2px; color: #fff; font-family: inherit; font-size: 10px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; margin-bottom: 6px; }
+.dh-wrap .sb-btn:last-child { margin-bottom: 0; }
+.dh-wrap .sb-btn.post { background: linear-gradient(to bottom, var(--accent), var(--accent-dark)); }
+.dh-wrap .sb-btn.post:hover { background: linear-gradient(to bottom, var(--accent-hover), var(--accent)); }
+.dh-wrap .sb-btn.save { background: #1a2a1a; border: 1px solid #2d5c2d; color: #7ade7a; }
+.dh-wrap .sb-btn.save:hover { background: #223a22; }
+.dh-wrap .dh-sync-status { font-size: 9px; color: #888; text-align: center; margin-top: 6px; letter-spacing: 0.3px; }
+.dh-wrap .font-size-control { display: flex; align-items: center; gap: 8px; padding: 8px 4px 4px; border-top: 1px solid #2a2a2a; margin-top: 8px; }
+.dh-wrap .font-size-control label { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; flex-shrink: 0; }
+.dh-wrap .fz-labels { display: flex; justify-content: space-between; font-size: 8px; color: #555; margin-top: 2px; }
+.dh-wrap input[type="range"].fz-slider { flex: 1; -webkit-appearance: none; appearance: none; height: 3px; border-radius: 2px; background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--fz-pct,0%), #333 var(--fz-pct,0%), #333 100%); outline: none; cursor: pointer; }
+.dh-wrap input[type="range"].fz-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid #1a1a1a; }
+@keyframes dh-fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+.dh-wrap .fade-in { animation: dh-fadeIn 0.2s ease forwards; }
+@media (max-width:700px) { .dh-wrap .dh-sidebar { width:180px; } }
+@media (max-width:520px) { .dh-wrap .dh-main { flex-direction:column; } .dh-wrap .dh-sidebar { width:100%; height:180px; } }
+</style>
+
+<!--
+  ============================================================================
+  CANONICAL REFERENCE COPY — Aeglos Register
+  ----------------------------------------------------------------------------
+  This is the deployed source as of 2026-07-07, with the full ~4KB base64 PNG
+  of the Aeglos globe logo (72px, transparent, LANCZOS-downscaled) embedded in the
+  topbar <img> src. This file is directly deployable. When rebuilding from this
+  asset, preserve the base64 string verbatim; if a rebuild pipeline ever strips
+  or shortens it, restore it from the live page (callcenter:disconnect_hub) or
+  from a known-good output before deploying.
+  ============================================================================
+-->
+
+<div class="dh-wrap">
+<div class="dh-shell">
+
+  <div class="dh-topbar">
+    <svg class="tb-logo" viewBox="0 -34 200 238" width="30" height="36" style="vertical-align:middle" aria-label="Aeglos"><g fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><polygon points="100,5 190,95 100,185 10,95"/><path d="M 60 105 A 40 40 0 0 1 140 105"/><line x1="26" y1="112" x2="90" y2="112"/><line x1="110" y1="112" x2="174" y2="112"/></g><polygon points="100,-25 118,40 108,55 108,185 100,195 92,185 92,55 82,40" fill="currentColor"/></svg>
+    <div>
+      <div class="tb-title">Register</div>
+    </div>
+    <div class="tb-div"></div>
+    <div class="tb-clock-wrap">
+      <div class="tb-clock">CT <span id="dh-ct">--:-- --</span></div>
+      <div class="tb-clock">ET <span id="dh-et">--:-- --</span></div>
+      <div class="tb-clock">MT <span id="dh-mt">--:-- --</span></div>
+      <div class="tb-clock">PT <span id="dh-pt">--:-- --</span></div>
+    </div>
+  </div>
+
+  <div class="dh-main">
+    <div class="dh-sidebar">
+      <div class="dh-sidebar-search-wrap">
+        <input type="text" id="dh-search" class="dh-sidebar-search" placeholder="Filter disconnects..." autocomplete="off">
+      </div>
+      <div class="dh-sidebar-count" id="dh-count"></div>
+      <div class="dh-sidebar-list" id="dh-list"></div>
+      <div class="dh-sidebar-footer">
+        <button class="sb-btn post" onclick="dhOpen(null)">+ Post New Disconnect</button>
+        <button class="sb-btn save" onclick="dhSaveKms(false)" title="Force a manual custom knowledge management system sync — normally happens automatically on save">&#8635; Force Sync</button>
+        <div class="dh-sync-status" id="dh-sync">Waiting for data...</div>
+        <div class="font-size-control">
+          <label>Size</label>
+          <div style="flex:1;">
+            <input type="range" class="fz-slider" id="dh-fz" min="0" max="2" step="1" value="0">
+            <div class="fz-labels"><span>S</span><span>M</span><span>L</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dh-content" id="dh-content">
+      <div id="dh-welcome" class="dh-welcome">
+        <div class="wlc-icon">&#128268;</div>
+        <h2>Register</h2>
+        <p>Post new disconnects manually or upload a file. Supports CSV, Excel, TXT, and PDF. Providers with active entries appear in the sidebar with status badges.</p>
+        <div class="wlc-hint">Post a new disconnect to get started</div>
+      </div>
+      <div id="dh-panel" class="dh-panel" style="display:none;"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="dh-overlay" id="dh-overlay" onclick="dhOverlayClose(event)">
+  <div class="dh-modal">
+    <div class="em-header">
+      <div class="em-header-logo">&#128268;</div>
+      <div>
+        <div class="em-header-title" id="dh-modal-title">Post New Disconnect</div>
+        <div class="em-header-sub" id="dh-modal-sub">Aeglos Register</div>
+      </div>
+      <button class="em-close" onclick="dhClose()">&#10005;</button>
+    </div>
+    <div class="em-body">
+      <div class="em-section-title">Provider</div>
+      <div class="em-row">
+        <div class="em-field" style="flex:2;">
+          <label>Provider Name <span class="req">*</span></label>
+          <input type="text" id="dh-prov" placeholder="e.g. Northwind Fiber" list="dh-prov-list" autocomplete="off">
+          <datalist id="dh-prov-list"></datalist>
+        </div>
+      </div>
+      <div class="em-section-title">Time Frame</div>
+      <div class="em-row">
+        <div class="em-field">
+          <label>Disconnect Date / Time</label>
+          <input type="datetime-local" id="dh-start">
+        </div>
+        <div class="em-field">
+          <label>Reconnect / End Date <span class="req">*</span></label>
+          <input type="datetime-local" id="dh-end">
+          <span class="em-field-hint">Required. Sets when this alert auto-resolves.</span>
+        </div>
+      </div>
+      <div class="em-section-title">Upload File</div>
+      <div class="em-upload-zone" id="dh-dropzone">
+        <input type="file" id="dh-file" accept=".csv,.xlsx,.xls,.txt,.pdf" style="display:none;">
+        <div class="em-upload-inner" onclick="document.getElementById('dh-file').click()">
+          <div class="em-upload-icon">&#128196;</div>
+          <div class="em-upload-label">Click to upload or drag &amp; drop</div>
+          <div class="em-upload-types">CSV &middot; Excel &middot; TXT &middot; PDF</div>
+        </div>
+        <div class="em-upload-status" id="dh-upload-status"></div>
+      </div>
+      <div class="em-tabs">
+        <button class="em-tab sel" id="dh-tab-grid" onclick="dhTab('grid')">Grid Entry</button>
+        <button class="em-tab" id="dh-tab-text" onclick="dhTab('text')">Plaintext</button>
+      </div>
+      <div id="dh-grid-panel">
+        <div class="em-grid-wrap">
+          <table class="em-grid" id="dh-grid">
+            <thead><tr>
+              <th style="width:24px;"></th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Address</th>
+              <th>Phone</th>
+            </tr></thead>
+            <tbody id="dh-grid-body"></tbody>
+          </table>
+        </div>
+        <button class="em-add-btn" onclick="dhAddRow()">+ Add Row</button>
+      </div>
+      <div id="dh-text-panel" style="display:none;">
+        <textarea id="dh-plaintext" class="em-plaintext-box" placeholder="Paste any format here — one entry per line, raw export data, etc. Saved and displayed as-is."></textarea>
+      </div>
+    </div>
+    <div class="em-footer">
+      <button class="em-save-btn" onclick="dhSave()">Save</button>
+      <button class="em-cancel-btn" onclick="dhClose()">Cancel</button>
+      <span class="em-status" id="dh-modal-status"></span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+'use strict';
+
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+var W = document.querySelector('.dh-wrap');
+function $id(id){ return document.getElementById(id); }
+
+var CURRENT_USER = null;
+
+function userFromJsinfo(){
+  try {
+    if (typeof JSINFO !== 'undefined' && JSINFO) {
+      var cand = JSINFO.user || JSINFO.client || JSINFO.loginname
+              || (JSINFO.userinfo && (JSINFO.userinfo.name || JSINFO.userinfo.user))
+              || (JSINFO.session && JSINFO.session.user) || null;
+      if (cand && String(cand).trim() && String(cand).trim().toLowerCase() !== 'false')
+        return String(cand).trim();
+    }
+  } catch(e){}
+  return null;
+}
+
+function userFromDom(d){
+  d = d || document;
+  try {
+    var sel = ['#dw__userinfo .iw_user','#dw__userinfo bdi','.userinfo .user','#dw__usertools .iw_user','li.user bdi'];
+    for (var i=0;i<sel.length;i++){
+      var el = d.querySelector(sel[i]);
+      if (el && el.textContent.trim()) return el.textContent.trim();
+    }
+    var body = d.body && d.body.textContent;
+    if (body){
+      var m = body.match(/Logged in as[:\s]+([^\s|<\n]+)/i);
+      if (m) return m[1].trim();
+    }
+  } catch(e){}
+  return null;
+}
+
+function resolveKmsUser(){ return userFromJsinfo() || userFromDom() || null; }
+
+function refreshUserBar(){
+  var u = resolveKmsUser();
+  if (u) CURRENT_USER = u;
+  var bar = $id('dh-userbar');
+  var lbl = $id('dh-username-label');
+  if (!bar || !lbl) return;
+  if (CURRENT_USER) {
+    bar.classList.remove('anon');
+    lbl.innerHTML = '' + esc(CURRENT_USER) + '</b>';
+  } else {
+    bar.classList.add('anon');
+    lbl.textContent = '';
+  }
+}
+
+function stampUser(){ return CURRENT_USER || resolveKmsUser() || 'unknown'; }
+
+function retryUserResolve(){
+  var tries = 0;
+  var iv = setInterval(function(){
+    tries++;
+    if (!CURRENT_USER) refreshUserBar();
+    if (CURRENT_USER || tries >= 6) clearInterval(iv);
+  }, 500);
+}
+
+function fetchUserFromPage(){
+  if (CURRENT_USER) return;
+  try {
+    fetch(window.location.pathname + window.location.search, {credentials:'same-origin'})
+      .then(function(r){ return r.ok ? r.text() : null; })
+      .then(function(html){
+        if (!html || CURRENT_USER) return;
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var u = userFromDom(doc);
+        if (u){ CURRENT_USER = u; refreshUserBar(); }
+      })
+      .catch(function(){});
+  } catch(e){}
+}
+
+var DB = {};
+var DELETED = {};
+var activeKey = null;
+var entryIdx  = 0;
+
+var PROVIDERS = [
+  'Northwind Fiber','Meridian Broadband','Copperline Networks','Harbor Telecom',
+  'Ridgeline Communications','Summit Fiber','Delta Connect','Basin Utilities',
+  'Grove Energy','Pinewood Co-op','Cedar Valley Telecom','Lakeshore Wireless'
+];
+
+var EM = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+function esc(s){ if(s==null)return''; return String(s).replace(/[&<>"']/g,function(c){return EM[c];}); }
+
+function tzTime(tz){
+  try{ return new Intl.DateTimeFormat('en-US',{timeZone:tz,hour:'numeric',minute:'2-digit',hour12:true}).format(new Date()); }
+  catch(e){ return '--:--'; }
+}
+function tickClocks(){
+  $id('dh-ct').textContent = tzTime('America/Chicago');
+  $id('dh-et').textContent = tzTime('America/New_York');
+  $id('dh-mt').textContent = tzTime('America/Denver');
+  $id('dh-pt').textContent = tzTime('America/Los_Angeles');
+}
+tickClocks();
+setInterval(tickClocks, 10000);
+
+function entryStatus(rec){
+  var now = Date.now();
+  var s = rec.start ? new Date(rec.start).getTime() : null;
+  var e = rec.end   ? new Date(rec.end).getTime()   : null;
+  if(s && s > now) return 'scheduled';
+  if(e && e < now) return 'expired';
+  return 'active';
+}
+function provStatus(key){
+  var rec = DB[key] || {};
+  if(rec.start || rec.end) return entryStatus(rec);
+  var entries = rec.entries || [];
+  if(!entries.length) return 'active';
+  var statuses = entries.map(entryStatus);
+  if(statuses.indexOf('active')    !== -1) return 'active';
+  if(statuses.indexOf('scheduled') !== -1) return 'scheduled';
+  return 'expired';
+}
+
+function fmtDt(iso){
+  if(!iso) return '\u2014';
+  try{ return new Date(iso).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true}); }
+  catch(e){ return iso; }
+}
+function pad(n){ return String(n).padStart(2,'0'); }
+function toLocalDt(iso){
+  if(!iso) return '';
+  try{ var d=new Date(iso); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes()); }
+  catch(e){ return ''; }
+}
+function nowLocalDt(){
+  var d=new Date();
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+
+function buildSidebar(filter){
+  var list  = $id('dh-list');
+  var count = $id('dh-count');
+  var q     = (filter||'').toLowerCase().trim();
+  var keys = Object.keys(DB).filter(function(k){
+    return (DB[k].entries && DB[k].entries.length > 0) || DB[k].plaintext || false;
+  });
+  if(!keys.length){
+    list.innerHTML = '<div class="sb-empty-state"><div class="se-icon">&#128268;</div><div class="se-title">No Disconnects Loaded</div><div class="se-sub">Post a new disconnect to get started.</div></div>';
+    count.textContent = '';
+    return;
+  }
+  var filtered = keys.filter(function(k){
+    return !q || (DB[k].displayName||k).toLowerCase().indexOf(q) !== -1;
+  });
+  var ord = {active:0,scheduled:1,expired:2};
+  filtered.sort(function(a,b){
+    var sa = ord[provStatus(a)] !== undefined ? ord[provStatus(a)] : 3;
+    var sb = ord[provStatus(b)] !== undefined ? ord[provStatus(b)] : 3;
+    if(sa !== sb) return sa - sb;
+    return (DB[a].displayName||a).localeCompare(DB[b].displayName||b);
+  });
+  count.textContent = filtered.length + ' provider' + (filtered.length!==1?'s':'') + ' / ' + keys.length + ' total';
+  list.innerHTML = '';
+  filtered.forEach(function(k){
+    var st  = provStatus(k);
+    var disp = DB[k].displayName || k;
+    var dotCls = st==='active' ? 'is-active' : st==='scheduled' ? 'is-scheduled' : 'is-expired';
+    var tagTxt = st==='active' ? 'ACTIVE' : st==='scheduled' ? 'SCHEDULED' : 'RESOLVED';
+    var el = document.createElement('div');
+    el.className = 'sb-provider' + (k===activeKey?' sel':'');
+    el.innerHTML = '<span class="sb-dot '+dotCls+'"></span>'+
+      '<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(disp)+'</span>'+
+      '<span class="sb-meta"><span class="sb-tag '+dotCls+'">'+tagTxt+'</span></span>';
+    el.addEventListener('click',function(){ selectProv(k); });
+    list.appendChild(el);
+  });
+  if(!filtered.length) list.innerHTML = '<div class="sb-no-results">No providers match.</div>';
+}
+
+$id('dh-search').addEventListener('input',function(){ buildSidebar(this.value); });
+setInterval(function(){ buildSidebar($id('dh-search').value); if(activeKey) renderPanel(activeKey); }, 30000);
+
+function selectProv(key){
+  activeKey = key;
+  buildSidebar($id('dh-search').value);
+  $id('dh-welcome').style.display = 'none';
+  $id('dh-panel').style.display   = 'block';
+  renderPanel(key);
+  $id('dh-content').scrollTop = 0;
+  if(history.replaceState) history.replaceState(null,'','#dc-'+encodeURIComponent(key));
+}
+
+var _si = 0;
+function renderPanel(key){
+  _si = 0;
+  var panel  = $id('dh-panel');
+  var rec    = DB[key];
+  if(!rec) return;
+  var disp   = rec.displayName || key;
+  var entries = rec.entries || [];
+  var st     = provStatus(key);
+  var abbr   = esc(disp.substring(0,3).toUpperCase());
+  var stTxt  = st==='active' ? 'Active Disconnect' : st==='scheduled' ? 'Scheduled' : 'Resolved';
+  var alertMsg = st==='active' ? '&#128308; Active disconnect in progress.'
+               : st==='scheduled' ? '&#128993; Scheduled disconnect upcoming.'
+               : '&#9898; Disconnect resolved or expired.';
+  var tf = '';
+  var tfStart = rec.start || (rec.entries && rec.entries[0] && rec.entries[0].start) || null;
+  var tfEnd   = rec.end   || (rec.entries && rec.entries[0] && rec.entries[0].end)   || null;
+  if(tfStart) tf = fmtDt(tfStart) + (tfEnd ? ' to ' + fmtDt(tfEnd) : '');
+  // Header tag: "Edited by" only if a real edit happened after creation,
+  // otherwise "Posted by" the creator.
+  var hCreatedAt = rec.createdAt || rec.uploadedAt || 0;
+  var wasEdited = rec.editedAt && rec.editedAt > hCreatedAt;
+  var attribUser = wasEdited ? rec.editedBy : (rec.createdBy || rec.uploadedBy || null);
+  var attribVerb = wasEdited ? 'Edited by' : 'Posted by';
+  var uploadedByTag = attribUser
+    ? '<span class="pv-uploaded-by">'+esc(attribVerb)+' <b>'+esc(attribUser)+'</b></span>'
+    : '';
+  var html =
+    '<div class="pv-header">'+
+      '<div class="pv-logo">'+abbr+'</div>'+
+      '<div class="pv-header-text">'+
+        '<div class="pv-name">'+esc(disp)+'</div>'+
+        '<div class="pv-subline"><span class="pv-sub">Disconnect Reference</span>'+uploadedByTag+'</div>'+
+        (tf ? '<div class="pv-timeframe">'+esc(tf)+'</div>' : '')+
+      '</div>'+
+      '<div class="pv-header-right">'+
+        '<button onclick="dhOpen(\''+esc(key)+'\')" style="padding:4px 12px;background:#333;border:1px solid #555;border-radius:2px;color:#ccc;font-family:inherit;font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;" onmouseover="this.style.background=\'#444\'" onmouseout="this.style.background=\'#333\'">Edit</button>'+
+        '<button onclick="dhRemove(\''+esc(key)+'\')" style="padding:4px 10px;background:#3a0000;border:1px solid #660000;border-radius:2px;color:#ff8888;font-family:inherit;font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;" onmouseover="this.style.background=\'#550000\'" onmouseout="this.style.background=\'#3a0000\'">Remove</button>'+
+        '<span class="pv-badge is-'+esc(st)+'">'+esc(stTxt)+'</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="pv-body">'+
+      '<div class="pv-alert is-'+esc(st)+'">'+alertMsg+'</div>';
+
+  html +=
+    '<div class="pv-section">'+
+      '<div class="pv-section-head" onclick="dhTogSec('+_si+')">'+
+        'Disconnect List'+
+        '<span class="sh-toggle" id="dh-st-'+_si+'">&#9662;</span>'+
+      '</div>'+
+      '<div class="pv-section-body" id="dh-sb-'+_si+'">';
+
+  if(rec.plaintext){
+    html += '<div class="dc-plaintext-view"><pre class="dc-plaintext-pre">'+esc(rec.plaintext)+'</pre></div>';
+  } else if(!entries.length){
+    html += '<div class="no-entries-panel"><div class="nop-icon">&#128237;</div><div class="nop-title">No entries</div><div class="nop-sub">Use the Edit button to add entries.</div></div>';
+  } else {
+    html += '<div class="dc-table-wrap"><table class="dc-table"><thead><tr><th>#</th><th>Name</th><th>Address</th><th>Phone</th></tr></thead><tbody>';
+    entries.forEach(function(e,i){
+      var name = [e.firstName,e.lastName].filter(Boolean).join(' ') || e.title || e.description || '\u2014';
+      var addr = e.address || e.affected || '\u2014';
+      var phone = e.phone || '';
+      html += '<tr><td class="dc-num">'+(i+1)+'</td><td class="dc-name">'+esc(name)+'</td><td class="dc-address">'+esc(addr)+'</td><td class="dc-phone">'+esc(phone)+'</td></tr>';
+    });
+    html += '</tbody></table><div class="dc-count">'+entries.length+' disconnect'+(entries.length!==1?'s':'')+'</div></div>';
+  }
+  html += '</div></div>';
+
+  // Record Info — always rendered, every field populated.
+  // Creator falls back to legacy uploadedBy/uploadedAt; editor falls back to
+  // creator (a never-edited record was last touched by its creator).
+  var ciBy = rec.createdBy || rec.uploadedBy || 'Unknown';
+  var ciAt = rec.createdAt || rec.uploadedAt || null;
+  var eiBy = rec.editedBy || ciBy;
+  var eiAt = rec.editedAt || ciAt;
+  _si++;
+  html +=
+    '<div class="pv-section">'+
+      '<div class="pv-section-head" onclick="dhTogSec('+_si+')">'+
+        'Record Info <span class="sh-toggle" id="dh-st-'+_si+'">&#9662;</span>'+
+      '</div>'+
+      '<div class="pv-section-body hidden" id="dh-sb-'+_si+'">'+
+        '<div class="pv-note">'+
+          '<strong>Created By:</strong> '+esc(ciBy)+'<br>'+
+          '<strong>Created On:</strong> '+esc(ciAt ? fmtDt(ciAt) : 'Unknown')+'<br>'+
+          '<strong>Last Edited By:</strong> '+esc(eiBy)+'<br>'+
+          '<strong>Last Edited On:</strong> '+esc(eiAt ? fmtDt(eiAt) : 'Unknown')+'<br>'+
+          '<strong>Last Custom Knowledge Management System Sync:</strong> '+esc(rec.syncedAt ? fmtDt(rec.syncedAt) : 'Not yet synced')+
+          (rec.sourceFile ? '<br><strong>Source:</strong> '+esc(rec.sourceFile) : '')+
+        '</div>'+
+      '</div>'+
+    '</div>';
+
+  html += '</div>';
+  panel.innerHTML = html;
+  panel.classList.remove('fade-in');
+  void panel.offsetWidth;
+  panel.classList.add('fade-in');
+}
+
+window.dhTogSec = function(i){
+  var b=$id('dh-sb-'+i), t=$id('dh-st-'+i);
+  if(b){ b.classList.toggle('hidden'); if(t) t.parentElement.classList.toggle('collapsed'); }
+};
+
+window.dhRemove = function(key){
+  if(!confirm('Remove all disconnect entries for "'+((DB[key]&&DB[key].displayName)||key)+'"?')) return;
+  var cleanKey = key.replace(/\\/g,'');
+  delete DB[key];
+  delete DB[cleanKey];
+  DELETED[key] = true;
+  DELETED[cleanKey] = true;
+  activeKey = null;
+  $id('dh-panel').style.display   = 'none';
+  $id('dh-welcome').style.display = 'block';
+  buildSidebar($id('dh-search').value);
+  saveLocal();
+};
+
+window.dhOpen = function(key){
+  entryIdx = 0;
+  refreshUserBar();
+  var dl = $id('dh-prov-list');
+  dl.innerHTML = PROVIDERS.map(function(n){ return '<option value="'+esc(n)+'">'; }).join('');
+  Object.keys(DB).forEach(function(k){
+    var d = DB[k].displayName||k;
+    if(!dl.querySelector('option[value="'+d+'"]')){
+      var o=document.createElement('option'); o.value=d; dl.appendChild(o);
+    }
+  });
+  var rec = key && DB[key];
+  $id('dh-prov').value    = rec ? (rec.displayName||key) : '';
+  $id('dh-prov').readOnly = !!rec;
+  $id('dh-modal-title').textContent = rec ? 'Edit Disconnect \u2014 '+(rec.displayName||key) : 'Post New Disconnect';
+  $id('dh-modal-sub').textContent   = 'Aeglos Register';
+  $id('dh-start').value = rec && rec.start ? toLocalDt(rec.start) : nowLocalDt();
+  $id('dh-end').value   = rec && rec.end   ? toLocalDt(rec.end)   : '';
+  $id('dh-end').style.borderColor = '';
+  $id('dh-plaintext').value = rec && rec.plaintext ? rec.plaintext : '';
+  $id('dh-upload-status').textContent = '';
+  $id('dh-upload-status').className = 'em-upload-status';
+  $id('dh-modal-status').textContent = '';
+  $id('dh-modal-status').className = 'em-status';
+  var tbody = $id('dh-grid-body');
+  tbody.innerHTML = '';
+  if(rec && rec.entries && rec.entries.length){
+    rec.entries.forEach(function(e){ dhAddRow(e); });
+    dhTab(rec.plaintext ? 'text' : 'grid');
+  } else {
+    for(var i=0;i<10;i++) dhAddRow();
+    dhTab('grid');
+  }
+  $id('dh-overlay').classList.add('open');
+  $id('dh-prov').focus();
+};
+
+window.dhClose = function(){ $id('dh-overlay').classList.remove('open'); };
+window.dhOverlayClose = function(e){ if(e.target===$id('dh-overlay')) dhClose(); };
+
+window.dhTab = function(t){
+  $id('dh-grid-panel').style.display = t==='grid' ? '' : 'none';
+  $id('dh-text-panel').style.display = t==='text' ? '' : 'none';
+  $id('dh-tab-grid').classList.toggle('sel', t==='grid');
+  $id('dh-tab-text').classList.toggle('sel', t==='text');
+};
+
+window.dhAddRow = function(d){
+  d = d||{};
+  var tbody = $id('dh-grid-body');
+  var tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td><button class="row-rm" onclick="this.closest(\'tr\').remove()" title="Remove">&#10005;</button></td>'+
+    '<td><input type="text" class="gr-fn" placeholder="First" value="'+esc(d.firstName||'')+'"></td>'+
+    '<td><input type="text" class="gr-ln" placeholder="Last"  value="'+esc(d.lastName||'')+'"></td>'+
+    '<td><input type="text" class="gr-ad" placeholder="123 Main St, City, ST" value="'+esc(d.address||'')+'"></td>'+
+    '<td><input type="text" class="gr-ph" placeholder="555-000-0000" value="'+esc(d.phone||'')+'"></td>';
+  tbody.appendChild(tr);
+};
+
+$id('dh-end').addEventListener('input', function(){ this.style.borderColor = ''; });
+
+function parseLine(line){
+  var tokens = line.trim().split(/\s+/);
+  if(!tokens.length||!tokens[0]) return null;
+  var phoneRe = /^[\d]{10}$|^\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}$/;
+  var phone='';
+  if(tokens.length>1 && phoneRe.test(tokens[tokens.length-1].replace(/[().\-\s]/g,''))){
+    phone = tokens.pop();
+  }
+  var firstName = tokens.shift()||'';
+  var lastName  = tokens.shift()||'';
+  var address   = tokens.join(' ');
+  return {firstName:firstName, lastName:lastName, address:address, phone:phone};
+}
+
+(function(){
+  var g = $id('dh-grid');
+  if(g) g.addEventListener('paste', function(e){
+    var text = (e.clipboardData||window.clipboardData).getData('text');
+    var lines = text.split(/\r?\n/).filter(function(l){ return l.trim(); });
+    if(lines.length<=1) return;
+    e.preventDefault();
+    var tbody  = $id('dh-grid-body');
+    var allRows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+    var tgt    = e.target.closest('tr');
+    var start  = allRows.indexOf(tgt);
+    if(start===-1) start = allRows.length;
+    lines.forEach(function(line,i){
+      var p = parseLine(line);
+      if(!p) return;
+      var row = allRows[start+i];
+      if(!row){ dhAddRow(); row = tbody.querySelectorAll('tr')[start+i]; }
+      if(!row) return;
+      if(p.firstName) row.querySelector('.gr-fn').value = p.firstName;
+      if(p.lastName)  row.querySelector('.gr-ln').value = p.lastName;
+      if(p.address)   row.querySelector('.gr-ad').value = p.address;
+      if(p.phone)     row.querySelector('.gr-ph').value = p.phone;
+    });
+  });
+})();
+
+window.dhSave = function(){
+  var statusEl = $id('dh-modal-status');
+  var prov = $id('dh-prov').value.trim();
+  if(!prov){
+    statusEl.className='em-status err';
+    statusEl.textContent='Provider name is required.';
+    $id('dh-prov').focus();
+    return;
+  }
+  var ev = $id('dh-end').value;
+  if(!ev){
+    statusEl.className='em-status err';
+    statusEl.textContent='End date is required.';
+    $id('dh-end').style.borderColor = 'var(--accent)';
+    $id('dh-end').focus();
+    return;
+  }
+  var key  = prov.toLowerCase().trim();
+  var isText = $id('dh-tab-text').classList.contains('sel');
+  var entries = [];
+  var plaintext = '';
+  var ts = Date.now();
+  if(isText){
+    plaintext = ($id('dh-plaintext').value||'').trim();
+  } else {
+    var rows = $id('dh-grid-body').querySelectorAll('tr');
+    rows.forEach(function(row,i){
+      var fn = row.querySelector('.gr-fn').value.trim();
+      var ln = row.querySelector('.gr-ln').value.trim();
+      if(!fn&&!ln) return;
+      var entry = {
+        id: 'e'+(ts+i)+Math.random().toString(36).slice(2,6),
+        firstName:fn, lastName:ln,
+        title:[fn,ln].filter(Boolean).join(' '),
+        address:row.querySelector('.gr-ad').value.trim(),
+        phone:row.querySelector('.gr-ph').value.trim()
+      };
+      Object.keys(entry).forEach(function(k){ if(entry[k]==='') delete entry[k]; });
+      entries.push(entry);
+    });
+  }
+  var existing = DB[key];
+  var who = stampUser();
+  if(!existing){
+    DB[key] = {displayName:prov, entries:[]};
+    DB[key].createdBy = who;
+    DB[key].createdAt = ts;
+    DB[key].editedBy  = who; // last-touched starts as the creator
+    DB[key].editedAt  = ts;
+  } else {
+    DB[key].displayName = prov;
+    DB[key].editedBy = who;
+    DB[key].editedAt = ts;
+    // Legacy backfill only — NEVER stamp the current editor as creator.
+    // Records made before attribution existed keep uploadedBy/uploadedAt
+    // if present, otherwise honestly show Unknown.
+    if(!DB[key].createdAt) DB[key].createdAt = DB[key].uploadedAt || null;
+    if(!DB[key].createdBy) DB[key].createdBy = DB[key].uploadedBy || null;
+  }
+  DB[key].entries   = entries;
+  DB[key].plaintext = plaintext;
+  var sv = $id('dh-start').value;
+  DB[key].start = sv ? new Date(sv).toISOString() : null;
+  DB[key].end   = new Date(ev).toISOString();
+  saveLocal();
+  buildSidebar($id('dh-search').value);
+  statusEl.className='em-status ok';
+  statusEl.textContent='Saved! Syncing to custom knowledge management system...';
+  setTimeout(function(){
+    dhClose();
+    selectProv(key);
+    dhSaveKms(true); // silent auto-sync — no button spinner, no alert on success
+  }, 600);
+};
+
+function setUploadStatus(msg, isErr){
+  var el = $id('dh-upload-status');
+  el.textContent = msg;
+  el.className = 'em-upload-status' + (isErr ? ' err' : '');
+}
+
+function populateGrid(rows){
+  var tbody = $id('dh-grid-body');
+  tbody.innerHTML = '';
+  entryIdx = 0;
+  var added=0, skipped=0;
+  rows.forEach(function(row){
+    var fn = colVal(row,'firstname','first_name','first','fname','givenname');
+    var ln = colVal(row,'lastname','last_name','last','lname','surname','familyname');
+    var ad = colVal(row,'address','addr','streetaddress','street');
+    var ph = colVal(row,'phone','phonenumber','phone_number','telephone','mobile','cell');
+    if(!fn&&!ln){ skipped++; return; }
+    dhAddRow({firstName:fn,lastName:ln,address:ad,phone:ph});
+    added++;
+  });
+  if(!added){ dhTab('text'); setUploadStatus('No name columns found — content loaded as plaintext',false); }
+  else { dhTab('grid'); setUploadStatus(added+' rows loaded'+(skipped?' ('+skipped+' skipped)':''),false); }
+  return added;
+}
+
+function colVal(row){
+  var names = Array.prototype.slice.call(arguments,1);
+  var keys = Object.keys(row);
+  for(var n=0;n<names.length;n++){
+    var t = names[n].toLowerCase().replace(/[\s_]/g,'');
+    for(var k=0;k<keys.length;k++){
+      if(keys[k].toLowerCase().replace(/[\s_]/g,'')=== t && row[keys[k]]!=='' && row[keys[k]]!=null)
+        return String(row[keys[k]]).trim();
+    }
+  }
+  return '';
+}
+
+function parseCSV(text){
+  var lines=text.split(/\r?\n/).filter(function(l){return l.trim();});
+  if(!lines.length) return [];
+  var hdrs=splitCSV(lines[0]);
+  var rows=[];
+  for(var i=1;i<lines.length;i++){
+    var vals=splitCSV(lines[i]);
+    if(vals.every(function(v){return !v.trim();})) continue;
+    var obj={};
+    hdrs.forEach(function(h,j){obj[h.trim()]=(vals[j]||'').trim();});
+    rows.push(obj);
+  }
+  return rows;
+}
+function splitCSV(line){
+  var res=[],cur='',inQ=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(c==='"'){inQ=!inQ;continue;}
+    if(c===','&&!inQ){res.push(cur);cur='';continue;}
+    cur+=c;
+  }
+  res.push(cur); return res;
+}
+
+function handleFile(file){
+  if(!file) return;
+  var name = file.name.toLowerCase();
+  setUploadStatus('Reading '+file.name+'...', false);
+  if(name.endsWith('.txt')){
+    var r=new FileReader();
+    r.onload=function(e){
+      $id('dh-plaintext').value = (e.target.result||'').trim();
+      dhTab('text');
+      setUploadStatus('Text file loaded', false);
+    };
+    r.readAsText(file);
+  } else if(name.endsWith('.pdf')){
+    if(typeof pdfjsLib === 'undefined'){ setUploadStatus('PDF.js not loaded — try refreshing', true); return; }
+    var r2=new FileReader();
+    r2.onload=function(e){
+      var arr = new Uint8Array(e.target.result);
+      pdfjsLib.getDocument({data:arr}).promise.then(function(pdf){
+        var pages=[], total=pdf.numPages;
+        for(var i=1;i<=total;i++) pages.push(i);
+        return pages.reduce(function(p,i){
+          return p.then(function(acc){
+            return pdf.getPage(i).then(function(page){
+              return page.getTextContent().then(function(tc){
+                acc.push(tc.items.map(function(item){return item.str;}).join(' ')); return acc;
+              });
+            });
+          });
+        }, Promise.resolve([]));
+      }).then(function(pageTexts){
+        $id('dh-plaintext').value = pageTexts.join('\n').trim();
+        dhTab('text');
+        setUploadStatus('PDF extracted ('+pageTexts.length+' page'+(pageTexts.length!==1?'s':'')+')', false);
+      }).catch(function(err){ setUploadStatus('PDF read failed: '+(err.message||err), true); });
+    };
+    r2.readAsArrayBuffer(file);
+  } else if(name.endsWith('.csv')){
+    var r3=new FileReader();
+    r3.onload=function(e){
+      var rows=parseCSV(e.target.result);
+      var added=populateGrid(rows);
+      if(!added){ $id('dh-plaintext').value = e.target.result; dhTab('text'); }
+    };
+    r3.readAsText(file);
+  } else {
+    var r4=new FileReader();
+    r4.onload=function(e){
+      try{
+        var wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+        var ws=wb.Sheets[wb.SheetNames[0]];
+        var rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+        var added=populateGrid(rows);
+        if(!added){ $id('dh-plaintext').value = XLSX.utils.sheet_to_csv(ws); dhTab('text'); }
+      } catch(err){ setUploadStatus('Failed to read file: '+(err.message||err), true); }
+    };
+    r4.readAsBinaryString(file);
+  }
+}
+
+$id('dh-file').addEventListener('change',function(e){ handleFile(e.target.files[0]); this.value=''; });
+
+(function(){
+  var zone = $id('dh-dropzone');
+  zone.addEventListener('dragover',function(e){e.preventDefault();zone.classList.add('dragover');});
+  zone.addEventListener('dragleave',function(){zone.classList.remove('dragover');});
+  zone.addEventListener('drop',function(e){
+    e.preventDefault(); zone.classList.remove('dragover');
+    var files=e.dataTransfer.files;
+    if(files.length) handleFile(files[0]);
+  });
+})();
+
+var WP = 'callcenter:outage_overrides';
+var WR = '/doku.php?id='+encodeURIComponent(WP)+'&do=export_raw';
+
+function parseKms(raw){
+  var m=raw.match(/<OUTAGE>([\s\S]*?)<\/OUTAGE>/i);
+  if(!m) return null;
+  try{ return JSON.parse(m[1].trim()); } catch(e){ return null; }
+}
+function setSyncStatus(t,c){ var el=$id('dh-sync'); el.textContent=t; el.style.color=c||'#888'; }
+
+window.dhSaveKms = function(silent){
+  // silent=true: called automatically after dhSave — no button spinner, no success alert
+  var btn = silent ? null : W.querySelector('.sb-btn.save');
+  var orig = btn ? btn.textContent : '';
+  if(btn){ btn.textContent='Syncing...'; btn.disabled=true; }
+  if(!silent) setSyncStatus('Syncing to custom knowledge management system...','#aaa');
+  // Stamp syncedAt on every record BEFORE serializing so the custom knowledge management system copy
+  // carries it. Snapshot previous values so a failed sync can roll back —
+  // never display a sync time that didn't actually happen.
+  var syncTs = Date.now();
+  var prevSync = {};
+  Object.keys(DB).forEach(function(k){
+    if(DB[k] && typeof DB[k]==='object'){
+      prevSync[k] = DB[k].syncedAt;
+      DB[k].syncedAt = syncTs;
+    }
+  });
+  function rollbackSync(){
+    Object.keys(prevSync).forEach(function(k){
+      if(DB[k]){
+        if(prevSync[k]===undefined) delete DB[k].syncedAt;
+        else DB[k].syncedAt = prevSync[k];
+      }
+    });
+  }
+  var kmsBody='~~NOCACHE~~\n<OUTAGE>\n'+JSON.stringify(DB,null,2)+'\n</OUTAGE>';
+  fetch('/doku.php?id='+encodeURIComponent(WP)+'&do=edit',{credentials:'same-origin'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+    .then(function(html){
+      var doc=new DOMParser().parseFromString(html,'text/html');
+      if(!CURRENT_USER){
+        var uEl = doc.querySelector('#dw__userinfo .iw_user, #dw__userinfo bdi, .userinfo .user');
+        if(uEl && uEl.textContent.trim()){ CURRENT_USER = uEl.textContent.trim(); refreshUserBar(); }
+      }
+      var tok=(doc.querySelector('input[name="sectok"]')||{}).value;
+      var dt=(doc.querySelector('input[name="date"]')||{}).value||'';
+      if(!tok) throw new Error('sectok missing — please reload');
+      var body=new URLSearchParams({id:WP,do:'save',kmstext:kmsBody,summary:'Register sync',sectok:tok,minor:'1'});
+      if(dt) body.set('date',dt);
+      return fetch('/doku.php',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()})
+        .then(function(r){ return r.text().then(function(t){ return {ok:r.ok,body:t}; }); });
+    })
+    .then(function(res){
+      if(!res.ok) throw new Error('Save failed');
+      if(/edit_conflict|Version conflict/i.test(res.body)) throw new Error('Edit conflict — reload and retry');
+      return fetch(WR+'&v='+Date.now(),{credentials:'same-origin'}).then(function(r){return r.text();})
+        .then(function(raw){ var p=parseKms(raw); if(!p) throw new Error('Verification failed'); return p; });
+    })
+    .then(function(){
+      if(btn){btn.textContent=orig;btn.disabled=false;}
+      saveLocal();
+      setSyncStatus('Custom Knowledge Management System synced ' + new Date().toLocaleTimeString(),'#39861f');
+      if(activeKey && DB[activeKey]) renderPanel(activeKey); // refresh Last Custom Knowledge Management System Sync display
+    })
+    .catch(function(err){
+      rollbackSync();
+      saveLocal();
+      if(btn){btn.textContent=orig;btn.disabled=false;}
+      setSyncStatus('Sync failed — use Force Sync or manual paste','#cc0000');
+      if(!silent){
+        if(navigator.clipboard) navigator.clipboard.writeText(kmsBody).catch(function(){});
+        window.open('/doku.php?id='+encodeURIComponent(WP)+'&do=edit','_blank');
+        alert('Custom Knowledge Management System sync failed: '+err.message+'\n\nEdit page opened, content copied to clipboard.');
+      } else {
+        // Auto-sync failed silently — update status so user knows to force sync
+        setSyncStatus('Auto-sync failed — click Force Sync to retry','#ff8844');
+      }
+    });
+};
+
+function loadKms(){
+  fetch(WR+'&bust='+Date.now(),{credentials:'same-origin'})
+    .then(function(r){ if(!r.ok) throw new Error(); return r.text(); })
+    .then(function(raw){
+      var data=parseKms(raw);
+      if(!data||typeof data!=='object') throw new Error();
+      Object.keys(data).forEach(function(k){
+        var cleanKey = k.replace(/\\/g, '');
+        if(!DELETED[cleanKey] && !DELETED[k]) {
+          if(cleanKey !== k) data[k].displayName = (data[k].displayName||'').replace(/\\/g, ' /');
+          DB[cleanKey] = data[k];
+        }
+      });
+      buildSidebar($id('dh-search').value);
+      setSyncStatus('Custom Knowledge Management System loaded ' + new Date().toLocaleTimeString(),'#39861f');
+    })
+    .catch(function(){ setSyncStatus('Local only — custom knowledge management system unavailable','#888'); });
+}
+
+function saveLocal(){ try{ localStorage.setItem('aeglos_disconnect_data',JSON.stringify(DB)); }catch(e){} }
+function loadLocal(){
+  try{
+    var d=localStorage.getItem('aeglos_disconnect_data');
+    if(d){
+      var raw=JSON.parse(d);
+      Object.keys(raw).forEach(function(k){
+        var cleanKey = k.replace(/\\/g,'');
+        if(cleanKey !== k){
+          raw[k].displayName = (raw[k].displayName||'').replace(/\\/g,' /');
+          raw[cleanKey] = raw[k];
+          delete raw[k];
+        }
+      });
+      DB=raw;
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+var FZ=['12px','13.5px','14.5px'], FP=['0%','50%','100%'];
+function applyFz(v){
+  var i=Math.max(0,Math.min(2,parseInt(v,10)));
+  if(W) W.style.setProperty('--fz',FZ[i]);
+  var sl=$id('dh-fz'); if(sl) sl.style.setProperty('--fz-pct',FP[i]);
+  try{ localStorage.setItem('aeglos_disconnect_fz',String(i)); }catch(e){}
+}
+(function(){
+  var sl=$id('dh-fz');
+  if(sl) sl.addEventListener('input',function(){ applyFz(this.value); });
+  try{ var s=localStorage.getItem('aeglos_disconnect_fz'); if(s&&'012'.indexOf(s)!==-1){ if(sl) sl.value=s; applyFz(s); } }catch(e){}
+})();
+
+refreshUserBar();
+retryUserResolve();
+fetchUserFromPage();
+loadLocal();
+buildSidebar();
+loadKms();
+var hash=window.location.hash;
+if(hash&&hash.indexOf('#dc-')===0){
+  var hk=decodeURIComponent(hash.slice(4));
+  if(DB[hk]) selectProv(hk);
+}
+
+})();
+</script>
+</html>
